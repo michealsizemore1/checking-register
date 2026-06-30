@@ -277,10 +277,15 @@
     .page-body > * { margin-bottom: 9px; }
     .table-card { display: block; flex: none; min-height: auto; height: auto; overflow: visible; }
     .table-scroll { overflow-x: hidden; overflow-y: visible; max-height: none; }
-    /* On mobile: hide date, category, type, balance columns */
+    /* On mobile: collapse date, category, type, balance columns to zero width
+       (display:none shifts cells into wrong columns with table-layout:fixed) */
     col.c-date, col.c-cat, col.c-type, col.c-bal { width: 0 !important; }
     th.h-date, th.h-cat, th.h-type, th.h-bal,
-    td.h-date, td.h-cat, td.h-type, td.h-bal { display: none !important; }
+    td.h-date, td.h-cat, td.h-type, td.h-bal {
+      width: 0 !important; max-width: 0 !important;
+      padding: 0 !important; overflow: hidden !important;
+      white-space: nowrap !important; border: none !important;
+    }
     /* Show the inline date inside the description cell */
     .txn-date-inline { display: block; }
     /* Give the desc+amount cell more breathing room */
