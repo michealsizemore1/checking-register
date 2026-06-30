@@ -154,9 +154,9 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
 .catbdg { display:inline-block; padding:2px 6px; border-radius:20px;
   font-size:.64rem; font-weight:500; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
 
-.amt-exp,.amt-expense { color:var(--danger);  font-weight:700; font-variant-numeric:tabular-nums; }
-.amt-ret,.amt-return  { color:var(--success); font-weight:700; font-variant-numeric:tabular-nums; }
-.amt-pay,.amt-payment { color:#7c3aed;        font-weight:700; font-variant-numeric:tabular-nums; }
+.amt-exp,.amt-expense { color:#dc2626 !important; font-weight:700; font-variant-numeric:tabular-nums; }
+.amt-ret,.amt-return  { color:#16a34a !important; font-weight:700; font-variant-numeric:tabular-nums; }
+.amt-pay,.amt-payment { color:#7c3aed !important; font-weight:700; font-variant-numeric:tabular-nums; }
 .amt-bal { font-weight:600; font-variant-numeric:tabular-nums; color:var(--primary); }
 .amt-bal.neg { color:var(--danger); }
 
@@ -601,6 +601,8 @@ function renderTable(){
     var bal=bm[t.id],neg=bal<0,clr=!!t.cleared;
     var cls=t.type+'-row'+(clr?'':' unclrd');
     var sign=t.type==='expense'?'+':'-';
+    var amtColor=t.type==='expense'?'#dc2626':t.type==='return'?'#16a34a':'#7c3aed';
+    var amtStyle='color:'+amtColor+';font-weight:700;';
     var cb='<input type="checkbox" class="clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
     var eb='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
     var db='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
@@ -610,17 +612,17 @@ function renderTable(){
       h+='<td class="clr-cell">'+cb+'</td>';
       h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
       h+='<td class="desc-cell"><span class="desc-main" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
-      h+='<td class="amt-cell"><span class="amt-'+t.type+'">'+sign+fmt(t.amount)+'</span></td>';
+      h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
       h+='<td class="act-cell">'+eb+db+'</td>';
       h+='</tr>';
     } else {
       h+='<tr class="'+cls+'">';
       h+='<td class="clr-cell">'+cb+'</td>';
       h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
-      h+='<td class="desc-cell"><span class="desc-main" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub amt-'+t.type+'">'+sign+fmt(t.amount)+'</span></td>';
+      h+='<td class="desc-cell"><span class="desc-main" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span style="'+amtStyle+'font-size:.7rem;">'+sign+fmt(t.amount)+'</span></td>';
       h+='<td class="cat-cell"><span class="catbdg">'+esc(t.cat)+'</span></td>';
       h+='<td class="type-cell"><span class="badge b-'+t.type+'">'+(t.type==='expense'?'Exp':t.type==='return'?'Ret':'Pay')+'</span></td>';
-      h+='<td class="bal-cell"><span class="amt-bal'+(neg?' neg':'')+'">'+fmtS(bal)+'</span></td>';
+      h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
       h+='<td class="act-cell">'+eb+db+'</td>';
       h+='</tr>';
     }
