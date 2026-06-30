@@ -248,28 +248,36 @@
   .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
   .empty-state p { font-size: 0.85rem; }
 
-  /* ── Mobile: let everything scroll naturally ── */
+  /* ── Mobile: full natural scroll layout ── */
   @media (max-width: 768px) {
     html, body {
-      height: auto;
-      overflow: auto;
+      height: auto !important;
+      overflow: auto !important;
+      display: block !important;
     }
     .page-body {
+      display: block;
       overflow: visible;
-      flex: none;
+      height: auto;
       padding: 10px 12px;
     }
+    .page-body > * {
+      margin-bottom: 10px;
+    }
     .table-card {
+      display: block;
       flex: none;
       min-height: auto;
+      height: auto;
       overflow: visible;
     }
     .table-scroll {
       overflow-x: auto;
       overflow-y: visible;
+      max-height: none;
     }
     .summary {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr 1fr;
     }
     .form-grid {
       grid-template-columns: 1fr 1fr;
