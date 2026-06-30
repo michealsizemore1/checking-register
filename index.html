@@ -72,6 +72,15 @@ header p  { font-size:.75rem; opacity:.8; margin-top:1px; }
 .type-toggle input:checked+label.rl { background:#dcfce7; color:var(--success); border-color:#86efac; }
 .type-toggle input:checked+label.pl { background:#ede9fe; color:#7c3aed; border-color:#c4b5fd; }
 
+.who-toggle { display:flex; gap:4px; }
+.who-toggle input[type=radio] { display:none; }
+.who-toggle label { flex:1; text-align:center; padding:6px 4px;
+  border-radius:6px; border:1px solid var(--border); font-size:.78rem;
+  font-weight:600; cursor:pointer; background:#fafbfc; color:var(--muted);
+  transition:all .15s; }
+.who-toggle input:checked+label.ml { background:#dbeafe; color:#1d4ed8; border-color:#93c5fd; }
+.who-toggle input:checked+label.wl { background:#fce7f3; color:#be185d; border-color:#f9a8d4; }
+
 .btn { padding:6px 13px; border-radius:6px; font-size:.83rem; font-weight:600;
   cursor:pointer; border:none; transition:background .15s,transform .05s; white-space:nowrap; }
 .btn:active { transform:scale(.97); }
@@ -286,6 +295,15 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
         <label for="tp" class="pl">Payment</label>
       </div>
     </div>
+    <div class="f fl">
+      <label>Who</label>
+      <div class="who-toggle">
+        <input type="radio" name="txn-who" id="wm" value="me" checked>
+        <label for="wm" class="ml">&#x1F464; Me</label>
+        <input type="radio" name="txn-who" id="ww" value="wife">
+        <label for="ww" class="wl">&#x1F469; Wife</label>
+      </div>
+    </div>
     <div class="form-actions">
       <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="btn-add">+ Add</button></div>
     </div>
@@ -358,6 +376,15 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
           <label for="er" class="rl">Return</label>
           <input type="radio" name="e-type" id="ep" value="payment">
           <label for="ep" class="pl">Payment</label>
+        </div>
+      </div>
+      <div class="f fl">
+        <label>Who</label>
+        <div class="who-toggle">
+          <input type="radio" name="e-who" id="ewm" value="me">
+          <label for="ewm" class="ml">&#x1F464; Me</label>
+          <input type="radio" name="e-who" id="eww" value="wife">
+          <label for="eww" class="wl">&#x1F469; Wife</label>
         </div>
       </div>
       <div class="f fl" style="display:flex;align-items:center;gap:8px;padding-top:18px;">
@@ -447,12 +474,13 @@ function addTxn(){
   var date=$('txn-date').value,desc=$('txn-desc').value.trim();
   var amt=parseFloat($('txn-amt').value),cat=$('txn-cat').value;
   var te=document.querySelector('input[name="txn-type"]:checked');
-  var type=te?te.value:'expense',err=$('form-err');
+  var we=document.querySelector('input[name="txn-who"]:checked');
+  var type=te?te.value:'expense',who=we?we.value:'me',err=$('form-err');
   if(!date){err.textContent='Please enter a date.';return;}
   if(!desc){err.textContent='Please enter a description.';return;}
   if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
   err.textContent='';
-  transactions.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false});
+  transactions.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,who:who});
   save();renderAll();
   $('txn-desc').value='';$('txn-amt').value='';$('txn-date').value=todayStr();$('txn-desc').focus();
 }
@@ -474,6 +502,8 @@ function openEdit(id){
   $('e-amt').value=t.amount;$('e-cleared').checked=!!t.cleared;
   var r=document.querySelector('input[name="e-type"][value="'+t.type+'"]');
   if(r)r.checked=true;
+  var w=document.querySelector('input[name="e-who"][value="'+(t.who||'me')+'"]');
+  if(w)w.checked=true;
   $('edit-err').textContent='';renderCatSelects(t.cat);
   $('edit-modal').classList.add('open');
 }
@@ -482,12 +512,13 @@ function saveEdit(){
   var date=$('e-date').value,desc=$('e-desc').value.trim();
   var amt=parseFloat($('e-amt').value),cat=$('e-cat').value;
   var te=document.querySelector('input[name="e-type"]:checked');
-  var type=te?te.value:'expense',err=$('edit-err');
+  var we=document.querySelector('input[name="e-who"]:checked');
+  var type=te?te.value:'expense',who=we?we.value:'me',err=$('edit-err');
   if(!date){err.textContent='Date required.';return;}
   if(!desc){err.textContent='Description required.';return;}
   if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
   var i=transactions.findIndex(function(t){return t.id===editId;});if(i===-1)return;
-  transactions[i]={id:transactions[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('e-cleared').checked};
+  transactions[i]={id:transactions[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('e-cleared').checked,who:who};
   save();renderAll();closeEdit();
 }
 
@@ -603,6 +634,8 @@ function renderTable(){
     var sign=t.type==='expense'?'+':'-';
     var amtColor=t.type==='expense'?'#dc2626':t.type==='return'?'#16a34a':'#7c3aed';
     var amtStyle='color:'+amtColor+';font-weight:700;';
+    var whoColor=(t.who==='wife')?'#be185d':'#1e293b';
+    var whoStyle='color:'+whoColor+';font-weight:'+(t.who==='wife'?'600':'500')+';';
     var cb='<input type="checkbox" class="clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
     var eb='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
     var db='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
@@ -611,7 +644,7 @@ function renderTable(){
       h+='<tr class="'+cls+'">';
       h+='<td class="clr-cell">'+cb+'</td>';
       h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
-      h+='<td class="desc-cell"><span class="desc-main" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
+      h+='<td class="desc-cell"><span class="desc-main" style="'+whoStyle+'" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
       h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
       h+='<td class="act-cell">'+eb+db+'</td>';
       h+='</tr>';
@@ -619,7 +652,7 @@ function renderTable(){
       h+='<tr class="'+cls+'">';
       h+='<td class="clr-cell">'+cb+'</td>';
       h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
-      h+='<td class="desc-cell"><span class="desc-main" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span style="'+amtStyle+'font-size:.7rem;">'+sign+fmt(t.amount)+'</span></td>';
+      h+='<td class="desc-cell"><span class="desc-main" style="'+whoStyle+'" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span style="'+amtStyle+'font-size:.7rem;">'+sign+fmt(t.amount)+'</span></td>';
       h+='<td class="cat-cell"><span class="catbdg">'+esc(t.cat)+'</span></td>';
       h+='<td class="type-cell"><span class="badge b-'+t.type+'">'+(t.type==='expense'?'Exp':t.type==='return'?'Ret':'Pay')+'</span></td>';
       h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
