@@ -246,12 +246,30 @@
   .sort-arrow { margin-left: 3px; opacity: 0.4; }
   .sort-arrow.active { opacity: 1; }
 
-  .btn-backup  { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
-  .btn-backup:hover { background: #e0f2fe; }
-  .btn-restore { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
-  .btn-restore:hover { background: #fef9c3; }
-  .btn-import  { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
-  .btn-import:hover { background: #ede9fe; }
+  .btn-backup  { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+  .btn-backup:hover  { background: rgba(255,255,255,0.25); }
+  .btn-restore { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+  .btn-restore:hover { background: rgba(255,255,255,0.25); }
+  .btn-import  { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+  .btn-import:hover  { background: rgba(255,255,255,0.25); }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    flex-shrink: 0;
+    background: #1d4ed8;
+    padding: 7px 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toolbar span {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 2px;
+  }
 
   /* ── AI floating button ── */
   .ai-fab {
@@ -440,6 +458,15 @@
   </div>
 </header>
 
+<div class="toolbar">
+  <span>Data</span>
+  <button class="btn btn-backup btn-sm" id="btn-backup">&#x1F4BE; Backup</button>
+  <button class="btn btn-restore btn-sm" id="btn-restore">&#x1F4C2; Restore</button>
+  <button class="btn btn-import btn-sm" id="btn-import-csv">&#x1F4E5; Import CSV</button>
+  <input type="file" id="restore-file" accept=".json" style="display:none">
+  <input type="file" id="import-csv-file" accept=".csv,.txt" style="display:none">
+</div>
+
 <div class="page-body">
 
   <div class="summary">
@@ -536,11 +563,6 @@
     <div class="filter-actions">
       <button class="btn btn-ghost btn-sm" id="btn-clear">Clear</button>
       <button class="btn btn-export btn-sm" id="btn-export">&#x2B07; Export CSV</button>
-      <button class="btn btn-backup btn-sm" id="btn-backup">&#x1F4BE; Backup</button>
-      <button class="btn btn-restore btn-sm" id="btn-restore">&#x1F4C2; Restore</button>
-      <button class="btn btn-import btn-sm" id="btn-import-csv">&#x1F4E5; Import CSV</button>
-      <input type="file" id="restore-file" accept=".json" style="display:none">
-      <input type="file" id="import-csv-file" accept=".csv,.txt" style="display:none">
     </div>
   </div>
 
