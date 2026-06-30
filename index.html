@@ -271,24 +271,23 @@
   .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
 
   /* ── Mobile card list ── */
-  #mobile-list { display: none; }
+  #mobile-list { display: none; width: 100%; }
   .mc {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 10px 12px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+    width: 100%; box-sizing: border-box;
   }
   .mc:last-child { border-bottom: none; }
   .mc.expense-row { background: #fffafa; }
   .mc.return-row  { background: #fafffa; }
   .mc.payment-row { background: #faf8ff; }
   .mc.uncleared   { opacity: 0.72; }
-  .mc-check { padding-top: 2px; flex-shrink: 0; }
-  .mc-body  { flex: 1; min-width: 0; }
-  .mc-meta  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2px; }
-  .mc-desc  { font-size: 0.88rem; font-weight: 500; color: var(--text); margin-bottom: 3px; word-break: break-word; }
-  .mc-amt   { font-size: 0.82rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .mc-bal   { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
-  .mc-bal span { font-weight: 600; }
-  .mc-actions { display: flex; gap: 5px; flex-shrink: 0; align-items: center; }
+  .mc-check   { flex-shrink: 0; }
+  .mc-body    { flex: 1; min-width: 0; }
+  .mc-meta    { font-size: 0.68rem; color: var(--muted); margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mc-desc    { font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mc-amt     { font-size: 0.8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .mc-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
 
   /* ── Mobile layout ── */
   @media (max-width: 768px) {
@@ -720,6 +719,10 @@
   function renderTable(){
     var filtered=getFiltered(), rows=sortedList(filtered);
     var balMap=buildBalMap(), body=$('txn-body'), empty=$('empty-state');
+    // JS-controlled view switching (more reliable than CSS-only media query)
+    var isMobile = window.innerWidth <= 768;
+    $('desktop-table').style.display = isMobile ? 'none' : '';
+    $('mobile-list').style.display   = isMobile ? 'block' : 'none';
 
     $('row-count').textContent=rows.length+' transaction'+(rows.length!==1?'s':'');
 
@@ -776,12 +779,11 @@
       mhtml+='<div class="mc '+t.type+'-row'+(clr?'':' uncleared')+'" data-id="'+t.id+'">';
       mhtml+='<div class="mc-check">'+clrCb+'</div>';
       mhtml+='<div class="mc-body">';
-      mhtml+='<div class="mc-meta">'+fmtDate(t.date)+' &middot; <span class="cat-badge">'+escHtml(t.cat)+'</span> &middot; <span class="badge badge-'+t.type+'">'+label+'</span></div>';
+      mhtml+='<div class="mc-meta">'+fmtDate(t.date)+' &middot; '+escHtml(t.cat)+'</div>';
       mhtml+='<div class="mc-desc">'+escHtml(t.desc)+'</div>';
       mhtml+='<div class="mc-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div>';
-      mhtml+='<div class="mc-bal">Balance: <span class="'+(isNeg?'amount-balance negative':'amount-balance')+'">'+fmtSigned(bal)+'</span></div>';
       mhtml+='</div>';
-      mhtml+='<div class="mc-actions">'+editBtn+''+delBtn+'</div>';
+      mhtml+='<div class="mc-actions">'+editBtn+delBtn+'</div>';
       mhtml+='</div>';
     });
     body.innerHTML=html;
@@ -1246,6 +1248,9 @@
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'){closeEdit();$('ai-modal').classList.remove('open');}
   });
+
+  // Re-render on resize / orientation change
+  window.addEventListener('resize', function(){ renderTable(); });
 
   // ── Boot ─────────────────────────────────────────────────────────────────
   renderCategorySelects();
