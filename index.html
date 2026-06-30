@@ -298,9 +298,9 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
     <div class="f fl">
       <label>Who</label>
       <div class="who-toggle">
-        <input type="radio" name="txn-who" id="wm" value="me" checked>
+        <input type="radio" name="txn-who" id="wm" value="me">
         <label for="wm" class="ml">&#x1F464; Me</label>
-        <input type="radio" name="txn-who" id="ww" value="wife">
+        <input type="radio" name="txn-who" id="ww" value="wife" checked>
         <label for="ww" class="wl">&#x1F469; Wife</label>
       </div>
     </div>
@@ -502,7 +502,7 @@ function openEdit(id){
   $('e-amt').value=t.amount;$('e-cleared').checked=!!t.cleared;
   var r=document.querySelector('input[name="e-type"][value="'+t.type+'"]');
   if(r)r.checked=true;
-  var w=document.querySelector('input[name="e-who"][value="'+(t.who||'me')+'"]');
+  var w=document.querySelector('input[name="e-who"][value="'+(t.who||'wife')+'"]');
   if(w)w.checked=true;
   $('edit-err').textContent='';renderCatSelects(t.cat);
   $('edit-modal').classList.add('open');
@@ -634,8 +634,9 @@ function renderTable(){
     var sign=t.type==='expense'?'+':'-';
     var amtColor=t.type==='expense'?'#dc2626':t.type==='return'?'#16a34a':'#7c3aed';
     var amtStyle='color:'+amtColor+';font-weight:700;';
-    var whoColor=(t.who==='wife')?'#be185d':'#1e293b';
-    var whoStyle='color:'+whoColor+';font-weight:'+(t.who==='wife'?'600':'500')+';';
+    var isWife=(t.who==='wife'||!t.who);
+    var whoColor=isWife?'#be185d':'#1e293b';
+    var whoStyle='color:'+whoColor+';font-weight:'+(isWife?'600':'500')+';';
     var cb='<input type="checkbox" class="clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
     var eb='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
     var db='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
