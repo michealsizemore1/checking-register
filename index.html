@@ -270,23 +270,35 @@
   .modal-grid .field.full { grid-column: 1 / -1; }
   .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
 
-  /* ── Mobile ── */
+  /* ── Mobile card list ── */
+  #mobile-list { display: none; }
+  .mc {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border-bottom: 1px solid var(--border);
+  }
+  .mc:last-child { border-bottom: none; }
+  .mc.expense-row { background: #fffafa; }
+  .mc.return-row  { background: #fafffa; }
+  .mc.payment-row { background: #faf8ff; }
+  .mc.uncleared   { opacity: 0.72; }
+  .mc-check { padding-top: 2px; flex-shrink: 0; }
+  .mc-body  { flex: 1; min-width: 0; }
+  .mc-meta  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2px; }
+  .mc-desc  { font-size: 0.88rem; font-weight: 500; color: var(--text); margin-bottom: 3px; word-break: break-word; }
+  .mc-amt   { font-size: 0.82rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .mc-bal   { font-size: 0.74rem; color: var(--muted); margin-top: 2px; }
+  .mc-bal span { font-weight: 600; }
+  .mc-actions { display: flex; gap: 5px; flex-shrink: 0; align-items: center; }
+
+  /* ── Mobile layout ── */
   @media (max-width: 768px) {
     html, body { height: auto !important; overflow: auto !important; display: block !important; }
     .page-body { display: block; overflow: visible; height: auto; padding: 10px 12px; }
     .page-body > * { margin-bottom: 9px; }
     .table-card { display: block; flex: none; min-height: auto; height: auto; overflow: visible; }
-    .table-scroll { overflow-x: hidden; overflow-y: visible; max-height: none; }
-    /* Switch to auto layout so display:none works correctly on cells */
-    table { table-layout: auto !important; }
-    th.h-date, th.h-cat, th.h-type, th.h-bal,
-    td.h-date, td.h-cat, td.h-type, td.h-bal { display: none !important; }
-    /* Show the inline date inside the description cell */
-    .txn-date-inline { display: block; }
-    /* Give the desc+amount cell more breathing room */
-    td.h-desc { padding-top: 8px; padding-bottom: 8px; }
-    .txn-name { font-size: 0.88rem; white-space: normal; }
-    .txn-amt  { font-size: 0.82rem; }
+    .table-scroll { overflow: visible; max-height: none; }
+    #desktop-table { display: none !important; }
+    #mobile-list   { display: block !important; }
     .summary { grid-template-columns: 1fr 1fr; }
     .form-card .field, .form-card .field-desc, .form-card .field-type { max-width: 100%; flex-basis: 100%; }
     .filters-card { flex-direction: column; align-items: stretch; }
@@ -425,7 +437,8 @@
       </div>
     </div>
     <div class="table-scroll">
-      <table>
+      <!-- Desktop table -->
+      <table id="desktop-table">
         <colgroup>
           <col class="c-clr"><col class="c-date"><col class="c-desc">
           <col class="c-cat"><col class="c-type">
@@ -434,16 +447,18 @@
         <thead>
           <tr>
             <th class="no-sort" title="Cleared on statement">&#x2713;</th>
-            <th data-sort="date" class="h-date">Date <span class="sort-arrow active" id="arr-date">&#x2193;</span></th>
-            <th data-sort="desc" class="h-desc">Description / Amount <span class="sort-arrow" id="arr-desc"></span></th>
-            <th data-sort="cat" class="h-cat">Category <span class="sort-arrow" id="arr-cat"></span></th>
-            <th class="no-sort h-type">Type</th>
-            <th class="h-bal" style="text-align:right">Balance</th>
+            <th data-sort="date">Date <span class="sort-arrow active" id="arr-date">&#x2193;</span></th>
+            <th data-sort="desc">Description / Amount <span class="sort-arrow" id="arr-desc"></span></th>
+            <th data-sort="cat">Category <span class="sort-arrow" id="arr-cat"></span></th>
+            <th class="no-sort">Type</th>
+            <th style="text-align:right">Balance</th>
             <th class="no-sort" style="text-align:center">Actions</th>
           </tr>
         </thead>
         <tbody id="txn-body"></tbody>
       </table>
+      <!-- Mobile card list -->
+      <div id="mobile-list"></div>
       <div id="empty-state" class="empty-state">
         <div class="icon">&#x1F9FE;</div>
         <p>No transactions yet. Add your first one above.</p>
@@ -731,31 +746,46 @@
     }
 
     if(rows.length===0){
-      body.innerHTML=''; empty.style.display='block'; return;
+      body.innerHTML=''; $('mobile-list').innerHTML=''; empty.style.display='block'; return;
     }
     empty.style.display='none';
 
-    var html='';
+    var html='', mhtml='';
     rows.forEach(function(t){
       var bal=balMap[t.id], isNeg=bal<0, clr=!!t.cleared;
       var label=t.type==='expense'?'Expense':t.type==='return'?'Return':'Payment';
+      var clrCb='<input type="checkbox" class="clr-cb clear-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark as cleared on statement" style="width:15px;height:15px;cursor:pointer;accent-color:var(--success);">';
+      var editBtn='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'" title="Edit">&#x270F;&#xFE0F;</button>';
+      var delBtn='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" title="Delete">&#x2715;</button>';
+
+      // Desktop table row
       html+='<tr class="'+t.type+'-row'+(clr?'':' uncleared')+'" data-id="'+t.id+'">';
-      html+='<td class="no-clip"><div class="clr-wrap"><input type="checkbox" class="clr-cb clear-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark as cleared on statement"></div></td>';
-      html+='<td class="h-date">'+fmtDate(t.date)+'</td>';
-      html+='<td class="h-desc" style="overflow:hidden;">';
-      html+='<div class="txn-date-inline">'+fmtDate(t.date)+'</div>';
+      html+='<td class="no-clip"><div class="clr-wrap">'+clrCb+'</div></td>';
+      html+='<td>'+fmtDate(t.date)+'</td>';
+      html+='<td style="overflow:hidden;">';
       html+='<div class="txn-name" title="'+escHtml(t.desc)+'">'+escHtml(t.desc)+'</div>';
       html+='<div class="txn-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div>';
       html+='</td>';
-      html+='<td class="h-cat"><span class="cat-badge">'+escHtml(t.cat)+'</span></td>';
-      html+='<td class="h-type"><span class="badge badge-'+t.type+'">'+label+'</span></td>';
-      html+='<td class="h-bal" style="text-align:right"><span class="amount-balance'+(isNeg?' negative':'')+'">'+fmtSigned(bal)+'</span></td>';
-      html+='<td class="no-clip" style="text-align:center;white-space:nowrap;">';
-      html+='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'" title="Edit">&#x270F;&#xFE0F;</button>';
-      html+='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" title="Delete" style="margin-left:3px">&#x2715;</button>';
-      html+='</td></tr>';
+      html+='<td><span class="cat-badge">'+escHtml(t.cat)+'</span></td>';
+      html+='<td><span class="badge badge-'+t.type+'">'+label+'</span></td>';
+      html+='<td style="text-align:right"><span class="amount-balance'+(isNeg?' negative':'')+'">'+fmtSigned(bal)+'</span></td>';
+      html+='<td class="no-clip" style="text-align:center;white-space:nowrap;">'+editBtn+'<span style="margin-left:3px;">'+delBtn+'</span></td>';
+      html+='</tr>';
+
+      // Mobile card
+      mhtml+='<div class="mc '+t.type+'-row'+(clr?'':' uncleared')+'" data-id="'+t.id+'">';
+      mhtml+='<div class="mc-check">'+clrCb+'</div>';
+      mhtml+='<div class="mc-body">';
+      mhtml+='<div class="mc-meta">'+fmtDate(t.date)+' &middot; <span class="cat-badge">'+escHtml(t.cat)+'</span> &middot; <span class="badge badge-'+t.type+'">'+label+'</span></div>';
+      mhtml+='<div class="mc-desc">'+escHtml(t.desc)+'</div>';
+      mhtml+='<div class="mc-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div>';
+      mhtml+='<div class="mc-bal">Balance: <span class="'+(isNeg?'amount-balance negative':'amount-balance')+'">'+fmtSigned(bal)+'</span></div>';
+      mhtml+='</div>';
+      mhtml+='<div class="mc-actions">'+editBtn+''+delBtn+'</div>';
+      mhtml+='</div>';
     });
     body.innerHTML=html;
+    $('mobile-list').innerHTML=mhtml;
   }
 
   // ── Export CSV ────────────────────────────────────────────────────────────
@@ -1137,7 +1167,7 @@
     renderTable();
   });
 
-  // Table row actions (delegated)
+  // Table + card row actions (delegated from scroll container)
   $('txn-body').addEventListener('click',function(e){
     var editBtn=e.target.closest('.edit-btn');
     var delBtn=e.target.closest('.del-btn');
@@ -1145,6 +1175,16 @@
     if(delBtn)  deleteTransaction(parseInt(delBtn.getAttribute('data-id'),10));
   });
   $('txn-body').addEventListener('change',function(e){
+    var cb=e.target.closest('.clear-cb');
+    if(cb) toggleCleared(parseInt(cb.getAttribute('data-id'),10));
+  });
+  $('mobile-list').addEventListener('click',function(e){
+    var editBtn=e.target.closest('.edit-btn');
+    var delBtn=e.target.closest('.del-btn');
+    if(editBtn) openEdit(parseInt(editBtn.getAttribute('data-id'),10));
+    if(delBtn)  deleteTransaction(parseInt(delBtn.getAttribute('data-id'),10));
+  });
+  $('mobile-list').addEventListener('change',function(e){
     var cb=e.target.closest('.clear-cb');
     if(cb) toggleCleared(parseInt(cb.getAttribute('data-id'),10));
   });
