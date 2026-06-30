@@ -171,6 +171,7 @@
   /* Description + amount combined cell */
   .txn-name { font-size: 0.83rem; font-weight: 500; color: var(--text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   .txn-amt  { font-size: 0.76rem; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .txn-date-inline { display: none; font-size: 0.7rem; color: var(--muted); margin-bottom: 1px; }
 
   thead th {
     position: sticky; top: 0; z-index: 1;
@@ -275,9 +276,17 @@
     .page-body { display: block; overflow: visible; height: auto; padding: 10px 12px; }
     .page-body > * { margin-bottom: 9px; }
     .table-card { display: block; flex: none; min-height: auto; height: auto; overflow: visible; }
-    .table-scroll { overflow-x: auto; overflow-y: visible; max-height: none; }
-    col.c-cat, col.c-bal { width: 0; }
-    thead th.h-cat, thead th.h-bal, td.c-cat, td.c-bal { display: none; }
+    .table-scroll { overflow-x: hidden; overflow-y: visible; max-height: none; }
+    /* On mobile: hide date, category, type, balance columns */
+    col.c-date, col.c-cat, col.c-type, col.c-bal { width: 0 !important; }
+    th.h-date, th.h-cat, th.h-type, th.h-bal,
+    td.h-date, td.h-cat, td.h-type, td.h-bal { display: none !important; }
+    /* Show the inline date inside the description cell */
+    .txn-date-inline { display: block; }
+    /* Give the desc+amount cell more breathing room */
+    td.h-desc { padding-top: 8px; padding-bottom: 8px; }
+    .txn-name { font-size: 0.88rem; white-space: normal; }
+    .txn-amt  { font-size: 0.82rem; }
     .summary { grid-template-columns: 1fr 1fr; }
     .form-card .field, .form-card .field-desc, .form-card .field-type { max-width: 100%; flex-basis: 100%; }
     .filters-card { flex-direction: column; align-items: stretch; }
@@ -425,10 +434,10 @@
         <thead>
           <tr>
             <th class="no-sort" title="Cleared on statement">&#x2713;</th>
-            <th data-sort="date">Date <span class="sort-arrow active" id="arr-date">&#x2193;</span></th>
-            <th data-sort="desc">Description / Amount <span class="sort-arrow" id="arr-desc"></span></th>
+            <th data-sort="date" class="h-date">Date <span class="sort-arrow active" id="arr-date">&#x2193;</span></th>
+            <th data-sort="desc" class="h-desc">Description / Amount <span class="sort-arrow" id="arr-desc"></span></th>
             <th data-sort="cat" class="h-cat">Category <span class="sort-arrow" id="arr-cat"></span></th>
-            <th class="no-sort">Type</th>
+            <th class="no-sort h-type">Type</th>
             <th class="h-bal" style="text-align:right">Balance</th>
             <th class="no-sort" style="text-align:center">Actions</th>
           </tr>
@@ -732,13 +741,14 @@
       var label=t.type==='expense'?'Expense':t.type==='return'?'Return':'Payment';
       html+='<tr class="'+t.type+'-row'+(clr?'':' uncleared')+'" data-id="'+t.id+'">';
       html+='<td class="no-clip"><div class="clr-wrap"><input type="checkbox" class="clr-cb clear-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark as cleared on statement"></div></td>';
-      html+='<td>'+fmtDate(t.date)+'</td>';
-      html+='<td style="overflow:hidden;">';
+      html+='<td class="h-date">'+fmtDate(t.date)+'</td>';
+      html+='<td class="h-desc" style="overflow:hidden;">';
+      html+='<div class="txn-date-inline">'+fmtDate(t.date)+'</div>';
       html+='<div class="txn-name" title="'+escHtml(t.desc)+'">'+escHtml(t.desc)+'</div>';
       html+='<div class="txn-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div>';
       html+='</td>';
-      html+='<td class="c-cat"><span class="cat-badge">'+escHtml(t.cat)+'</span></td>';
-      html+='<td><span class="badge badge-'+t.type+'">'+label+'</span></td>';
+      html+='<td class="h-cat"><span class="cat-badge">'+escHtml(t.cat)+'</span></td>';
+      html+='<td class="h-type"><span class="badge badge-'+t.type+'">'+label+'</span></td>';
       html+='<td class="h-bal" style="text-align:right"><span class="amount-balance'+(isNeg?' negative':'')+'">'+fmtSigned(bal)+'</span></td>';
       html+='<td class="no-clip" style="text-align:center;white-space:nowrap;">';
       html+='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'" title="Edit">&#x270F;&#xFE0F;</button>';
