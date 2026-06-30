@@ -436,7 +436,7 @@
       </div>
     </div>
     <div class="table-scroll">
-      <!-- Desktop table -->
+      <!-- Desktop table (7 columns) -->
       <table id="desktop-table">
         <colgroup>
           <col class="c-clr"><col class="c-date"><col class="c-desc">
@@ -456,8 +456,19 @@
         </thead>
         <tbody id="txn-body"></tbody>
       </table>
-      <!-- Mobile card list -->
-      <div id="mobile-list"></div>
+      <!-- Mobile table (4 columns, no horizontal scroll) -->
+      <table id="mobile-table" style="display:none;">
+        <thead>
+          <tr>
+            <th class="no-sort" style="width:32px;" title="Cleared">&#x2713;</th>
+            <th data-sort="date" style="width:76px;">Date <span class="sort-arrow active" id="marr-date">&#x2193;</span></th>
+            <th data-sort="desc">Description <span class="sort-arrow" id="marr-desc"></span></th>
+            <th data-sort="amount" style="width:76px;text-align:right;">Amount <span class="sort-arrow" id="marr-amount"></span></th>
+            <th class="no-sort" style="width:64px;text-align:center;">Act.</th>
+          </tr>
+        </thead>
+        <tbody id="mobile-body"></tbody>
+      </table>
       <div id="empty-state" class="empty-state">
         <div class="icon">&#x1F9FE;</div>
         <p>No transactions yet. Add your first one above.</p>
@@ -671,6 +682,12 @@
       if(sortField===f){el.textContent=sortAsc?'↑':'↓';el.className='sort-arrow active';}
       else{el.textContent='';el.className='sort-arrow';}
     });
+    // Mobile table arrows
+    ['date','desc','amount'].forEach(function(f){
+      var el=$('marr-'+f); if(!el) return;
+      if(sortField===f){el.textContent=sortAsc?'↑':'↓';el.className='sort-arrow active';}
+      else{el.textContent='';el.className='sort-arrow';}
+    });
   }
   function sortedList(list){
     var out=list.slice().sort(function(a,b){
@@ -719,10 +736,9 @@
   function renderTable(){
     var filtered=getFiltered(), rows=sortedList(filtered);
     var balMap=buildBalMap(), body=$('txn-body'), empty=$('empty-state');
-    // JS-controlled view switching (more reliable than CSS-only media query)
     var isMobile = window.innerWidth <= 768;
     $('desktop-table').style.display = isMobile ? 'none' : '';
-    $('mobile-list').style.display   = isMobile ? 'block' : 'none';
+    $('mobile-table').style.display  = isMobile ? '' : 'none';
 
     $('row-count').textContent=rows.length+' transaction'+(rows.length!==1?'s':'');
 
@@ -749,45 +765,40 @@
     }
 
     if(rows.length===0){
-      body.innerHTML=''; $('mobile-list').innerHTML=''; empty.style.display='block'; return;
+      body.innerHTML=''; $('mobile-body').innerHTML=''; empty.style.display='block'; return;
     }
     empty.style.display='none';
 
     var html='', mhtml='';
     rows.forEach(function(t){
       var bal=balMap[t.id], isNeg=bal<0, clr=!!t.cleared;
-      var label=t.type==='expense'?'Expense':t.type==='return'?'Return':'Payment';
-      var clrCb='<input type="checkbox" class="clr-cb clear-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark as cleared on statement" style="width:15px;height:15px;cursor:pointer;accent-color:var(--success);">';
+      var rowCls=t.type+'-row'+(clr?'':' uncleared');
+      var clrCb='<input type="checkbox" class="clr-cb clear-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Cleared on statement" style="width:15px;height:15px;cursor:pointer;accent-color:var(--success);">';
       var editBtn='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'" title="Edit">&#x270F;&#xFE0F;</button>';
       var delBtn='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" title="Delete">&#x2715;</button>';
 
-      // Desktop table row
-      html+='<tr class="'+t.type+'-row'+(clr?'':' uncleared')+'" data-id="'+t.id+'">';
+      // ── Desktop row (7 columns) ──
+      html+='<tr class="'+rowCls+'" data-id="'+t.id+'">';
       html+='<td class="no-clip"><div class="clr-wrap">'+clrCb+'</div></td>';
       html+='<td>'+fmtDate(t.date)+'</td>';
-      html+='<td style="overflow:hidden;">';
-      html+='<div class="txn-name" title="'+escHtml(t.desc)+'">'+escHtml(t.desc)+'</div>';
-      html+='<div class="txn-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div>';
-      html+='</td>';
+      html+='<td style="overflow:hidden;"><div class="txn-name" title="'+escHtml(t.desc)+'">'+escHtml(t.desc)+'</div><div class="txn-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div></td>';
       html+='<td><span class="cat-badge">'+escHtml(t.cat)+'</span></td>';
-      html+='<td><span class="badge badge-'+t.type+'">'+label+'</span></td>';
+      html+='<td><span class="badge badge-'+t.type+'">'+(t.type==='expense'?'Exp':t.type==='return'?'Ret':'Pay')+'</span></td>';
       html+='<td style="text-align:right"><span class="amount-balance'+(isNeg?' negative':'')+'">'+fmtSigned(bal)+'</span></td>';
       html+='<td class="no-clip" style="text-align:center;white-space:nowrap;">'+editBtn+'<span style="margin-left:3px;">'+delBtn+'</span></td>';
       html+='</tr>';
 
-      // Mobile card
-      mhtml+='<div class="mc '+t.type+'-row'+(clr?'':' uncleared')+'" data-id="'+t.id+'">';
-      mhtml+='<div class="mc-check">'+clrCb+'</div>';
-      mhtml+='<div class="mc-body">';
-      mhtml+='<div class="mc-meta">'+fmtDate(t.date)+' &middot; '+escHtml(t.cat)+'</div>';
-      mhtml+='<div class="mc-desc">'+escHtml(t.desc)+'</div>';
-      mhtml+='<div class="mc-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div>';
-      mhtml+='</div>';
-      mhtml+='<div class="mc-actions">'+editBtn+delBtn+'</div>';
-      mhtml+='</div>';
+      // ── Mobile row (4 columns) ──
+      mhtml+='<tr class="'+rowCls+'" data-id="'+t.id+'">';
+      mhtml+='<td class="no-clip" style="vertical-align:middle;"><div class="clr-wrap">'+clrCb+'</div></td>';
+      mhtml+='<td style="font-size:0.75rem;color:var(--muted);white-space:nowrap;">'+fmtDate(t.date)+'</td>';
+      mhtml+='<td style="overflow:hidden;"><div class="txn-name" style="font-size:0.85rem;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;" title="'+escHtml(t.desc)+'">'+escHtml(t.desc)+'</div><div style="font-size:0.72rem;color:var(--muted);">'+escHtml(t.cat)+'</div></td>';
+      mhtml+='<td style="text-align:right;white-space:nowrap;"><span class="amount-'+t.type+'" style="font-size:0.82rem;">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</span></td>';
+      mhtml+='<td class="no-clip" style="text-align:center;white-space:nowrap;">'+editBtn+'<span style="margin-left:2px;">'+delBtn+'</span></td>';
+      mhtml+='</tr>';
     });
     body.innerHTML=html;
-    $('mobile-list').innerHTML=mhtml;
+    $('mobile-body').innerHTML=mhtml;
   }
 
   // ── Export CSV ────────────────────────────────────────────────────────────
@@ -1180,15 +1191,20 @@
     var cb=e.target.closest('.clear-cb');
     if(cb) toggleCleared(parseInt(cb.getAttribute('data-id'),10));
   });
-  $('mobile-list').addEventListener('click',function(e){
+  $('mobile-body').addEventListener('click',function(e){
     var editBtn=e.target.closest('.edit-btn');
     var delBtn=e.target.closest('.del-btn');
     if(editBtn) openEdit(parseInt(editBtn.getAttribute('data-id'),10));
     if(delBtn)  deleteTransaction(parseInt(delBtn.getAttribute('data-id'),10));
   });
-  $('mobile-list').addEventListener('change',function(e){
+  $('mobile-body').addEventListener('change',function(e){
     var cb=e.target.closest('.clear-cb');
     if(cb) toggleCleared(parseInt(cb.getAttribute('data-id'),10));
+  });
+  // Mobile table sort headers
+  $('mobile-table').querySelector('thead').addEventListener('click',function(e){
+    var th=e.target.closest('th[data-sort]');
+    if(th) toggleSort(th.getAttribute('data-sort'));
   });
 
   // Sort headers (delegated)
