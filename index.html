@@ -261,10 +261,10 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
 <div class="page-body">
 
   <div class="summary">
-    <div class="card exp"><div class="lbl">Total Expenses</div><div class="val" id="s-exp">$0.00</div></div>
-    <div class="card ret"><div class="lbl">Total Returns</div><div class="val" id="s-ret">$0.00</div></div>
-    <div class="card pay"><div class="lbl">Total Payments</div><div class="val" id="s-pay">$0.00</div></div>
-    <div class="card bal"><div class="lbl">Net Balance</div><div class="val" id="s-bal">$0.00</div></div>
+    <div class="card exp"><div class="lbl">&#x2713; Cleared Expenses</div><div class="val" id="s-exp">$0.00</div></div>
+    <div class="card ret"><div class="lbl">&#x2713; Cleared Returns</div><div class="val" id="s-ret">$0.00</div></div>
+    <div class="card pay"><div class="lbl">&#x2713; Cleared Payments</div><div class="val" id="s-pay">$0.00</div></div>
+    <div class="card bal"><div class="lbl">&#x2713; Cleared Balance</div><div class="val" id="s-bal">$0.00</div></div>
     <div class="card uncl"><div class="lbl">&#x26A0; Uncleared</div><div class="val" id="s-uncl">$0.00</div></div>
     <div class="card uncl-ret"><div class="lbl">&#x21A9; Uncleared Returns</div><div class="val" id="s-uncl-ret">$0.00</div></div>
   </div>
@@ -562,9 +562,9 @@ function renderSummary(){
   var exp=0,ret=0,pay=0,uexp=0,uret=0,upay=0;
   transactions.forEach(function(t){
     var cleared=!!t.cleared;
-    if(t.type==='expense'){exp+=t.amount;if(!cleared)uexp+=t.amount;}
-    else if(t.type==='return'){ret+=t.amount;if(!cleared)uret+=t.amount;}
-    else if(t.type==='payment'){pay+=t.amount;if(!cleared)upay+=t.amount;}
+    if(t.type==='expense'){if(cleared)exp+=t.amount;else uexp+=t.amount;}
+    else if(t.type==='return'){if(cleared)ret+=t.amount;else uret+=t.amount;}
+    else if(t.type==='payment'){if(cleared)pay+=t.amount;else upay+=t.amount;}
   });
   var bal=exp-ret-pay, uncl=uexp-uret-upay;
   $('s-exp').textContent=fmt(exp);$('s-ret').textContent=fmt(ret);
