@@ -161,13 +161,16 @@
   /* Fixed-layout table — no horizontal scroll */
   table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   col.c-clr  { width: 36px; }
-  col.c-date { width: 90px; }
+  col.c-date { width: 88px; }
   col.c-desc { width: auto; }
-  col.c-cat  { width: 100px; }
-  col.c-type { width: 74px; }
-  col.c-amt  { width: 84px; }
-  col.c-bal  { width: 94px; }
-  col.c-act  { width: 70px; }
+  col.c-cat  { width: 96px; }
+  col.c-type { width: 70px; }
+  col.c-bal  { width: 92px; }
+  col.c-act  { width: 68px; }
+
+  /* Description + amount combined cell */
+  .txn-name { font-size: 0.83rem; font-weight: 500; color: var(--text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .txn-amt  { font-size: 0.76rem; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 1px; }
 
   thead th {
     position: sticky; top: 0; z-index: 1;
@@ -416,17 +419,16 @@
       <table>
         <colgroup>
           <col class="c-clr"><col class="c-date"><col class="c-desc">
-          <col class="c-cat"><col class="c-type"><col class="c-amt">
+          <col class="c-cat"><col class="c-type">
           <col class="c-bal"><col class="c-act">
         </colgroup>
         <thead>
           <tr>
             <th class="no-sort" title="Cleared on statement">&#x2713;</th>
             <th data-sort="date">Date <span class="sort-arrow active" id="arr-date">&#x2193;</span></th>
-            <th data-sort="desc">Description <span class="sort-arrow" id="arr-desc"></span></th>
+            <th data-sort="desc">Description / Amount <span class="sort-arrow" id="arr-desc"></span></th>
             <th data-sort="cat" class="h-cat">Category <span class="sort-arrow" id="arr-cat"></span></th>
             <th class="no-sort">Type</th>
-            <th data-sort="amount" style="text-align:right">Amount <span class="sort-arrow" id="arr-amount"></span></th>
             <th class="h-bal" style="text-align:right">Balance</th>
             <th class="no-sort" style="text-align:center">Actions</th>
           </tr>
@@ -641,7 +643,7 @@
     sortField=field; updateSortArrows(); renderTable();
   }
   function updateSortArrows(){
-    ['date','desc','cat','amount'].forEach(function(f){
+    ['date','desc','cat'].forEach(function(f){
       var el=$('arr-'+f); if(!el) return;
       if(sortField===f){el.textContent=sortAsc?'↑':'↓';el.className='sort-arrow active';}
       else{el.textContent='';el.className='sort-arrow';}
@@ -731,10 +733,12 @@
       html+='<tr class="'+t.type+'-row'+(clr?'':' uncleared')+'" data-id="'+t.id+'">';
       html+='<td class="no-clip"><div class="clr-wrap"><input type="checkbox" class="clr-cb clear-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark as cleared on statement"></div></td>';
       html+='<td>'+fmtDate(t.date)+'</td>';
-      html+='<td title="'+escHtml(t.desc)+'">'+escHtml(t.desc)+'</td>';
+      html+='<td style="overflow:hidden;">';
+      html+='<div class="txn-name" title="'+escHtml(t.desc)+'">'+escHtml(t.desc)+'</div>';
+      html+='<div class="txn-amt amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</div>';
+      html+='</td>';
       html+='<td class="c-cat"><span class="cat-badge">'+escHtml(t.cat)+'</span></td>';
       html+='<td><span class="badge badge-'+t.type+'">'+label+'</span></td>';
-      html+='<td style="text-align:right"><span class="amount-'+t.type+'">'+(t.type==='expense'?'+':'-')+fmt(t.amount)+'</span></td>';
       html+='<td class="h-bal" style="text-align:right"><span class="amount-balance'+(isNeg?' negative':'')+'">'+fmtSigned(bal)+'</span></td>';
       html+='<td class="no-clip" style="text-align:center;white-space:nowrap;">';
       html+='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'" title="Edit">&#x270F;&#xFE0F;</button>';
