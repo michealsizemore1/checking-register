@@ -246,6 +246,112 @@
   .sort-arrow { margin-left: 3px; opacity: 0.4; }
   .sort-arrow.active { opacity: 1; }
 
+  .btn-backup  { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+  .btn-backup:hover { background: #e0f2fe; }
+  .btn-restore { background: #fefce8; color: #a16207; border: 1px solid #fde68a; }
+  .btn-restore:hover { background: #fef9c3; }
+  .btn-import  { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+  .btn-import:hover { background: #ede9fe; }
+
+  /* ── AI floating button ── */
+  .ai-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .ai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(99,102,241,0.55); }
+
+  /* ── AI chat modal ── */
+  .ai-modal {
+    background: var(--surface);
+    border-radius: 14px;
+    width: 440px;
+    max-width: 95vw;
+    max-height: 80vh;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .ai-modal-header {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .ai-modal-header h3 { font-size: 0.95rem; font-weight: 700; }
+  .ai-modal-header p  { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; }
+  .ai-modal-header button { background: rgba(255,255,255,0.2); border: none; color: white; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; display:flex;align-items:center;justify-content:center; }
+  .ai-modal-header button:hover { background: rgba(255,255,255,0.35); }
+
+  .ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 220px;
+  }
+  .ai-msg {
+    max-width: 88%;
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  .ai-msg.bot  { background: #f1f5f9; color: var(--text); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .ai-msg.user { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; align-self: flex-end; border-bottom-right-radius: 3px; }
+  .ai-suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; flex-shrink: 0; }
+  .ai-chip {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    background: #ede9fe;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .ai-chip:hover { background: #ddd6fe; }
+  .ai-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px 14px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .ai-input-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    outline: none;
+    color: var(--text);
+  }
+  .ai-input-row input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+  .ai-input-row button { background: linear-gradient(135deg,#6366f1,#8b5cf6); color:white; border:none; border-radius:20px; padding:8px 16px; font-size:0.85rem; font-weight:600; cursor:pointer; }
+
   .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
   .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
   .empty-state p { font-size: 0.85rem; }
@@ -430,6 +536,11 @@
     <div class="filter-actions">
       <button class="btn btn-ghost btn-sm" id="btn-clear">Clear</button>
       <button class="btn btn-export btn-sm" id="btn-export">&#x2B07; Export CSV</button>
+      <button class="btn btn-backup btn-sm" id="btn-backup">&#x1F4BE; Backup</button>
+      <button class="btn btn-restore btn-sm" id="btn-restore">&#x1F4C2; Restore</button>
+      <button class="btn btn-import btn-sm" id="btn-import-csv">&#x1F4E5; Import CSV</button>
+      <input type="file" id="restore-file" accept=".json" style="display:none">
+      <input type="file" id="import-csv-file" accept=".csv,.txt" style="display:none">
     </div>
   </div>
 
@@ -503,6 +614,34 @@
       <button class="btn btn-primary" id="btn-save-edit">Save Changes</button>
     </div>
     <div id="edit-error" style="color:var(--danger); font-size:0.8rem; margin-top:8px; text-align:right;"></div>
+  </div>
+</div>
+
+<!-- AI floating button -->
+<button class="ai-fab" id="btn-ai-fab" title="Ask AI Assistant">&#x1F916;</button>
+
+<!-- AI Chat Modal -->
+<div class="modal-overlay" id="ai-modal">
+  <div class="ai-modal">
+    <div class="ai-modal-header">
+      <div>
+        <h3>&#x2728; Register Assistant</h3>
+        <p>Ask questions about your transactions</p>
+      </div>
+      <button id="btn-ai-close">&#x2715;</button>
+    </div>
+    <div class="ai-messages" id="ai-messages"></div>
+    <div class="ai-suggestions">
+      <span class="ai-chip" data-q="What's my current balance?">Current balance</span>
+      <span class="ai-chip" data-q="What are my top spending categories?">Top categories</span>
+      <span class="ai-chip" data-q="How much did I spend this month?">This month</span>
+      <span class="ai-chip" data-q="What's my biggest single expense?">Biggest expense</span>
+      <span class="ai-chip" data-q="Give me spending tips and recommendations">Suggestions</span>
+    </div>
+    <div class="ai-input-row">
+      <input type="text" id="ai-input" placeholder="Ask anything about your register...">
+      <button id="btn-ai-send">Send</button>
+    </div>
   </div>
 </div>
 
@@ -834,7 +973,373 @@
   $('edit-modal').addEventListener('click', function(e) {
     if (e.target === $('edit-modal')) closeEdit();
   });
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeEdit(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeEdit();
+      $('ai-modal').classList.remove('open');
+    }
+  });
+
+  // ── CSV Import ───────────────────────────────────────────────────────────
+  function parseCSVLine(line) {
+    var result = [], cur = '', inQ = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+      if (ch === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (ch === ',' && !inQ) {
+        result.push(cur.trim()); cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    result.push(cur.trim());
+    return result;
+  }
+
+  function normalizeDate(raw) {
+    raw = raw.trim();
+    // Already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+    // MM/DD/YYYY or M/D/YYYY
+    var m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) return m[3] + '-' + m[1].padStart(2,'0') + '-' + m[2].padStart(2,'0');
+    // MM-DD-YYYY
+    m = raw.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (m) return m[3] + '-' + m[1].padStart(2,'0') + '-' + m[2].padStart(2,'0');
+    // Try native Date parse as last resort
+    var d = new Date(raw);
+    if (!isNaN(d)) return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    return null;
+  }
+
+  function importCSV(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var lines = e.target.result.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(function(l){ return l.trim(); });
+      if (lines.length < 2) { alert('CSV has no data rows.'); return; }
+
+      // Parse headers (case-insensitive)
+      var headers = parseCSVLine(lines[0]).map(function(h){ return h.toLowerCase().replace(/[^a-z]/g,''); });
+
+      function col(keywords) {
+        for (var i = 0; i < keywords.length; i++) {
+          var idx = headers.indexOf(keywords[i]);
+          if (idx !== -1) return idx;
+        }
+        // partial match
+        for (var i = 0; i < keywords.length; i++) {
+          for (var j = 0; j < headers.length; j++) {
+            if (headers[j].indexOf(keywords[i]) !== -1) return j;
+          }
+        }
+        return -1;
+      }
+
+      var ci = {
+        date:   col(['date','transactiondate','txndate','posteddate']),
+        desc:   col(['description','desc','memo','narrative','name','merchant','payee','transaction']),
+        amount: col(['amount','amt','debit','credit','txnamount']),
+        cat:    col(['category','cat']),
+        type:   col(['type','txntype','transactiontype']),
+        bal:    col(['runningbalance','balance'])  // ignored but mapped to skip
+      };
+
+      if (ci.date === -1)   { alert('Could not find a Date column in this CSV.'); return; }
+      if (ci.desc === -1)   { alert('Could not find a Description column in this CSV.'); return; }
+      if (ci.amount === -1) { alert('Could not find an Amount column in this CSV.'); return; }
+
+      var imported = 0, skipped = 0, newCats = [];
+      var toAdd = [];
+
+      for (var i = 1; i < lines.length; i++) {
+        var row = parseCSVLine(lines[i]);
+        var rawDate   = (ci.date  >= 0 && row[ci.date])   ? row[ci.date]   : '';
+        var rawDesc   = (ci.desc  >= 0 && row[ci.desc])   ? row[ci.desc]   : '';
+        var rawAmt    = (ci.amount>= 0 && row[ci.amount]) ? row[ci.amount] : '';
+        var rawCat    = (ci.cat   >= 0 && row[ci.cat])    ? row[ci.cat].trim()  : 'Other';
+        var rawType   = (ci.type  >= 0 && row[ci.type])   ? row[ci.type].trim().toLowerCase() : '';
+
+        var date = normalizeDate(rawDate);
+        if (!date) { skipped++; continue; }
+
+        var desc = rawDesc.trim();
+        if (!desc) { skipped++; continue; }
+
+        // Strip currency symbols and commas from amount
+        var amtStr = rawAmt.replace(/[$,\s]/g,'');
+        var amount = parseFloat(amtStr);
+        if (isNaN(amount) || amount === 0) { skipped++; continue; }
+
+        // Determine type
+        var type;
+        if (rawType === 'expense' || rawType === 'debit')        type = 'expense';
+        else if (rawType === 'return' || rawType === 'refund')   type = 'return';
+        else if (rawType === 'payment')                          type = 'payment';
+        else if (amount < 0) type = 'return';   // negative = credit
+        else                 type = 'expense';  // positive = charge
+
+        amount = Math.abs(amount);
+
+        // Category handling
+        var cat = rawCat || 'Other';
+        if (cat && categories.indexOf(cat) === -1 && newCats.indexOf(cat) === -1) newCats.push(cat);
+
+        toAdd.push({ id: Date.now() + i, date: date, desc: desc, cat: cat, type: type, amount: amount });
+        imported++;
+      }
+
+      if (!imported) { alert('No valid rows found to import. Check that the CSV has Date, Description, and Amount columns.'); return; }
+
+      // Add new categories silently
+      newCats.forEach(function(c) { categories.push(c); });
+      if (newCats.length) { saveCategories(); renderCategorySelects(); }
+
+      // Merge: avoid exact duplicates (same date+desc+amount)
+      var existing = {};
+      transactions.forEach(function(t) { existing[t.date+'|'+t.desc+'|'+t.amount] = true; });
+      var dupes = 0;
+      toAdd = toAdd.filter(function(t) {
+        var key = t.date+'|'+t.desc+'|'+t.amount;
+        if (existing[key]) { dupes++; return false; }
+        existing[key] = true;
+        return true;
+      });
+
+      toAdd.forEach(function(t) { transactions.push(t); });
+      save();
+      renderAll();
+
+      var msg = 'Import complete!\n• ' + toAdd.length + ' transaction' + (toAdd.length!==1?'s':'') + ' added';
+      if (dupes)    msg += '\n• ' + dupes + ' duplicate' + (dupes!==1?'s':'') + ' skipped';
+      if (skipped)  msg += '\n• ' + skipped + ' invalid row' + (skipped!==1?'s':'') + ' skipped';
+      if (newCats.length) msg += '\n• ' + newCats.length + ' new categor' + (newCats.length!==1?'ies':'y') + ' added: ' + newCats.join(', ');
+      alert(msg);
+    };
+    reader.readAsText(file);
+  }
+
+  $('btn-import-csv').addEventListener('click', function() { $('import-csv-file').click(); });
+  $('import-csv-file').addEventListener('change', function(e) {
+    if (e.target.files[0]) { importCSV(e.target.files[0]); e.target.value = ''; }
+  });
+
+  // ── Backup & Restore ─────────────────────────────────────────────────────
+  function backup() {
+    var data = {
+      version: 2,
+      exported: new Date().toISOString(),
+      transactions: transactions,
+      categories: categories
+    };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'cc-register-backup-' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function restoreFromFile(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var data = JSON.parse(e.target.result);
+        if (!data.transactions || !Array.isArray(data.transactions)) {
+          alert('Invalid backup file.'); return;
+        }
+        if (!confirm('This will replace ALL current transactions and categories. Continue?')) return;
+        transactions = data.transactions;
+        if (data.categories && Array.isArray(data.categories)) categories = data.categories;
+        save();
+        saveCategories();
+        renderCategorySelects();
+        renderAll();
+        alert('Restore complete! ' + transactions.length + ' transactions loaded.');
+      } catch(err) {
+        alert('Could not read backup file: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  $('btn-backup').addEventListener('click', backup);
+  $('btn-restore').addEventListener('click', function() { $('restore-file').click(); });
+  $('restore-file').addEventListener('change', function(e) {
+    if (e.target.files[0]) { restoreFromFile(e.target.files[0]); e.target.value = ''; }
+  });
+
+  // ── AI Assistant ──────────────────────────────────────────────────────────
+  function aiQuery(q) {
+    var text = q.toLowerCase().trim();
+    var t = transactions;
+    if (!t.length) return "You don't have any transactions yet. Add some to get started!";
+
+    // helpers
+    var expenses  = t.filter(function(x){ return x.type==='expense'; });
+    var returns   = t.filter(function(x){ return x.type==='return'; });
+    var payments  = t.filter(function(x){ return x.type==='payment'; });
+    var totalExp  = expenses.reduce(function(s,x){ return s+x.amount; },0);
+    var totalRet  = returns.reduce(function(s,x){ return s+x.amount; },0);
+    var totalPay  = payments.reduce(function(s,x){ return s+x.amount; },0);
+    var balance   = totalExp - totalRet - totalPay;
+
+    var now = new Date();
+    var thisMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+    var lastMonthDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    var lastMonth = lastMonthDate.getFullYear() + '-' + String(lastMonthDate.getMonth()+1).padStart(2,'0');
+
+    // category totals (expenses only)
+    var catTotals = {};
+    expenses.forEach(function(x) {
+      catTotals[x.cat] = (catTotals[x.cat]||0) + x.amount;
+    });
+    var catRanked = Object.keys(catTotals).sort(function(a,b){ return catTotals[b]-catTotals[a]; });
+
+    // ── intent matching ──
+    if (/help|what can you|what do you/.test(text)) {
+      return "I can answer questions like:\n• What's my current balance?\n• How much did I spend on Dining?\n• What are my top spending categories?\n• How much did I spend this month?\n• What's my biggest expense?\n• How much have I paid?\n• Give me spending tips\n• How many transactions do I have?\n\nJust ask!";
+    }
+
+    if (/balance/.test(text)) {
+      return 'Your current balance is ' + fmtSigned(balance) + '.\n\nBreakdown:\n• Expenses: ' + fmt(totalExp) + '\n• Returns: ' + fmt(totalRet) + '\n• Payments: ' + fmt(totalPay);
+    }
+
+    if (/how many|count|number of/.test(text)) {
+      return 'You have ' + t.length + ' total transaction' + (t.length!==1?'s':'') + ':\n• ' + expenses.length + ' expense' + (expenses.length!==1?'s':'') + '\n• ' + returns.length + ' return' + (returns.length!==1?'s':'') + '\n• ' + payments.length + ' payment' + (payments.length!==1?'s':'');
+    }
+
+    if (/payment|paid|pay/.test(text)) {
+      if (!payments.length) return "No payments recorded yet.";
+      var lastPay = payments.slice().sort(function(a,b){ return b.date.localeCompare(a.date); })[0];
+      return 'Total payments: ' + fmt(totalPay) + ' across ' + payments.length + ' payment' + (payments.length!==1?'s':'') + '.\nMost recent: ' + fmt(lastPay.amount) + ' on ' + fmtDate(lastPay.date) + (lastPay.desc ? ' (' + lastPay.desc + ')' : '') + '.';
+    }
+
+    if (/return|refund/.test(text)) {
+      if (!returns.length) return "No returns recorded yet.";
+      return 'Total returns/refunds: ' + fmt(totalRet) + ' across ' + returns.length + ' return' + (returns.length!==1?'s':'') + '.';
+    }
+
+    if (/this month/.test(text)) {
+      var mExp = expenses.filter(function(x){ return x.date.indexOf(thisMonth)===0; });
+      var mTotal = mExp.reduce(function(s,x){ return s+x.amount; },0);
+      if (!mExp.length) return "No expenses recorded this month yet.";
+      return 'This month (' + thisMonth + ') you have spent ' + fmt(mTotal) + ' across ' + mExp.length + ' expense' + (mExp.length!==1?'s':'') + '.';
+    }
+
+    if (/last month/.test(text)) {
+      var lmExp = expenses.filter(function(x){ return x.date.indexOf(lastMonth)===0; });
+      var lmTotal = lmExp.reduce(function(s,x){ return s+x.amount; },0);
+      if (!lmExp.length) return "No expenses recorded last month.";
+      return 'Last month (' + lastMonth + ') you spent ' + fmt(lmTotal) + ' across ' + lmExp.length + ' expense' + (lmExp.length!==1?'s':'') + '.';
+    }
+
+    if (/biggest|largest|highest|most expensive/.test(text) && /expense|purchase|transaction/.test(text)) {
+      if (!expenses.length) return "No expenses recorded yet.";
+      var big = expenses.slice().sort(function(a,b){ return b.amount-a.amount; })[0];
+      return 'Your biggest expense is ' + fmt(big.amount) + ' on ' + fmtDate(big.date) + ':\n"' + big.desc + '" (' + big.cat + ').';
+    }
+
+    if (/top|biggest|most|largest|highest/.test(text) && /categor|spending/.test(text)) {
+      if (!catRanked.length) return "No expense categories found yet.";
+      var top = catRanked.slice(0,3);
+      return 'Your top spending categories:\n' + top.map(function(c,i){ return (i+1)+'. '+c+' — '+fmt(catTotals[c]); }).join('\n');
+    }
+
+    if (/average|avg/.test(text)) {
+      if (!expenses.length) return "No expenses yet to average.";
+      var avg = totalExp / expenses.length;
+      return 'Your average expense is ' + fmt(avg) + ' (across ' + expenses.length + ' expenses totaling ' + fmt(totalExp) + ').';
+    }
+
+    if (/recent|last \d|latest/.test(text)) {
+      var n = 5;
+      var match = text.match(/last (\d+)/);
+      if (match) n = parseInt(match[1],10);
+      var recent = t.slice().sort(function(a,b){ return b.date.localeCompare(a.date)||b.id-a.id; }).slice(0,n);
+      return 'Last ' + recent.length + ' transactions:\n' + recent.map(function(x){
+        return '• ' + fmtDate(x.date) + ' — ' + x.desc + ' ' + (x.type==='expense'?'+':'-') + fmt(x.amount);
+      }).join('\n');
+    }
+
+    if (/suggest|recommend|advice|tip|improve|saving|budget/.test(text)) {
+      var tips = [];
+      if (catRanked.length) tips.push('Your top expense category is ' + catRanked[0] + ' at ' + fmt(catTotals[catRanked[0]]) + '. Consider setting a monthly limit here.');
+      if (totalPay === 0) tips.push('No payments recorded yet — log your credit card payments to keep your balance accurate.');
+      if (balance > 500) tips.push('Your balance is ' + fmtSigned(balance) + '. Making a payment soon can help avoid interest charges.');
+      if (catRanked.length > 3) {
+        var dining = catTotals['Dining']||0, grocery = catTotals['Groceries']||0;
+        if (dining > grocery && dining > 0) tips.push('Dining (' + fmt(dining) + ') exceeds Groceries (' + fmt(grocery) + '). Cooking at home more often could save money.');
+      }
+      if (expenses.length > 0) {
+        var avg2 = totalExp / expenses.length;
+        var big2 = expenses.slice().sort(function(a,b){ return b.amount-a.amount; })[0];
+        if (big2.amount > avg2 * 3) tips.push('Your biggest expense (' + big2.desc + ', ' + fmt(big2.amount) + ') is much higher than your average (' + fmt(avg2) + '). Is this a recurring item?');
+      }
+      if (!tips.length) tips.push('Keep tracking your expenses consistently — you\'re doing great!');
+      return '💡 Spending Suggestions:\n\n' + tips.join('\n\n');
+    }
+
+    // spending on a specific category
+    for (var i = 0; i < categories.length; i++) {
+      var cat = categories[i].toLowerCase();
+      if (text.indexOf(cat) !== -1) {
+        var catExp = expenses.filter(function(x){ return x.cat.toLowerCase() === cat; });
+        var catTotal = catExp.reduce(function(s,x){ return s+x.amount; },0);
+        if (!catExp.length) return 'No expenses found for ' + categories[i] + '.';
+        return 'You have spent ' + fmt(catTotal) + ' on ' + categories[i] + ' across ' + catExp.length + ' transaction' + (catExp.length!==1?'s':'') + '.';
+      }
+    }
+
+    // total spending fallback
+    if (/total|overall|all|much.*spent|spent.*much/.test(text)) {
+      return 'Total expenses: ' + fmt(totalExp) + '\nTotal returns: ' + fmt(totalRet) + '\nTotal payments: ' + fmt(totalPay) + '\nNet balance: ' + fmtSigned(balance);
+    }
+
+    return "I'm not sure about that. Try asking:\n• \"What's my balance?\"\n• \"How much on Dining?\"\n• \"Top categories\"\n• \"Give me suggestions\"\nOr type \"help\" for a full list.";
+  }
+
+  // ── AI UI ─────────────────────────────────────────────────────────────────
+  function aiAddMsg(text, who) {
+    var box = $('ai-messages');
+    var div = document.createElement('div');
+    div.className = 'ai-msg ' + who;
+    div.textContent = text;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function aiSubmit() {
+    var input = $('ai-input');
+    var q = input.value.trim();
+    if (!q) return;
+    input.value = '';
+    aiAddMsg(q, 'user');
+    setTimeout(function() { aiAddMsg(aiQuery(q), 'bot'); }, 120);
+  }
+
+  $('btn-ai-fab').addEventListener('click', function() {
+    var modal = $('ai-modal');
+    modal.classList.add('open');
+    if (!$('ai-messages').children.length) {
+      aiAddMsg('Hi! I\'m your Register Assistant. I can analyze your transactions, answer spending questions, and suggest ways to save. What would you like to know?', 'bot');
+    }
+    setTimeout(function(){ $('ai-input').focus(); }, 50);
+  });
+
+  $('btn-ai-close').addEventListener('click', function() { $('ai-modal').classList.remove('open'); });
+  $('ai-modal').addEventListener('click', function(e) { if (e.target === $('ai-modal')) $('ai-modal').classList.remove('open'); });
+  $('btn-ai-send').addEventListener('click', aiSubmit);
+  $('ai-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') aiSubmit(); });
+
+  document.querySelectorAll('.ai-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      $('ai-input').value = chip.getAttribute('data-q');
+      aiSubmit();
+    });
+  });
 
   // ── Category add UI ───────────────────────────────────────────────────────
   $('btn-show-add-cat').addEventListener('click', function() {
