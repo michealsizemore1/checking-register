@@ -265,7 +265,7 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
     <div class="card ret"><div class="lbl">&#x2713; Cleared Returns</div><div class="val" id="s-ret">$0.00</div></div>
     <div class="card pay"><div class="lbl">&#x2713; Cleared Payments</div><div class="val" id="s-pay">$0.00</div></div>
     <div class="card bal"><div class="lbl">&#x2713; Cleared Balance</div><div class="val" id="s-bal">$0.00</div></div>
-    <div class="card uncl"><div class="lbl">&#x26A0; Uncleared</div><div class="val" id="s-uncl">$0.00</div></div>
+    <div class="card uncl"><div class="lbl">&#x26A0; Uncleared Charges</div><div class="val" id="s-uncl">$0.00</div></div>
     <div class="card uncl-ret"><div class="lbl">&#x21A9; Uncleared Returns</div><div class="val" id="s-uncl-ret">$0.00</div></div>
   </div>
 
@@ -569,7 +569,7 @@ function renderSummary(){
   var bal=exp-ret-pay, uncl=uexp-uret-upay;
   $('s-exp').textContent=fmt(exp);$('s-ret').textContent=fmt(ret);
   $('s-pay').textContent=fmt(pay);$('s-bal').textContent=fmtS(bal);
-  $('s-uncl').textContent=fmtS(uncl);
+  $('s-uncl').textContent=fmt(uexp);
   $('s-uncl-ret').textContent=fmt(uret);
   $('hdr-bal').textContent=fmtS(bal);
 }
