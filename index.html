@@ -34,7 +34,7 @@ header p  { font-size:.75rem; opacity:.8; margin-top:1px; }
 .page-body { flex:1; overflow:hidden; display:flex; flex-direction:column;
   padding:10px 16px; gap:8px; }
 
-.summary { flex-shrink:0; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.summary { flex-shrink:0; display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
 .card { background:var(--surface); border-radius:8px; padding:8px 12px;
   border:1px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,.05); }
 .card .lbl { font-size:.67rem; color:var(--muted); text-transform:uppercase;
@@ -44,6 +44,7 @@ header p  { font-size:.75rem; opacity:.8; margin-top:1px; }
 .card.ret .val { color:var(--success); }
 .card.pay .val { color:#7c3aed; }
 .card.bal .val { color:var(--primary); }
+.card.uncl .val { color:#d97706; }
 
 .form-card { flex-shrink:0; background:var(--surface); border-radius:8px;
   border:1px solid var(--border); padding:9px 14px;
@@ -211,6 +212,9 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
 .mfooter { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
 
 /* Mobile overrides — only structural, no column tricks */
+@media (max-width:900px) {
+  .summary { grid-template-columns:repeat(3,1fr); }
+}
 @media (max-width:700px) {
   html,body { height:auto !important; overflow:auto !important; display:block !important; }
   .page-body { display:block; overflow:visible; height:auto; padding:8px 10px; }
@@ -251,6 +255,7 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
     <div class="card ret"><div class="lbl">Total Returns</div><div class="val" id="s-ret">$0.00</div></div>
     <div class="card pay"><div class="lbl">Total Payments</div><div class="val" id="s-pay">$0.00</div></div>
     <div class="card bal"><div class="lbl">Net Balance</div><div class="val" id="s-bal">$0.00</div></div>
+    <div class="card uncl"><div class="lbl">&#x26A0; Uncleared</div><div class="val" id="s-uncl">$0.00</div></div>
   </div>
 
   <div class="form-card">
@@ -521,15 +526,17 @@ function sorted(list){
 function renderAll(){renderSummary();renderTable();}
 
 function renderSummary(){
-  var exp=0,ret=0,pay=0;
+  var exp=0,ret=0,pay=0,uexp=0,uret=0,upay=0;
   transactions.forEach(function(t){
-    if(t.type==='expense')exp+=t.amount;
-    else if(t.type==='return')ret+=t.amount;
-    else if(t.type==='payment')pay+=t.amount;
+    var cleared=!!t.cleared;
+    if(t.type==='expense'){exp+=t.amount;if(!cleared)uexp+=t.amount;}
+    else if(t.type==='return'){ret+=t.amount;if(!cleared)uret+=t.amount;}
+    else if(t.type==='payment'){pay+=t.amount;if(!cleared)upay+=t.amount;}
   });
-  var bal=exp-ret-pay;
+  var bal=exp-ret-pay, uncl=uexp-uret-upay;
   $('s-exp').textContent=fmt(exp);$('s-ret').textContent=fmt(ret);
   $('s-pay').textContent=fmt(pay);$('s-bal').textContent=fmtS(bal);
+  $('s-uncl').textContent=fmtS(uncl);
   $('hdr-bal').textContent=fmtS(bal);
 }
 
