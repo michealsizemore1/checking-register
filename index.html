@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Card Register</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f0f2f5;
+    --surface: #ffffff;
+    --border: #e0e4ea;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --text: #1e293b;
+    --muted: #64748b;
+    --expense-bg: #fef2f2;
+    --return-bg: #f0fdf4;
+    --row-hover: #f8fafc;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--primary);
+    color: white;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
+  header p { font-size: 0.8rem; opacity: 0.8; margin-top: 2px; }
+
+  .header-balance {
+    text-align: right;
+  }
+  .header-balance .label { font-size: 0.75rem; opacity: 0.8; }
+  .header-balance .amount { font-size: 1.5rem; font-weight: 700; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+
+  /* Summary Cards */
+  .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+
+  .card {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .card .card-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .card .card-value { font-size: 1.4rem; font-weight: 700; }
+  .card.expenses .card-value { color: var(--danger); }
+  .card.returns .card-value { color: var(--success); }
+  .card.balance .card-value { color: var(--primary); }
+
+  /* Add Transaction Form */
+  .form-card {
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .form-card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr 140px 180px auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .field input, .field select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: #fafbfc;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    background: white;
+  }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 7px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s, transform 0.05s;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); }
+  .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
+  .btn-danger:hover { background: #fecaca; }
+  .btn-export { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+  .btn-export:hover { background: #dcfce7; }
+
+  .type-toggle { display: flex; gap: 6px; }
+  .type-toggle input[type=radio] { display: none; }
+  .type-toggle label {
+    flex: 1;
+    text-align: center;
+    padding: 9px 8px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #fafbfc;
+    color: var(--muted);
+  }
+  .type-toggle input:checked + label.expense-label {
+    background: #fee2e2; color: var(--danger); border-color: #fca5a5;
+  }
+  .type-toggle input:checked + label.return-label {
+    background: #dcfce7; color: var(--success); border-color: #86efac;
+  }
+
+  /* Filters */
+  .filters-card {
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .filters-card .field { min-width: 150px; flex: 1; }
+  .filter-actions { display: flex; gap: 8px; align-items: flex-end; }
+
+  /* Table */
+  .table-card {
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+
+  .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .table-header h2 { font-size: 0.95rem; font-weight: 600; }
+  .table-header span { font-size: 0.8rem; color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-weight: 600;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { background: #f0f2f5; }
+  thead th.sorted { color: var(--primary); }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--row-hover); }
+  tbody tr.expense-row { background: #fffafa; }
+  tbody tr.return-row { background: #fafffa; }
+  tbody tr.expense-row:hover { background: #fef2f2; }
+  tbody tr.return-row:hover { background: #f0fdf4; }
+
+  td { padding: 11px 14px; font-size: 0.88rem; vertical-align: middle; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .badge-expense { background: #fee2e2; color: var(--danger); }
+  .badge-return { background: #dcfce7; color: var(--success); }
+
+  .cat-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+  }
+
+  .amount-expense { color: var(--danger); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .amount-return  { color: var(--success); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .amount-balance { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--primary); }
+  .amount-balance.negative { color: var(--danger); }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .empty-state p { font-size: 0.9rem; }
+
+  /* Category breakdown */
+  .cat-section {
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-top: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .cat-section h2 { font-size: 0.95rem; font-weight: 600; margin-bottom: 14px; }
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+  .cat-item {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .cat-item .cat-name { font-size: 0.78rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .cat-item .cat-amount { font-size: 1.1rem; font-weight: 700; color: var(--danger); margin-top: 4px; }
+  .cat-item .cat-count { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+  .sort-arrow { margin-left: 4px; opacity: 0.5; }
+  .sort-arrow.active { opacity: 1; }
+
+  @media (max-width: 700px) {
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .summary { grid-template-columns: 1fr; }
+    .filters-card { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>💳 Credit Card Register</h1>
+    <p id="card-name-display">My Credit Card</p>
+  </div>
+  <div class="header-balance">
+    <div class="label">Current Balance</div>
+    <div class="amount" id="header-balance">$0.00</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Summary -->
+  <div class="summary">
+    <div class="card expenses">
+      <div class="card-label">Total Expenses</div>
+      <div class="card-value" id="total-expenses">$0.00</div>
+    </div>
+    <div class="card returns">
+      <div class="card-label">Total Returns</div>
+      <div class="card-value" id="total-returns">$0.00</div>
+    </div>
+    <div class="card balance">
+      <div class="card-label">Net Balance</div>
+      <div class="card-value" id="total-balance">$0.00</div>
+    </div>
+  </div>
+
+  <!-- Add Transaction -->
+  <div class="form-card">
+    <h2>Add Transaction</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="txn-date">
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <input type="text" id="txn-desc" placeholder="e.g. Whole Foods, Amazon..." maxlength="100">
+      </div>
+      <div class="field">
+        <label>Amount ($)</label>
+        <input type="number" id="txn-amount" placeholder="0.00" min="0.01" step="0.01">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="txn-cat">
+          <option value="Groceries">Groceries</option>
+          <option value="Dining">Dining</option>
+          <option value="Gas">Gas</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Travel">Travel</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Subscriptions">Subscriptions</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Type</label>
+        <div class="type-toggle">
+          <input type="radio" name="txn-type" id="type-expense" value="expense" checked>
+          <label for="type-expense" class="expense-label">Expense</label>
+          <input type="radio" name="txn-type" id="type-return" value="return">
+          <label for="type-return" class="return-label">Return</label>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+      <button class="btn btn-primary" onclick="addTransaction()">+ Add Transaction</button>
+      <span id="form-error" style="color:var(--danger); font-size:0.82rem;"></span>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="field">
+      <label>Search</label>
+      <input type="text" id="f-search" placeholder="Description..." oninput="renderTable()">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="f-cat" onchange="renderTable()">
+        <option value="">All Categories</option>
+        <option value="Groceries">Groceries</option>
+        <option value="Dining">Dining</option>
+        <option value="Gas">Gas</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Travel">Travel</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Healthcare">Healthcare</option>
+        <option value="Utilities">Utilities</option>
+        <option value="Subscriptions">Subscriptions</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Type</label>
+      <select id="f-type" onchange="renderTable()">
+        <option value="">All Types</option>
+        <option value="expense">Expenses</option>
+        <option value="return">Returns</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>From</label>
+      <input type="date" id="f-from" onchange="renderTable()">
+    </div>
+    <div class="field">
+      <label>To</label>
+      <input type="date" id="f-to" onchange="renderTable()">
+    </div>
+    <div class="filter-actions">
+      <button class="btn btn-ghost btn-sm" onclick="clearFilters()">Clear</button>
+      <button class="btn btn-export btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Transactions</h2>
+      <span id="row-count">0 transactions</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th onclick="toggleSort('date')" id="th-date">Date <span class="sort-arrow active" id="arr-date">↓</span></th>
+          <th onclick="toggleSort('desc')" id="th-desc">Description <span class="sort-arrow" id="arr-desc"></span></th>
+          <th onclick="toggleSort('cat')" id="th-cat">Category <span class="sort-arrow" id="arr-cat"></span></th>
+          <th>Type</th>
+          <th onclick="toggleSort('amount')" id="th-amount" style="text-align:right">Amount <span class="sort-arrow" id="arr-amount"></span></th>
+          <th style="text-align:right">Running Balance</th>
+          <th style="text-align:center">Delete</th>
+        </tr>
+      </thead>
+      <tbody id="txn-body"></tbody>
+    </table>
+    <div id="empty-state" class="empty-state" style="display:none">
+      <div class="icon">🧾</div>
+      <p>No transactions yet. Add your first one above.</p>
+    </div>
+  </div>
+
+  <!-- Category Breakdown -->
+  <div class="cat-section" id="cat-section" style="display:none">
+    <h2>Spending by Category</h2>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+
+</div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let transactions = JSON.parse(localStorage.getItem('cc-register') || '[]');
+let sortField = 'date';
+let sortAsc = false;
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+document.getElementById('txn-date').valueAsDate = new Date();
+renderAll();
+
+// ─── Add Transaction ──────────────────────────────────────────────────────────
+function addTransaction() {
+  const date   = document.getElementById('txn-date').value;
+  const desc   = document.getElementById('txn-desc').value.trim();
+  const amount = parseFloat(document.getElementById('txn-amount').value);
+  const cat    = document.getElementById('txn-cat').value;
+  const type   = document.querySelector('input[name="txn-type"]:checked').value;
+  const errEl  = document.getElementById('form-error');
+
+  if (!date)            { errEl.textContent = 'Please enter a date.'; return; }
+  if (!desc)            { errEl.textContent = 'Please enter a description.'; return; }
+  if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
+  errEl.textContent = '';
+
+  transactions.push({ id: Date.now(), date, desc, cat, type, amount });
+  save();
+  renderAll();
+
+  // Reset form
+  document.getElementById('txn-desc').value = '';
+  document.getElementById('txn-amount').value = '';
+  document.getElementById('txn-date').valueAsDate = new Date();
+}
+
+// Enter key on amount field submits
+document.getElementById('txn-amount').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addTransaction();
+});
+
+// ─── Delete ───────────────────────────────────────────────────────────────────
+function deleteTransaction(id) {
+  if (!confirm('Delete this transaction?')) return;
+  transactions = transactions.filter(t => t.id !== id);
+  save();
+  renderAll();
+}
+
+// ─── Save ─────────────────────────────────────────────────────────────────────
+function save() {
+  localStorage.setItem('cc-register', JSON.stringify(transactions));
+}
+
+// ─── Filters ──────────────────────────────────────────────────────────────────
+function getFiltered() {
+  const search = document.getElementById('f-search').value.toLowerCase();
+  const cat    = document.getElementById('f-cat').value;
+  const type   = document.getElementById('f-type').value;
+  const from   = document.getElementById('f-from').value;
+  const to     = document.getElementById('f-to').value;
+
+  return transactions.filter(t => {
+    if (search && !t.desc.toLowerCase().includes(search)) return false;
+    if (cat  && t.cat  !== cat)  return false;
+    if (type && t.type !== type) return false;
+    if (from && t.date < from)   return false;
+    if (to   && t.date > to)     return false;
+    return true;
+  });
+}
+
+function clearFilters() {
+  document.getElementById('f-search').value = '';
+  document.getElementById('f-cat').value = '';
+  document.getElementById('f-type').value = '';
+  document.getElementById('f-from').value = '';
+  document.getElementById('f-to').value = '';
+  renderTable();
+}
+
+// ─── Sort ─────────────────────────────────────────────────────────────────────
+function toggleSort(field) {
+  if (sortField === field) { sortAsc = !sortAsc; }
+  else { sortField = field; sortAsc = field !== 'date'; }
+  updateSortArrows();
+  renderTable();
+}
+
+function updateSortArrows() {
+  ['date','desc','cat','amount'].forEach(f => {
+    const arr = document.getElementById('arr-' + f);
+    if (arr) {
+      if (sortField === f) {
+        arr.textContent = sortAsc ? '↑' : '↓';
+        arr.className = 'sort-arrow active';
+      } else {
+        arr.textContent = '';
+        arr.className = 'sort-arrow';
+      }
+    }
+  });
+}
+
+function sorted(list) {
+  return [...list].sort((a, b) => {
+    let av = a[sortField === 'desc' ? 'desc' : sortField];
+    let bv = b[sortField === 'desc' ? 'desc' : sortField];
+    if (sortField === 'amount') { av = parseFloat(av); bv = parseFloat(bv); }
+    if (av < bv) return sortAsc ? -1 : 1;
+    if (av > bv) return sortAsc ?  1 : -1;
+    return 0;
+  });
+}
+
+// ─── Format ───────────────────────────────────────────────────────────────────
+function fmt(n) {
+  return '$' + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function fmtSigned(n) {
+  return (n < 0 ? '-' : '') + '$' + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function fmtDate(d) {
+  const [y, m, day] = d.split('-');
+  return `${m}/${day}/${y}`;
+}
+
+// ─── Render All ───────────────────────────────────────────────────────────────
+function renderAll() {
+  renderSummary();
+  renderTable();
+  renderCategories();
+}
+
+function renderSummary() {
+  let expenses = 0, returns = 0;
+  transactions.forEach(t => {
+    if (t.type === 'expense') expenses += t.amount;
+    else returns += t.amount;
+  });
+  const balance = expenses - returns;
+
+  document.getElementById('total-expenses').textContent = fmt(expenses);
+  document.getElementById('total-returns').textContent  = fmt(returns);
+  document.getElementById('total-balance').textContent  = fmtSigned(balance);
+  document.getElementById('header-balance').textContent = fmtSigned(balance);
+}
+
+function renderTable() {
+  const filtered = getFiltered();
+  const rows = sorted(filtered);
+  const body = document.getElementById('txn-body');
+
+  // Compute running balance on date-sorted order for the full unfiltered set
+  // then show per-row balance based on chronological position
+  const chrono = [...transactions].sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id);
+  const balMap = {};
+  let running = 0;
+  chrono.forEach(t => {
+    running += t.type === 'expense' ? t.amount : -t.amount;
+    balMap[t.id] = running;
+  });
+
+  document.getElementById('row-count').textContent = rows.length + ' transaction' + (rows.length !== 1 ? 's' : '');
+
+  if (rows.length === 0) {
+    body.innerHTML = '';
+    document.getElementById('empty-state').style.display = 'block';
+    return;
+  }
+  document.getElementById('empty-state').style.display = 'none';
+
+  body.innerHTML = rows.map(t => {
+    const bal = balMap[t.id];
+    const isNeg = bal < 0;
+    return `
+      <tr class="${t.type}-row">
+        <td>${fmtDate(t.date)}</td>
+        <td>${escHtml(t.desc)}</td>
+        <td><span class="cat-badge">${escHtml(t.cat)}</span></td>
+        <td><span class="badge badge-${t.type}">${t.type === 'expense' ? 'Expense' : 'Return'}</span></td>
+        <td style="text-align:right">
+          <span class="amount-${t.type}">
+            ${t.type === 'expense' ? '+' : '-'}${fmt(t.amount)}
+          </span>
+        </td>
+        <td style="text-align:right">
+          <span class="amount-balance ${isNeg ? 'negative' : ''}">${fmtSigned(bal)}</span>
+        </td>
+        <td style="text-align:center">
+          <button class="btn btn-danger btn-sm" onclick="deleteTransaction(${t.id})">✕</button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function renderCategories() {
+  const section = document.getElementById('cat-section');
+  if (transactions.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+
+  const cats = {};
+  transactions.filter(t => t.type === 'expense').forEach(t => {
+    if (!cats[t.cat]) cats[t.cat] = { total: 0, count: 0 };
+    cats[t.cat].total += t.amount;
+    cats[t.cat].count++;
+  });
+
+  const entries = Object.entries(cats).sort((a,b) => b[1].total - a[1].total);
+  if (entries.length === 0) { section.style.display = 'none'; return; }
+
+  document.getElementById('cat-grid').innerHTML = entries.map(([name, data]) => `
+    <div class="cat-item">
+      <div class="cat-name">${escHtml(name)}</div>
+      <div class="cat-amount">${fmt(data.total)}</div>
+      <div class="cat-count">${data.count} transaction${data.count !== 1 ? 's' : ''}</div>
+    </div>
+  `).join('');
+}
+
+// ─── Export CSV ───────────────────────────────────────────────────────────────
+function exportCSV() {
+  const filtered = getFiltered();
+  const rows = sorted(filtered);
+  if (rows.length === 0) { alert('No transactions to export.'); return; }
+
+  const chrono = [...transactions].sort((a,b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id);
+  let running = 0;
+  const balMap = {};
+  chrono.forEach(t => {
+    running += t.type === 'expense' ? t.amount : -t.amount;
+    balMap[t.id] = running;
+  });
+
+  const header = ['Date','Description','Category','Type','Amount','Running Balance'];
+  const csv = [header, ...rows.map(t => [
+    t.date, `"${t.desc.replace(/"/g,'""')}"`, t.cat,
+    t.type === 'expense' ? 'Expense' : 'Return',
+    (t.type === 'expense' ? '' : '-') + t.amount.toFixed(2),
+    balMap[t.id].toFixed(2)
+  ])].map(r => r.join(',')).join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `credit-card-register-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
