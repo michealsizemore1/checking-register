@@ -173,13 +173,6 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
 .empty-state { text-align:center; padding:36px 20px; color:var(--muted); }
 .empty-state .icon { font-size:2rem; margin-bottom:8px; }
 
-.ai-fab { position:fixed; bottom:18px; right:18px; width:48px; height:48px;
-  border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6);
-  color:#fff; border:none; font-size:1.3rem; cursor:pointer;
-  box-shadow:0 4px 16px rgba(99,102,241,.45);
-  display:flex; align-items:center; justify-content:center;
-  z-index:50; transition:transform .15s; }
-.ai-fab:hover { transform:scale(1.08); }
 
 .ai-modal-wrap { background:var(--surface); border-radius:14px;
   width:440px; max-width:95vw; max-height:82vh;
@@ -269,6 +262,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
   <button class="btn btn-tb btn-sm" id="btn-restore">&#x1F4C2; Restore</button>
   <button class="btn btn-tb btn-sm" id="btn-import">&#x1F4E5; Import CSV</button>
   <button class="btn btn-tb btn-sm" id="btn-undo" disabled style="opacity:.45;">&#x21B6; Undo</button>
+  <button class="btn btn-tb btn-sm" id="btn-ai">&#x1F916; AI Assistant</button>
   <input type="file" id="restore-file" accept=".json" style="display:none">
   <input type="file" id="import-file" accept=".csv,.txt" style="display:none">
 </div>
@@ -524,7 +518,6 @@ tbody tr.wth-row:hover { background:#fef2f2; }
   </div>
 </div>
 
-<button class="ai-fab" id="btn-ai" title="AI Assistant">&#x1F916;</button>
 
 <div class="modal-ov" id="ai-modal">
   <div class="ai-modal-wrap">
@@ -1239,7 +1232,7 @@ function switchTab(tab){
     $('page-sub').textContent='My Credit Card';
     renderAll();
   } else {
-    $('page-title').textContent='🏦 Checking Account';
+    $('page-title').textContent='🏦 Cindy\'s Checking Account';
     $('page-sub').textContent='My Checking Account';
     var ob=$('chk-open');
     ob.value=chkOpenBal>0?chkOpenBal.toFixed(2):'';
