@@ -214,6 +214,18 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
 .mgrid .f.full { grid-column:1/-1; }
 .mfooter { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
 
+/* Notes card */
+.notes-card { flex-shrink:0; background:#fefce8; border:1px solid #fde68a;
+  border-radius:8px; padding:8px 12px; }
+.notes-card .notes-hdr { display:flex; align-items:center;
+  justify-content:space-between; margin-bottom:5px; }
+.notes-card .notes-hdr span { font-size:.7rem; font-weight:700;
+  color:#92400e; text-transform:uppercase; letter-spacing:.05em; }
+.notes-card .notes-hdr small { font-size:.65rem; color:#b45309; }
+.notes-card textarea { width:100%; border:none; background:transparent;
+  resize:none; font-size:.82rem; color:#1e293b; outline:none;
+  font-family:inherit; line-height:1.5; min-height:52px; }
+
 /* Tabs */
 .tabs { flex-shrink:0; display:flex; background:#1e40af; padding:0 16px; gap:2px; }
 .tab-btn { padding:9px 20px; font-size:.85rem; font-weight:600;
@@ -221,6 +233,10 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
   cursor:pointer; border-bottom:3px solid transparent; transition:all .15s; }
 .tab-btn:hover { color:#fff; }
 .tab-btn.active { color:#fff; border-bottom-color:#fff; }
+
+/* 4-column summary (checking) */
+.summary-4 { flex-shrink:0; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+@media (max-width:700px) { .summary-4 { grid-template-columns:1fr 1fr; } }
 
 /* Checking-specific row colours */
 tbody tr.dep-row { background:#fafffa; }
@@ -351,6 +367,11 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     <span id="ft-detail"></span>
   </div>
 
+  <div class="notes-card">
+    <div class="notes-hdr"><span>&#x1F4DD; Notes</span><small>auto-saved</small></div>
+    <textarea id="cc-notes" placeholder="Jot down anything — due dates, credit limit, reminders…" rows="2"></textarea>
+  </div>
+
   <div class="table-card">
     <div class="table-hdr">
       <h2>Transactions</h2>
@@ -385,7 +406,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     <span id="chk-open-note" style="font-size:.75rem;color:#64748b;align-self:flex-end;padding-bottom:7px;"></span>
   </div>
 
-  <div class="summary" style="grid-template-columns:repeat(4,1fr);">
+  <div class="summary-4">
     <div class="card bal"><div class="lbl">&#x1F4B0; Account Balance</div><div class="val" id="chk-s-bal">$0.00</div></div>
     <div class="card ret"><div class="lbl">&#x2713; Cleared Balance</div><div class="val" id="chk-s-clr">$0.00</div></div>
     <div class="card uncl-ret"><div class="lbl">&#x26A0; Pending Deposits</div><div class="val" id="chk-s-pdep">$0.00</div></div>
@@ -400,13 +421,13 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <label>Category</label>
       <div style="display:flex;gap:4px;">
         <select id="chk-cat" style="flex:1;min-width:0;"></select>
-        <button class="btn btn-ghost btn-sm" id="btn-show-chk-cat" style="flex-shrink:0;padding:6px 8px;">＋</button>
+        <button class="btn btn-sm" id="btn-show-chk-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
       </div>
       <div id="chk-cat-row" style="display:none;margin-top:4px;gap:4px;">
         <input type="text" id="chk-new-cat" placeholder="New category…" maxlength="40"
-          style="flex:1;padding:5px 8px;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;color:var(--text);">
-        <button class="btn btn-primary btn-sm" id="btn-save-chk-cat">Add</button>
-        <button class="btn btn-ghost btn-sm" id="btn-cancel-chk-cat">&#x2715;</button>
+          style="flex:1;padding:5px 8px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="btn-save-chk-cat" style="background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="btn-cancel-chk-cat" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">&#x2715;</button>
       </div>
     </div>
     <div class="ft fl">
@@ -439,6 +460,11 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <button class="btn btn-ghost btn-sm" id="chk-btn-clr-filter">Clear</button>
       <button class="btn btn-export btn-sm" id="chk-btn-export">&#x2B07; Export CSV</button>
     </div>
+  </div>
+
+  <div class="notes-card">
+    <div class="notes-hdr"><span>&#x1F4DD; Notes</span><small>auto-saved</small></div>
+    <textarea id="chk-notes" placeholder="Jot down anything — account number, routing number, reminders…" rows="2"></textarea>
   </div>
 
   <div class="table-card">
@@ -886,7 +912,8 @@ function importCSV(file){
 function backup(){
   var data={version:5,exported:new Date().toISOString(),
     transactions:transactions,categories:categories,
-    chkTxns:chkTxns,chkOpenBal:chkOpenBal};
+    chkTxns:chkTxns,chkOpenBal:chkOpenBal,
+    ccNotes:sGet('cc-notes')||'',chkNotes:sGet('chk-notes')||''};
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   a.download='register-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
@@ -913,6 +940,8 @@ function restore(file){
       if(data.categories)categories=data.categories;
       if(data.chkTxns&&Array.isArray(data.chkTxns))chkTxns=data.chkTxns;
       if(data.chkOpenBal!=null)chkOpenBal=parseFloat(data.chkOpenBal)||0;
+      if(data.ccNotes!=null){sSet('cc-notes',data.ccNotes);$('cc-notes').value=data.ccNotes;}
+      if(data.chkNotes!=null){sSet('chk-notes',data.chkNotes);$('chk-notes').value=data.chkNotes;}
       // Persist everything
       var ok=persistAll();
       renderCatSelects();renderAll();renderChk();
@@ -1325,6 +1354,15 @@ $('chk-body').addEventListener('change',function(e){
 $('chk-btn-cancel-edit').addEventListener('click',closeChkEdit);
 $('chk-btn-save-edit').addEventListener('click',saveChkEdit);
 $('chk-edit-modal').addEventListener('click',function(e){if(e.target===$('chk-edit-modal'))closeChkEdit();});
+
+// ── Notes ─────────────────────────────────────────────────────────────────────
+(function(){
+  var ccN=$('cc-notes'),chkN=$('chk-notes');
+  ccN.value=sGet('cc-notes')||'';
+  chkN.value=sGet('chk-notes')||'';
+  ccN.addEventListener('input',function(){sSet('cc-notes',ccN.value);});
+  chkN.addEventListener('input',function(){sSet('chk-notes',chkN.value);});
+})();
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 renderCatSelects();
