@@ -221,6 +221,20 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
 .mgrid .f.full { grid-column:1/-1; }
 .mfooter { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
 
+/* Tabs */
+.tabs { flex-shrink:0; display:flex; background:#1e40af; padding:0 16px; gap:2px; }
+.tab-btn { padding:9px 20px; font-size:.85rem; font-weight:600;
+  color:rgba(255,255,255,.6); background:transparent; border:none;
+  cursor:pointer; border-bottom:3px solid transparent; transition:all .15s; }
+.tab-btn:hover { color:#fff; }
+.tab-btn.active { color:#fff; border-bottom-color:#fff; }
+
+/* Checking-specific row colours */
+tbody tr.dep-row { background:#fafffa; }
+tbody tr.wth-row { background:#fffafa; }
+tbody tr.dep-row:hover { background:#f0fdf4; }
+tbody tr.wth-row:hover { background:#fef2f2; }
+
 /* Mobile overrides — only structural, no column tricks */
 @media (max-width:1100px) {
   .summary { grid-template-columns:repeat(3,1fr); }
@@ -242,7 +256,7 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
 <body>
 
 <header>
-  <div><h1>&#x1F4B3; Cindy's Credit Card Register</h1><p>My Credit Card</p></div>
+  <div><h1 id="page-title">&#x1F4B3; Cindy's Credit Card Register</h1><p id="page-sub">My Credit Card</p></div>
   <div class="hbal">
     <div class="lbl">Current Balance</div>
     <div class="amt" id="hdr-bal">$0.00</div>
@@ -259,7 +273,12 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
   <input type="file" id="import-file" accept=".csv,.txt" style="display:none">
 </div>
 
-<div class="page-body">
+<div class="tabs">
+  <button class="tab-btn active" id="tab-cc">&#x1F4B3; Credit Card</button>
+  <button class="tab-btn" id="tab-chk">&#x1F3E6; Checking</button>
+</div>
+
+<div id="cc-pane" class="page-body">
 
   <div class="summary">
     <div class="card exp"><div class="lbl">&#x2713; Cleared Expenses</div><div class="val" id="s-exp">$0.00</div></div>
@@ -359,6 +378,108 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
     </div>
   </div>
 
+</div>
+
+</div><!-- /cc-pane -->
+
+<!-- Checking Pane -->
+<div id="chk-pane" class="page-body" style="display:none;">
+
+  <div class="form-card" style="justify-content:flex-start;">
+    <div class="f fl"><label>Opening Balance ($)</label><input type="number" id="chk-open" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="form-actions"><div class="fl"><label style="color:transparent;">.</label><button class="btn btn-ghost" id="btn-set-open">Set</button></div></div>
+    <span id="chk-open-note" style="font-size:.75rem;color:#64748b;align-self:flex-end;padding-bottom:7px;"></span>
+  </div>
+
+  <div class="summary" style="grid-template-columns:repeat(4,1fr);">
+    <div class="card bal"><div class="lbl">&#x1F4B0; Account Balance</div><div class="val" id="chk-s-bal">$0.00</div></div>
+    <div class="card ret"><div class="lbl">&#x2713; Cleared Balance</div><div class="val" id="chk-s-clr">$0.00</div></div>
+    <div class="card uncl-ret"><div class="lbl">&#x26A0; Pending Deposits</div><div class="val" id="chk-s-pdep">$0.00</div></div>
+    <div class="card uncl"><div class="lbl">&#x26A0; Pending Withdrawals</div><div class="val" id="chk-s-pwth">$0.00</div></div>
+  </div>
+
+  <div class="form-card">
+    <div class="f fl"><label>Date</label><input type="date" id="chk-date"></div>
+    <div class="fd fl"><label>Description</label><input type="text" id="chk-desc" placeholder="e.g. Paycheck, Rent…" maxlength="100"></div>
+    <div class="f fl"><label>Amount ($)</label><input type="number" id="chk-amt" placeholder="0.00" min="0.01" step="0.01"></div>
+    <div class="f fl"><label>Category</label><select id="chk-cat"></select></div>
+    <div class="ft fl">
+      <label>Type</label>
+      <div class="type-toggle">
+        <input type="radio" name="chk-type" id="chk-dep" value="deposit" checked>
+        <label for="chk-dep" class="rl">&#x2B06; Deposit</label>
+        <input type="radio" name="chk-type" id="chk-wth" value="withdrawal">
+        <label for="chk-wth" class="el">&#x2B07; Withdrawal</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="chk-btn-add">+ Add</button></div>
+    </div>
+    <span id="chk-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
+  </div>
+
+  <div class="filters-card">
+    <div class="f fl"><label>Search</label><input type="text" id="chk-f-search" placeholder="Search…"></div>
+    <div class="f fl"><label>Type</label>
+      <select id="chk-f-type">
+        <option value="">All Types</option>
+        <option value="deposit">Deposits</option>
+        <option value="withdrawal">Withdrawals</option>
+      </select>
+    </div>
+    <div class="f fl"><label>From</label><input type="date" id="chk-f-from"></div>
+    <div class="f fl"><label>To</label><input type="date" id="chk-f-to"></div>
+    <div class="filter-actions">
+      <button class="btn btn-ghost btn-sm" id="chk-btn-clr-filter">Clear</button>
+      <button class="btn btn-export btn-sm" id="chk-btn-export">&#x2B07; Export CSV</button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr">
+      <h2>Transactions</h2>
+      <div class="thr">
+        <span id="chk-row-count">0 transactions</span>
+        <button class="btn btn-danger btn-sm" id="chk-btn-clr-all">Clear All</button>
+      </div>
+    </div>
+    <div class="tscroll">
+      <table id="chk-table"><thead id="chk-head"></thead><tbody id="chk-body"></tbody></table>
+      <div id="chk-empty" class="empty-state"><div class="icon">&#x1F3E6;</div><p>No transactions yet.</p></div>
+    </div>
+  </div>
+
+</div><!-- /chk-pane -->
+
+<!-- Checking Edit Modal -->
+<div class="modal-ov" id="chk-edit-modal">
+  <div class="modal">
+    <h2>&#x270F;&#xFE0F; Edit Transaction</h2>
+    <div class="mgrid">
+      <div class="f fl"><label>Date</label><input type="date" id="chk-e-date"></div>
+      <div class="f fl"><label>Amount ($)</label><input type="number" id="chk-e-amt" min="0.01" step="0.01"></div>
+      <div class="f full fl"><label>Description</label><input type="text" id="chk-e-desc" maxlength="100"></div>
+      <div class="f fl"><label>Category</label><select id="chk-e-cat"></select></div>
+      <div class="f fl">
+        <label>Type</label>
+        <div class="type-toggle">
+          <input type="radio" name="chk-e-type" id="chk-ed" value="deposit">
+          <label for="chk-ed" class="rl">&#x2B06; Deposit</label>
+          <input type="radio" name="chk-e-type" id="chk-ew" value="withdrawal">
+          <label for="chk-ew" class="el">&#x2B07; Withdrawal</label>
+        </div>
+      </div>
+      <div class="f fl" style="display:flex;align-items:center;gap:8px;padding-top:18px;">
+        <input type="checkbox" id="chk-e-cleared" style="width:16px;height:16px;accent-color:#16a34a;cursor:pointer;">
+        <label for="chk-e-cleared" style="font-size:.84rem;color:#1e293b;text-transform:none;letter-spacing:0;font-weight:500;cursor:pointer;">Cleared</label>
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="btn btn-ghost" id="chk-btn-cancel-edit">Cancel</button>
+      <button class="btn btn-primary" id="chk-btn-save-edit">Save Changes</button>
+    </div>
+    <div id="chk-edit-err" style="color:#dc2626;font-size:.78rem;margin-top:8px;text-align:right;"></div>
+  </div>
 </div>
 
 <!-- Edit Modal -->
@@ -914,7 +1035,261 @@ document.querySelectorAll('.ai-chip').forEach(function(c){c.addEventListener('cl
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeEdit();$('ai-modal').classList.remove('open');}});
 
 // Resize
-window.addEventListener('resize',function(){renderTable();});
+window.addEventListener('resize',function(){if(activeTab==='cc')renderTable();else renderChkTable();});
+
+// ── Checking Account ──────────────────────────────────────────────────────────
+var chkTxns=JSON.parse(sGet('chk-register')||'[]');
+var chkOpenBal=parseFloat(sGet('chk-open-bal')||'0');
+var chkSortField='date',chkSortAsc=false,chkHistory=[],chkEditId=null;
+
+function saveChk(){sSet('chk-register',JSON.stringify(chkTxns));}
+function chkSnap(){
+  chkHistory.push(JSON.stringify(chkTxns));
+  if(chkHistory.length>50)chkHistory.shift();
+  var b=$('btn-undo');b.disabled=false;b.style.opacity='1';
+}
+
+function chkBuildBalMap(){
+  var sorted=chkTxns.slice().sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:a.id-b.id;});
+  var m={},r=chkOpenBal;
+  sorted.forEach(function(t){r+=(t.type==='deposit')?t.amount:-t.amount;m[t.id]=r;});
+  return m;
+}
+
+function renderChkCat(keep){
+  ['chk-cat','chk-e-cat'].forEach(function(id){
+    var s=$(id);if(!s)return;var pv=keep||s.value;
+    s.innerHTML=categories.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');
+    if(pv)s.value=pv;
+  });
+}
+
+function renderChkSummary(){
+  var dep=0,wth=0,pdep=0,pwth=0,cdep=0,cwth=0;
+  chkTxns.forEach(function(t){
+    var cl=!!t.cleared;
+    if(t.type==='deposit'){dep+=t.amount;if(cl)cdep+=t.amount;else pdep+=t.amount;}
+    else{wth+=t.amount;if(cl)cwth+=t.amount;else pwth+=t.amount;}
+  });
+  var bal=chkOpenBal+dep-wth, clr=chkOpenBal+cdep-cwth;
+  $('chk-s-bal').textContent=fmtS(bal);
+  $('chk-s-clr').textContent=fmtS(clr);
+  $('chk-s-pdep').textContent=fmt(pdep);
+  $('chk-s-pwth').textContent=fmt(pwth);
+  $('hdr-bal').textContent=fmtS(bal);
+}
+
+function chkArw(f){
+  return chkSortField===f?('<span class="sarr on">'+(chkSortAsc?'↑':'↓')+'</span>'):'<span class="sarr"></span>';
+}
+
+function chkGetFiltered(){
+  var s=$('chk-f-search').value.toLowerCase().trim(),ty=$('chk-f-type').value;
+  var fr=$('chk-f-from').value,to=$('chk-f-to').value;
+  return chkTxns.filter(function(t){
+    if(s&&t.desc.toLowerCase().indexOf(s)===-1)return false;
+    if(ty&&t.type!==ty)return false;
+    if(fr&&t.date<fr)return false;
+    if(to&&t.date>to)return false;
+    return true;
+  });
+}
+
+function chkSorted(list){
+  return list.slice().sort(function(a,b){
+    var av=a[chkSortField],bv=b[chkSortField];
+    if(chkSortField==='amount'){av=+av;bv=+bv;}
+    if(av<bv)return chkSortAsc?-1:1;if(av>bv)return chkSortAsc?1:-1;return 0;
+  });
+}
+
+function toggleChkSort(f){chkSortAsc=(chkSortField===f)?!chkSortAsc:(f!=='date');chkSortField=f;renderChkTable();}
+
+function renderChkTable(){
+  var rows=chkSorted(chkGetFiltered()),bm=chkBuildBalMap(),mobile=isMobile();
+  $('chk-row-count').textContent=rows.length+' transaction'+(rows.length!==1?'s':'');
+  var head=$('chk-head');
+  if(mobile){
+    head.innerHTML='<tr>'+
+      '<th style="width:32px;">&#x2713;</th>'+
+      '<th class="sortable" data-sort="date" style="width:76px;">Date '+chkArw('date')+'</th>'+
+      '<th class="sortable" data-sort="desc">Description '+chkArw('desc')+'</th>'+
+      '<th class="sortable" data-sort="amount" style="text-align:right;width:76px;">Amount '+chkArw('amount')+'</th>'+
+      '<th style="text-align:center;width:62px;">Act.</th></tr>';
+  } else {
+    head.innerHTML='<tr>'+
+      '<th style="width:32px;">&#x2713;</th>'+
+      '<th class="sortable" data-sort="date" style="width:88px;">Date '+chkArw('date')+'</th>'+
+      '<th class="sortable" data-sort="desc">Description '+chkArw('desc')+'</th>'+
+      '<th class="sortable" data-sort="cat" style="width:96px;">Category '+chkArw('cat')+'</th>'+
+      '<th style="width:80px;">Type</th>'+
+      '<th class="sortable" data-sort="amount" style="text-align:right;width:90px;">Amount '+chkArw('amount')+'</th>'+
+      '<th style="text-align:right;width:90px;">Balance</th>'+
+      '<th style="text-align:center;width:66px;">Actions</th></tr>';
+  }
+  var body=$('chk-body'),empty=$('chk-empty');
+  if(!rows.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  var h='';
+  rows.forEach(function(t){
+    var bal=bm[t.id],neg=bal<0,clr=!!t.cleared;
+    var isDep=t.type==='deposit';
+    var cls=(isDep?'dep':'wth')+'-row'+(clr?'':' unclrd');
+    var amtColor=isDep?'#16a34a':'#dc2626';
+    var amtStyle='color:'+amtColor+';font-weight:700;';
+    var sign=isDep?'+':'-';
+    var cb='<input type="checkbox" class="chk-clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
+    var eb='<button class="btn btn-edit btn-sm chk-edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
+    var db='<button class="btn btn-danger btn-sm chk-del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
+    if(mobile){
+      h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
+      h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
+      h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
+      h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
+      h+='<td class="act-cell">'+eb+db+'</td></tr>';
+    } else {
+      h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
+      h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
+      h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span></td>';
+      h+='<td class="cat-cell"><span class="catbdg">'+esc(t.cat)+'</span></td>';
+      h+='<td class="type-cell"><span class="badge '+(isDep?'b-ret':'b-exp')+'">'+(isDep?'Dep':'Wth')+'</span></td>';
+      h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
+      h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
+      h+='<td class="act-cell">'+eb+db+'</td></tr>';
+    }
+  });
+  body.innerHTML=h;
+}
+
+function renderChk(){renderChkSummary();renderChkTable();}
+
+function addChkTxn(){
+  var date=$('chk-date').value,desc=$('chk-desc').value.trim();
+  var amt=parseFloat($('chk-amt').value),cat=$('chk-cat').value;
+  var te=document.querySelector('input[name="chk-type"]:checked');
+  var type=te?te.value:'deposit',err=$('chk-form-err');
+  if(!date){err.textContent='Please enter a date.';return;}
+  if(!desc){err.textContent='Please enter a description.';return;}
+  if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
+  err.textContent='';chkSnap();
+  chkTxns.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false});
+  saveChk();renderChk();
+  $('chk-desc').value='';$('chk-amt').value='';$('chk-date').value=todayStr();$('chk-desc').focus();
+}
+
+function delChkTxn(id){
+  if(!confirm('Delete this transaction?'))return;
+  chkSnap();
+  chkTxns=chkTxns.filter(function(t){return t.id!==id;});
+  saveChk();renderChk();
+}
+
+function toggleChkCleared(id){
+  var t=chkTxns.find(function(x){return x.id===id;});
+  if(t){chkSnap();t.cleared=!t.cleared;saveChk();renderChk();}
+}
+
+function openChkEdit(id){
+  var t=chkTxns.find(function(x){return x.id===id;});if(!t)return;
+  chkEditId=id;
+  $('chk-e-date').value=t.date;$('chk-e-desc').value=t.desc;
+  $('chk-e-amt').value=t.amount;$('chk-e-cleared').checked=!!t.cleared;
+  var r=document.querySelector('input[name="chk-e-type"][value="'+t.type+'"]');if(r)r.checked=true;
+  $('chk-edit-err').textContent='';renderChkCat(t.cat);
+  $('chk-edit-modal').classList.add('open');
+}
+function closeChkEdit(){$('chk-edit-modal').classList.remove('open');chkEditId=null;}
+function saveChkEdit(){
+  var date=$('chk-e-date').value,desc=$('chk-e-desc').value.trim();
+  var amt=parseFloat($('chk-e-amt').value),cat=$('chk-e-cat').value;
+  var te=document.querySelector('input[name="chk-e-type"]:checked');
+  var type=te?te.value:'deposit',err=$('chk-edit-err');
+  if(!date){err.textContent='Date required.';return;}
+  if(!desc){err.textContent='Description required.';return;}
+  if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
+  var i=chkTxns.findIndex(function(t){return t.id===chkEditId;});if(i===-1)return;
+  chkSnap();
+  chkTxns[i]={id:chkTxns[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('chk-e-cleared').checked};
+  saveChk();renderChk();closeChkEdit();
+}
+
+function exportChkCSV(){
+  var rows=chkSorted(chkGetFiltered());if(!rows.length){alert('Nothing to export.');return;}
+  var bm=chkBuildBalMap();
+  var lines=['Date,Description,Category,Type,Amount,Balance,Cleared'];
+  rows.forEach(function(t){
+    lines.push([t.date,'"'+t.desc.replace(/"/g,'""')+'"',t.cat,
+      t.type==='deposit'?'Deposit':'Withdrawal',
+      (t.type==='deposit'?'':'-')+t.amount.toFixed(2),bm[t.id].toFixed(2),t.cleared?'Yes':'No'].join(','));
+  });
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
+  a.download='checking-'+todayStr()+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ── Tab Switching ─────────────────────────────────────────────────────────────
+var activeTab='cc';
+function switchTab(tab){
+  activeTab=tab;
+  $('cc-pane').style.display=tab==='cc'?'':'none';
+  $('chk-pane').style.display=tab==='chk'?'':'none';
+  $('tab-cc').classList.toggle('active',tab==='cc');
+  $('tab-chk').classList.toggle('active',tab==='chk');
+  if(tab==='cc'){
+    $('page-title').textContent='💳 Cindy\'s Credit Card Register';
+    $('page-sub').textContent='My Credit Card';
+    renderAll();
+  } else {
+    $('page-title').textContent='🏦 Checking Account';
+    $('page-sub').textContent='My Checking Account';
+    var ob=$('chk-open');
+    ob.value=chkOpenBal>0?chkOpenBal.toFixed(2):'';
+    $('chk-open-note').textContent=chkOpenBal>0?'Opening balance: '+fmt(chkOpenBal):'No opening balance set';
+    renderChkCat();renderChk();
+  }
+}
+
+$('tab-cc').addEventListener('click',function(){switchTab('cc');});
+$('tab-chk').addEventListener('click',function(){switchTab('chk');});
+
+// Checking events
+$('chk-btn-add').addEventListener('click',addChkTxn);
+$('chk-amt').addEventListener('keydown',function(e){if(e.key==='Enter')addChkTxn();});
+
+$('btn-set-open').addEventListener('click',function(){
+  var v=parseFloat($('chk-open').value);
+  if(isNaN(v)||v<0){alert('Please enter a valid opening balance.');return;}
+  chkOpenBal=v;sSet('chk-open-bal',v.toString());
+  $('chk-open-note').textContent='Opening balance: '+fmt(v);
+  renderChk();
+});
+
+['chk-f-search','chk-f-type','chk-f-from','chk-f-to'].forEach(function(id){
+  $(id).addEventListener(id==='chk-f-search'?'input':'change',function(){renderChkTable();});
+});
+$('chk-btn-clr-filter').addEventListener('click',function(){
+  ['chk-f-search','chk-f-type','chk-f-from','chk-f-to'].forEach(function(id){$(id).value='';});
+  renderChkTable();
+});
+$('chk-btn-export').addEventListener('click',exportChkCSV);
+$('chk-btn-clr-all').addEventListener('click',function(){
+  if(!chkTxns.length)return;if(!confirm('Delete ALL checking transactions?'))return;
+  chkSnap();chkTxns=[];saveChk();renderChk();
+});
+
+$('chk-head').addEventListener('click',function(e){
+  var th=e.target.closest('th.sortable');if(th)toggleChkSort(th.getAttribute('data-sort'));
+});
+$('chk-body').addEventListener('click',function(e){
+  var eb=e.target.closest('.chk-edit-btn'),db=e.target.closest('.chk-del-btn');
+  if(eb)openChkEdit(parseInt(eb.getAttribute('data-id'),10));
+  if(db)delChkTxn(parseInt(db.getAttribute('data-id'),10));
+});
+$('chk-body').addEventListener('change',function(e){
+  var cb=e.target.closest('.chk-clr-cb');if(cb)toggleChkCleared(parseInt(cb.getAttribute('data-id'),10));
+});
+$('chk-btn-cancel-edit').addEventListener('click',closeChkEdit);
+$('chk-btn-save-edit').addEventListener('click',saveChkEdit);
+$('chk-edit-modal').addEventListener('click',function(e){if(e.target===$('chk-edit-modal'))closeChkEdit();});
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 renderCatSelects();
