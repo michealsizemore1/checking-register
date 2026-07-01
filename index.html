@@ -254,6 +254,7 @@ td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
   <button class="btn btn-tb btn-sm" id="btn-backup">&#x1F4BE; Backup</button>
   <button class="btn btn-tb btn-sm" id="btn-restore">&#x1F4C2; Restore</button>
   <button class="btn btn-tb btn-sm" id="btn-import">&#x1F4E5; Import CSV</button>
+  <button class="btn btn-tb btn-sm" id="btn-undo" disabled style="opacity:.45;">&#x21B6; Undo</button>
   <input type="file" id="restore-file" accept=".json" style="display:none">
   <input type="file" id="import-file" accept=".csv,.txt" style="display:none">
 </div>
@@ -436,11 +437,24 @@ function sSet(k,v){try{localStorage.setItem(k,v);}catch(e){_mem[k]=v;}}
 
 // ── State ─────────────────────────────────────────────────────────────────────
 var transactions=JSON.parse(sGet('cc-register')||'[]');
+var history=[], MAX_HISTORY=50;
 var DEFAULT_CATS=['Groceries','Dining','Gas','Shopping','Travel','Entertainment','Healthcare','Utilities','Subscriptions','Other'];
 var categories=JSON.parse(sGet('cc-categories')||'null')||DEFAULT_CATS.slice();
 var sortField='date', sortAsc=false, unclFirst=false, editId=null;
 
+function snapshot(){
+  history.push(JSON.stringify(transactions));
+  if(history.length>MAX_HISTORY)history.shift();
+  var btn=$('btn-undo');btn.disabled=false;btn.style.opacity='1';
+}
 function save(){sSet('cc-register',JSON.stringify(transactions));}
+function undo(){
+  if(!history.length)return;
+  transactions=JSON.parse(history.pop());
+  save();renderAll();
+  var btn=$('btn-undo');
+  if(!history.length){btn.disabled=true;btn.style.opacity='.45';}
+}
 function saveCats(){sSet('cc-categories',JSON.stringify(categories));}
 function $(id){return document.getElementById(id);}
 
@@ -482,18 +496,20 @@ function addTxn(){
   if(!desc){err.textContent='Please enter a description.';return;}
   if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
   err.textContent='';
+  snapshot();
   transactions.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,who:who});
   save();renderAll();
   $('txn-desc').value='';$('txn-amt').value='';$('txn-date').value=todayStr();$('txn-desc').focus();
 }
 function delTxn(id){
   if(!confirm('Delete this transaction?'))return;
+  snapshot();
   transactions=transactions.filter(function(t){return t.id!==id;});
   save();renderAll();
 }
 function toggleCleared(id){
   var t=transactions.find(function(x){return x.id===id;});
-  if(t){t.cleared=!t.cleared;save();renderTable();}
+  if(t){snapshot();t.cleared=!t.cleared;save();renderAll();}
 }
 
 // ── Edit ──────────────────────────────────────────────────────────────────────
@@ -520,6 +536,7 @@ function saveEdit(){
   if(!desc){err.textContent='Description required.';return;}
   if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
   var i=transactions.findIndex(function(t){return t.id===editId;});if(i===-1)return;
+  snapshot();
   transactions[i]={id:transactions[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('e-cleared').checked,who:who};
   save();renderAll();closeEdit();
 }
@@ -865,7 +882,7 @@ $('txn-head').addEventListener('click',function(e){
 $('btn-uncl').addEventListener('click',function(){unclFirst=!unclFirst;this.classList.toggle('active',unclFirst);renderTable();});
 
 // Clear all
-$('btn-clr-all').addEventListener('click',function(){if(!transactions.length)return;if(!confirm('Delete ALL transactions? Cannot be undone.'))return;transactions=[];save();renderAll();});
+$('btn-clr-all').addEventListener('click',function(){if(!transactions.length)return;if(!confirm('Delete ALL transactions? Cannot be undone.'))return;snapshot();transactions=[];save();renderAll();});
 
 // Edit modal
 $('btn-cancel-edit').addEventListener('click',closeEdit);
@@ -873,6 +890,7 @@ $('btn-save-edit').addEventListener('click',saveEdit);
 $('edit-modal').addEventListener('click',function(e){if(e.target===$('edit-modal'))closeEdit();});
 
 // Backup / Restore / Import
+$('btn-undo').addEventListener('click',undo);
 $('btn-backup').addEventListener('click',backup);
 $('btn-restore').addEventListener('click',function(){$('restore-file').click();});
 $('restore-file').addEventListener('change',function(e){if(e.target.files[0]){restore(e.target.files[0]);e.target.value='';}});
