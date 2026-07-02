@@ -671,8 +671,12 @@ tbody tr.wth-row:hover { background:#fef2f2; }
         <div class="scan-drop-zone" id="scan-drop">
           <div class="scan-drop-icon">&#x1F9FE;</div>
           <p>Drop a receipt image here, or</p>
-          <button class="btn btn-primary" id="scan-pick-btn">&#x1F4F7; Take Photo / Choose Image</button>
-          <input type="file" id="scan-file-inp" accept="image/*" style="display:none">
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="scan-camera-btn">&#x1F4F7; Take Photo</button>
+            <button class="btn btn-ghost" id="scan-library-btn">&#x1F5BC; Choose from Library</button>
+          </div>
+          <input type="file" id="scan-file-camera" accept="image/*" capture="environment" style="display:none">
+          <input type="file" id="scan-file-library" accept="image/*" style="display:none">
           <p class="scan-hint">Works on mobile camera, screenshots &amp; scanned receipts</p>
         </div>
       </div>
@@ -1763,8 +1767,10 @@ function applyScanResult(){
 $('btn-scan-cc').addEventListener('click',function(){openScanner('cc');});
 $('btn-scan-chk').addEventListener('click',function(){openScanner('chk');});
 $('btn-scan-mike').addEventListener('click',function(){openScanner('mike');});
-$('scan-pick-btn').addEventListener('click',function(){$('scan-file-inp').click();});
-$('scan-file-inp').addEventListener('change',function(e){if(e.target.files[0]){processReceiptFile(e.target.files[0]);}e.target.value='';});
+$('scan-camera-btn').addEventListener('click',function(){$('scan-file-camera').click();});
+$('scan-library-btn').addEventListener('click',function(){$('scan-file-library').click();});
+$('scan-file-camera').addEventListener('change',function(e){if(e.target.files[0]){processReceiptFile(e.target.files[0]);}e.target.value='';});
+$('scan-file-library').addEventListener('change',function(e){if(e.target.files[0]){processReceiptFile(e.target.files[0]);}e.target.value='';});
 $('scan-cancel-btn').addEventListener('click',function(){$('scan-modal').classList.remove('open');});
 $('scan-retry-btn').addEventListener('click',function(){scanShowState('upload');});
 $('scan-use-btn').addEventListener('click',applyScanResult);
