@@ -1894,9 +1894,6 @@ function applyScanResult(){
   $('scan-modal').classList.remove('open');
 }
 
-$('btn-scan-cc').addEventListener('click',function(){openScanner('cc');});
-$('btn-scan-chk').addEventListener('click',function(){openScanner('chk');});
-$('btn-scan-mike').addEventListener('click',function(){openScanner('mike');});
 $('scan-camera-btn').addEventListener('click',function(){$('scan-file-camera').click();});
 $('scan-library-btn').addEventListener('click',function(){$('scan-file-library').click();});
 $('scan-file-camera').addEventListener('change',function(e){if(e.target.files[0]){processReceiptFile(e.target.files[0]);}e.target.value='';});
