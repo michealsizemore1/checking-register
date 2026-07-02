@@ -715,6 +715,37 @@ tbody tr.wth-row:hover { background:#fef2f2; }
   </div>
 </div>
 
+<!-- Receipt Attach Modal -->
+<div class="modal-ov" id="rcpt-attach-modal">
+  <div class="modal" style="max-width:340px;">
+    <h2>&#x1F4CE; Attach Receipt</h2>
+    <p style="color:#64748b;font-size:.85rem;margin:8px 0 16px;">Save a photo of the receipt with this transaction.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn btn-primary" id="rcpt-camera-btn">&#x1F4F7; Take Photo</button>
+      <button class="btn btn-ghost" id="rcpt-library-btn">&#x1F5BC; Choose from Library</button>
+    </div>
+    <input type="file" id="rcpt-camera-inp" accept="image/*" capture="environment" style="display:none">
+    <input type="file" id="rcpt-library-inp" accept="image/*" style="display:none">
+    <div class="mfooter" style="margin-top:18px;">
+      <button class="btn btn-ghost" id="rcpt-cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt View Modal -->
+<div class="modal-ov" id="rcpt-view-modal">
+  <div class="modal" style="max-width:500px;">
+    <h2>&#x1F9FE; Receipt</h2>
+    <div style="text-align:center;margin:10px 0;">
+      <img id="rcpt-view-img" style="max-width:100%;max-height:58vh;border-radius:6px;border:1px solid #e0e4ea;" src="" alt="Receipt">
+    </div>
+    <div class="mfooter">
+      <button class="btn btn-danger" id="rcpt-remove-btn">&#x1F5D1; Remove</button>
+      <button class="btn btn-ghost" id="rcpt-view-close">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit Modal -->
 <div class="modal-ov" id="edit-modal">
   <div class="modal">
@@ -858,6 +889,7 @@ function delTxn(id){
   if(!confirm('Delete this transaction?'))return;
   snapshot();
   transactions=transactions.filter(function(t){return t.id!==id;});
+  delRcptKey(id);
   save();renderAll();
 }
 function toggleCleared(id){
@@ -1013,6 +1045,8 @@ function renderTable(){
     var cb='<input type="checkbox" class="clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
     var eb='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
     var db='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
+    var hasRcpt=!!sGet('rcpt-'+t.id);
+    var rb='<button class="btn btn-sm '+(hasRcpt?'rcpt-view-btn':'rcpt-add-btn')+'" data-id="'+t.id+'" style="margin-left:2px;'+(hasRcpt?'color:#059669;':'color:#94a3b8;')+'" title="'+(hasRcpt?'View receipt':'Attach receipt')+'">'+(hasRcpt?'&#x1F9FE;':'&#x1F4CE;')+'</button>';
 
     if(mobile){
       h+='<tr class="'+cls+'">';
@@ -1020,7 +1054,7 @@ function renderTable(){
       h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
       h+='<td class="desc-cell"><span class="desc-main" style="'+whoStyle+'" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
       h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
-      h+='<td class="act-cell">'+eb+db+'</td>';
+      h+='<td class="act-cell">'+rb+eb+db+'</td>';
       h+='</tr>';
     } else {
       h+='<tr class="'+cls+'">';
@@ -1030,7 +1064,7 @@ function renderTable(){
       h+='<td class="cat-cell"><span class="catbdg">'+esc(t.cat)+'</span></td>';
       h+='<td class="type-cell"><span class="badge b-'+t.type+'">'+(t.type==='expense'?'Exp':t.type==='return'?'Ret':'Pay')+'</span></td>';
       h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
-      h+='<td class="act-cell">'+eb+db+'</td>';
+      h+='<td class="act-cell">'+rb+eb+db+'</td>';
       h+='</tr>';
     }
   });
@@ -1253,8 +1287,11 @@ $('btn-export').addEventListener('click',exportCSV);
 // Table actions — delegated to tbody
 $('txn-body').addEventListener('click',function(e){
   var eb=e.target.closest('.edit-btn'),db=e.target.closest('.del-btn');
+  var rv=e.target.closest('.rcpt-view-btn'),ra=e.target.closest('.rcpt-add-btn');
   if(eb)openEdit(parseInt(eb.getAttribute('data-id'),10));
   if(db)delTxn(parseInt(db.getAttribute('data-id'),10));
+  if(rv)openRcptView(parseInt(rv.getAttribute('data-id'),10));
+  if(ra)openRcptAttach(parseInt(ra.getAttribute('data-id'),10));
 });
 $('txn-body').addEventListener('change',function(e){
   var cb=e.target.closest('.clr-cb');if(cb)toggleCleared(parseInt(cb.getAttribute('data-id'),10));
@@ -1406,12 +1443,14 @@ function makeChecking(pfx,storeKey,openBalKey){
       var cb='<input type="checkbox" class="'+pfx+'-clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
       var eb='<button class="btn btn-edit btn-sm '+pfx+'-edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
       var db='<button class="btn btn-danger btn-sm '+pfx+'-del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
+      var hasRcpt=!!sGet('rcpt-'+t.id);
+      var rb='<button class="btn btn-sm '+(hasRcpt?pfx+'-rcpt-view':pfx+'-rcpt-add')+'" data-id="'+t.id+'" style="margin-left:2px;'+(hasRcpt?'color:#059669;':'color:#94a3b8;')+'" title="'+(hasRcpt?'View receipt':'Attach receipt')+'">'+(hasRcpt?'&#x1F9FE;':'&#x1F4CE;')+'</button>';
       if(mobile){
         h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
         h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
         h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
         h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
-        h+='<td class="act-cell">'+eb+db+'</td></tr>';
+        h+='<td class="act-cell">'+rb+eb+db+'</td></tr>';
       } else {
         h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
         h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
@@ -1420,7 +1459,7 @@ function makeChecking(pfx,storeKey,openBalKey){
         h+='<td class="type-cell"><span class="badge '+(isDep?'b-ret':'b-exp')+'">'+(isDep?'Dep':'Wth')+'</span></td>';
         h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
         h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
-        h+='<td class="act-cell">'+eb+db+'</td></tr>';
+        h+='<td class="act-cell">'+rb+eb+db+'</td></tr>';
       }
     });
     body.innerHTML=h;
@@ -1444,7 +1483,7 @@ function makeChecking(pfx,storeKey,openBalKey){
 
   function delTxn(id){
     if(!confirm('Delete this transaction?'))return;
-    snap();txns=txns.filter(function(t){return t.id!==id;});saveTxns();renderAll();
+    snap();txns=txns.filter(function(t){return t.id!==id;});delRcptKey(id);saveTxns();renderAll();
   }
 
   function toggleCleared(id){
@@ -1526,8 +1565,11 @@ function makeChecking(pfx,storeKey,openBalKey){
     });
     g('body').addEventListener('click',function(e){
       var eb=e.target.closest('.'+pfx+'-edit-btn'),db=e.target.closest('.'+pfx+'-del-btn');
+      var rv=e.target.closest('.'+pfx+'-rcpt-view'),ra=e.target.closest('.'+pfx+'-rcpt-add');
       if(eb)openEdit(parseInt(eb.getAttribute('data-id'),10));
       if(db)delTxn(parseInt(db.getAttribute('data-id'),10));
+      if(rv)openRcptView(parseInt(rv.getAttribute('data-id'),10));
+      if(ra)openRcptAttach(parseInt(ra.getAttribute('data-id'),10));
     });
     g('body').addEventListener('change',function(e){
       var cb=e.target.closest('.'+pfx+'-clr-cb');
@@ -1605,6 +1647,62 @@ window.addEventListener('resize',function(){
   else if(activeTab==='chk')chk.renderAll();
   else mike.renderAll();
 });
+
+// ── Receipt Image Storage ─────────────────────────────────────────────────────
+var rcptTargetId=null;
+
+function compressImage(file,cb){
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var maxW=900,w=img.width,h=img.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg',0.65));
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function delRcptKey(id){
+  try{localStorage.removeItem('rcpt-'+id);}catch(e){}
+  try{delete _mem['rcpt-'+id];}catch(e){}
+}
+
+function openRcptAttach(id){
+  rcptTargetId=id;
+  $('rcpt-attach-modal').classList.add('open');
+}
+
+function openRcptView(id){
+  var data=sGet('rcpt-'+id);if(!data)return;
+  rcptTargetId=id;
+  $('rcpt-view-img').src=data;
+  $('rcpt-view-modal').classList.add('open');
+}
+
+function removeRcpt(){
+  if(!confirm('Remove this receipt photo?'))return;
+  delRcptKey(rcptTargetId);
+  $('rcpt-view-modal').classList.remove('open');
+  if(activeTab==='cc')renderTable();
+  else if(activeTab==='chk')chk.renderAll();
+  else mike.renderAll();
+}
+
+function attachRcptFile(file){
+  if(!rcptTargetId)return;
+  compressImage(file,function(data){
+    sSet('rcpt-'+rcptTargetId,data);
+    $('rcpt-attach-modal').classList.remove('open');
+    if(activeTab==='cc')renderTable();
+    else if(activeTab==='chk')chk.renderAll();
+    else mike.renderAll();
+  });
+}
 
 // ── Receipt Scanner ───────────────────────────────────────────────────────────
 var scanTarget='cc';
@@ -1787,6 +1885,17 @@ $('scan-drop').addEventListener('drop',function(e){
   e.preventDefault();this.classList.remove('drag-over');
   var f=e.dataTransfer.files[0];if(f)processReceiptFile(f);
 });
+
+// ── Receipt modal events ──────────────────────────────────────────────────────
+$('rcpt-camera-btn').addEventListener('click',function(){$('rcpt-camera-inp').click();});
+$('rcpt-library-btn').addEventListener('click',function(){$('rcpt-library-inp').click();});
+$('rcpt-camera-inp').addEventListener('change',function(e){if(e.target.files[0]){attachRcptFile(e.target.files[0]);}e.target.value='';});
+$('rcpt-library-inp').addEventListener('change',function(e){if(e.target.files[0]){attachRcptFile(e.target.files[0]);}e.target.value='';});
+$('rcpt-cancel-btn').addEventListener('click',function(){$('rcpt-attach-modal').classList.remove('open');});
+$('rcpt-attach-modal').addEventListener('click',function(e){if(e.target===$('rcpt-attach-modal'))$('rcpt-attach-modal').classList.remove('open');});
+$('rcpt-remove-btn').addEventListener('click',removeRcpt);
+$('rcpt-view-close').addEventListener('click',function(){$('rcpt-view-modal').classList.remove('open');});
+$('rcpt-view-modal').addEventListener('click',function(e){if(e.target===$('rcpt-view-modal'))$('rcpt-view-modal').classList.remove('open');});
 
 // ── Notes ─────────────────────────────────────────────────────────────────────
 (function(){
