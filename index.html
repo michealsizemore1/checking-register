@@ -285,7 +285,8 @@ tbody tr.wth-row:hover { background:#fef2f2; }
 
 <div class="tabs">
   <button class="tab-btn active" id="tab-cc">&#x1F4B3; Credit Card</button>
-  <button class="tab-btn" id="tab-chk">&#x1F3E6; Checking</button>
+  <button class="tab-btn" id="tab-chk">&#x1F3E6; Cindy's Checking</button>
+  <button class="tab-btn" id="tab-mike">&#x1F3E6; Mike's Checking</button>
 </div>
 
 <div id="cc-pane" class="page-body">
@@ -402,7 +403,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
 
   <div class="form-card" style="justify-content:flex-start;">
     <div class="f fl"><label>Opening Balance ($)</label><input type="number" id="chk-open" placeholder="0.00" step="0.01" min="0"></div>
-    <div class="form-actions"><div class="fl"><label style="color:transparent;">.</label><button class="btn btn-ghost" id="btn-set-open">Set</button></div></div>
+    <div class="form-actions"><div class="fl"><label style="color:transparent;">.</label><button class="btn btn-ghost" id="chk-btn-set-open">Set</button></div></div>
     <span id="chk-open-note" style="font-size:.75rem;color:#64748b;align-self:flex-end;padding-bottom:7px;"></span>
   </div>
 
@@ -421,13 +422,13 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <label>Category</label>
       <div style="display:flex;gap:4px;">
         <select id="chk-cat" style="flex:1;min-width:0;"></select>
-        <button class="btn btn-sm" id="btn-show-chk-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+        <button class="btn btn-sm" id="chk-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
       </div>
       <div id="chk-cat-row" style="display:none;margin-top:4px;gap:4px;">
         <input type="text" id="chk-new-cat" placeholder="New category…" maxlength="40"
           style="flex:1;padding:5px 8px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
-        <button class="btn btn-sm" id="btn-save-chk-cat" style="background:#2563eb;color:#fff;font-weight:600;">Add</button>
-        <button class="btn btn-sm" id="btn-cancel-chk-cat" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">&#x2715;</button>
+        <button class="btn btn-sm" id="chk-btn-save-cat" style="background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="chk-btn-cancel-cat" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">&#x2715;</button>
       </div>
     </div>
     <div class="ft fl">
@@ -483,6 +484,92 @@ tbody tr.wth-row:hover { background:#fef2f2; }
 
 </div><!-- /chk-pane -->
 
+<!-- Mike's Checking Pane -->
+<div id="mike-pane" class="page-body" style="display:none;">
+
+  <div class="form-card" style="justify-content:flex-start;">
+    <div class="f fl"><label>Opening Balance ($)</label><input type="number" id="mike-open" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="form-actions"><div class="fl"><label style="color:transparent;">.</label><button class="btn btn-ghost" id="mike-btn-set-open">Set</button></div></div>
+    <span id="mike-open-note" style="font-size:.75rem;color:#64748b;align-self:flex-end;padding-bottom:7px;"></span>
+  </div>
+
+  <div class="summary-4">
+    <div class="card bal"><div class="lbl">&#x1F4B0; Account Balance</div><div class="val" id="mike-s-bal">$0.00</div></div>
+    <div class="card ret"><div class="lbl">&#x2713; Cleared Balance</div><div class="val" id="mike-s-clr">$0.00</div></div>
+    <div class="card uncl-ret"><div class="lbl">&#x26A0; Pending Deposits</div><div class="val" id="mike-s-pdep">$0.00</div></div>
+    <div class="card uncl"><div class="lbl">&#x26A0; Pending Withdrawals</div><div class="val" id="mike-s-pwth">$0.00</div></div>
+  </div>
+
+  <div class="form-card">
+    <div class="f fl"><label>Date</label><input type="date" id="mike-date"></div>
+    <div class="fd fl"><label>Description</label><input type="text" id="mike-desc" placeholder="e.g. Paycheck, Rent…" maxlength="100"></div>
+    <div class="f fl"><label>Amount ($)</label><input type="number" id="mike-amt" placeholder="0.00" min="0.01" step="0.01"></div>
+    <div class="f fl">
+      <label>Category</label>
+      <div style="display:flex;gap:4px;">
+        <select id="mike-cat" style="flex:1;min-width:0;"></select>
+        <button class="btn btn-sm" id="mike-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+      </div>
+      <div id="mike-cat-row" style="display:none;margin-top:4px;gap:4px;">
+        <input type="text" id="mike-new-cat" placeholder="New category…" maxlength="40"
+          style="flex:1;padding:5px 8px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="mike-btn-save-cat" style="background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="mike-btn-cancel-cat" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">&#x2715;</button>
+      </div>
+    </div>
+    <div class="ft fl">
+      <label>Type</label>
+      <div class="type-toggle">
+        <input type="radio" name="mike-type" id="mike-dep" value="deposit" checked>
+        <label for="mike-dep" class="rl">&#x2B06; Deposit</label>
+        <input type="radio" name="mike-type" id="mike-wth" value="withdrawal">
+        <label for="mike-wth" class="el">&#x2B07; Withdrawal</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="mike-btn-add">+ Add</button></div>
+    </div>
+    <span id="mike-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
+  </div>
+
+  <div class="filters-card">
+    <div class="f fl"><label>Search</label><input type="text" id="mike-f-search" placeholder="Search…"></div>
+    <div class="f fl"><label>Type</label>
+      <select id="mike-f-type">
+        <option value="">All Types</option>
+        <option value="deposit">Deposits</option>
+        <option value="withdrawal">Withdrawals</option>
+      </select>
+    </div>
+    <div class="f fl"><label>From</label><input type="date" id="mike-f-from"></div>
+    <div class="f fl"><label>To</label><input type="date" id="mike-f-to"></div>
+    <div class="filter-actions">
+      <button class="btn btn-ghost btn-sm" id="mike-btn-clr-filter">Clear</button>
+      <button class="btn btn-export btn-sm" id="mike-btn-export">&#x2B07; Export CSV</button>
+    </div>
+  </div>
+
+  <div class="notes-card">
+    <div class="notes-hdr"><span>&#x1F4DD; Notes</span><small>auto-saved</small></div>
+    <textarea id="mike-notes" placeholder="Jot down anything — account number, routing number, reminders…" rows="2"></textarea>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr">
+      <h2>Transactions</h2>
+      <div class="thr">
+        <span id="mike-row-count">0 transactions</span>
+        <button class="btn btn-danger btn-sm" id="mike-btn-clr-all">Clear All</button>
+      </div>
+    </div>
+    <div class="tscroll">
+      <table id="mike-table"><thead id="mike-head"></thead><tbody id="mike-body"></tbody></table>
+      <div id="mike-empty" class="empty-state"><div class="icon">&#x1F3E6;</div><p>No transactions yet.</p></div>
+    </div>
+  </div>
+
+</div><!-- /mike-pane -->
+
 <!-- Checking Edit Modal -->
 <div class="modal-ov" id="chk-edit-modal">
   <div class="modal">
@@ -511,6 +598,37 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <button class="btn btn-primary" id="chk-btn-save-edit">Save Changes</button>
     </div>
     <div id="chk-edit-err" style="color:#dc2626;font-size:.78rem;margin-top:8px;text-align:right;"></div>
+  </div>
+</div>
+
+<!-- Mike's Checking Edit Modal -->
+<div class="modal-ov" id="mike-edit-modal">
+  <div class="modal">
+    <h2>&#x270F;&#xFE0F; Edit Transaction</h2>
+    <div class="mgrid">
+      <div class="f fl"><label>Date</label><input type="date" id="mike-e-date"></div>
+      <div class="f fl"><label>Amount ($)</label><input type="number" id="mike-e-amt" min="0.01" step="0.01"></div>
+      <div class="f full fl"><label>Description</label><input type="text" id="mike-e-desc" maxlength="100"></div>
+      <div class="f fl"><label>Category</label><select id="mike-e-cat"></select></div>
+      <div class="f fl">
+        <label>Type</label>
+        <div class="type-toggle">
+          <input type="radio" name="mike-e-type" id="mike-ed" value="deposit">
+          <label for="mike-ed" class="rl">&#x2B06; Deposit</label>
+          <input type="radio" name="mike-e-type" id="mike-ew" value="withdrawal">
+          <label for="mike-ew" class="el">&#x2B07; Withdrawal</label>
+        </div>
+      </div>
+      <div class="f fl" style="display:flex;align-items:center;gap:8px;padding-top:18px;">
+        <input type="checkbox" id="mike-e-cleared" style="width:16px;height:16px;accent-color:#16a34a;cursor:pointer;">
+        <label for="mike-e-cleared" style="font-size:.84rem;color:#1e293b;text-transform:none;letter-spacing:0;font-weight:500;cursor:pointer;">Cleared</label>
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="btn btn-ghost" id="mike-btn-cancel-edit">Cancel</button>
+      <button class="btn btn-primary" id="mike-btn-save-edit">Save Changes</button>
+    </div>
+    <div id="mike-edit-err" style="color:#dc2626;font-size:.78rem;margin-top:8px;text-align:right;"></div>
   </div>
 </div>
 
@@ -910,10 +1028,11 @@ function importCSV(file){
 
 // ── Backup / Restore ──────────────────────────────────────────────────────────
 function backup(){
-  var data={version:5,exported:new Date().toISOString(),
+  var data={version:6,exported:new Date().toISOString(),
     transactions:transactions,categories:categories,
-    chkTxns:chkTxns,chkOpenBal:chkOpenBal,
-    ccNotes:sGet('cc-notes')||'',chkNotes:sGet('chk-notes')||''};
+    chkTxns:chk.getTxns(),chkOpenBal:chk.getOpenBal(),
+    mikeTxns:mike.getTxns(),mikeOpenBal:mike.getOpenBal(),
+    ccNotes:sGet('cc-notes')||'',chkNotes:sGet('chk-notes')||'',mikeNotes:sGet('mike-notes')||''};
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   a.download='register-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
@@ -923,8 +1042,10 @@ function persistAll(){
   try{
     localStorage.setItem('cc-register',JSON.stringify(transactions));
     localStorage.setItem('cc-categories',JSON.stringify(categories));
-    localStorage.setItem('chk-register',JSON.stringify(chkTxns));
-    localStorage.setItem('chk-open-bal',chkOpenBal.toString());
+    localStorage.setItem('chk-register',JSON.stringify(chk.getTxns()));
+    localStorage.setItem('chk-open-bal',chk.getOpenBal().toString());
+    localStorage.setItem('mike-register',JSON.stringify(mike.getTxns()));
+    localStorage.setItem('mike-open-bal',mike.getOpenBal().toString());
   }catch(e){ok=false;}
   return ok;
 }
@@ -938,15 +1059,20 @@ function restore(file){
       // Update in-memory state first
       transactions=data.transactions;
       if(data.categories)categories=data.categories;
-      if(data.chkTxns&&Array.isArray(data.chkTxns))chkTxns=data.chkTxns;
-      if(data.chkOpenBal!=null)chkOpenBal=parseFloat(data.chkOpenBal)||0;
+      if(data.chkTxns&&Array.isArray(data.chkTxns))chk.setTxns(data.chkTxns);
+      if(data.chkOpenBal!=null)chk.setOpenBal(parseFloat(data.chkOpenBal)||0);
+      if(data.mikeTxns&&Array.isArray(data.mikeTxns))mike.setTxns(data.mikeTxns);
+      if(data.mikeOpenBal!=null)mike.setOpenBal(parseFloat(data.mikeOpenBal)||0);
       if(data.ccNotes!=null){sSet('cc-notes',data.ccNotes);$('cc-notes').value=data.ccNotes;}
       if(data.chkNotes!=null){sSet('chk-notes',data.chkNotes);$('chk-notes').value=data.chkNotes;}
+      if(data.mikeNotes!=null){sSet('mike-notes',data.mikeNotes);$('mike-notes').value=data.mikeNotes;}
       // Persist everything
       var ok=persistAll();
-      renderCatSelects();renderAll();renderChk();
+      renderCatSelects();renderAll();
+      if(activeTab==='chk')chk.activatePane();else if(activeTab==='mike')mike.activatePane();
+      var cn=chk.getTxns().length,mn=mike.getTxns().length;
       if(ok){
-        alert('Restored! '+transactions.length+' credit card + '+chkTxns.length+' checking transactions loaded. Data saved — refresh-safe.');
+        alert('Restored! '+transactions.length+' CC + '+cn+' Cindy checking + '+mn+' Mike checking transactions loaded. Data saved — refresh-safe.');
       } else {
         alert('Restored in this session, but localStorage is unavailable in this environment — data may not survive a page refresh. Consider keeping the backup file handy.');
       }
@@ -1082,13 +1208,6 @@ function submitCat(){var n=$('new-cat').value.trim();if(!n)return;if(!addCat(n))
 $('btn-save-cat').addEventListener('click',submitCat);
 $('new-cat').addEventListener('keydown',function(e){if(e.key==='Enter')submitCat();if(e.key==='Escape'){$('cat-row').style.display='none';$('new-cat').value='';}});
 
-// Checking category add
-$('btn-show-chk-cat').addEventListener('click',function(){var r=$('chk-cat-row');r.style.display=r.style.display==='flex'?'none':'flex';if(r.style.display==='flex')$('chk-new-cat').focus();});
-$('btn-cancel-chk-cat').addEventListener('click',function(){$('chk-cat-row').style.display='none';$('chk-new-cat').value='';});
-function submitChkCat(){var n=$('chk-new-cat').value.trim();if(!n)return;if(!addCat(n)){$('chk-new-cat').style.borderColor='#dc2626';setTimeout(function(){$('chk-new-cat').style.borderColor='';},1200);return;}$('chk-new-cat').value='';$('chk-cat-row').style.display='none';}
-$('btn-save-chk-cat').addEventListener('click',submitChkCat);
-$('chk-new-cat').addEventListener('keydown',function(e){if(e.key==='Enter')submitChkCat();if(e.key==='Escape'){$('chk-cat-row').style.display='none';$('chk-new-cat').value='';}});
-
 // AI
 $('btn-ai').addEventListener('click',function(){$('ai-modal').classList.add('open');if(!$('ai-msgs').children.length)aiMsg('Hi! Ask me anything — try "How much on Starbucks this month?" or "Spending this week".','bot');setTimeout(function(){$('ai-in').focus();},50);});
 $('btn-ai-close').addEventListener('click',function(){$('ai-modal').classList.remove('open');});
@@ -1098,197 +1217,275 @@ $('ai-in').addEventListener('keydown',function(e){if(e.key==='Enter')aiSubmit();
 document.querySelectorAll('.ai-chip').forEach(function(c){c.addEventListener('click',function(){$('ai-in').value=c.getAttribute('data-q');aiSubmit();});});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeEdit();$('ai-modal').classList.remove('open');}});
 
-// Resize
-window.addEventListener('resize',function(){if(activeTab==='cc')renderTable();else renderChkTable();});
+// ── Checking Account Factory ──────────────────────────────────────────────────
+function makeChecking(pfx,storeKey,openBalKey){
+  var txns=JSON.parse(sGet(storeKey)||'[]');
+  var openBal=parseFloat(sGet(openBalKey)||'0');
+  var sortFld='date',sAsc=false,hist=[],editId=null;
 
-// ── Checking Account ──────────────────────────────────────────────────────────
-var chkTxns=JSON.parse(sGet('chk-register')||'[]');
-var chkOpenBal=parseFloat(sGet('chk-open-bal')||'0');
-var chkSortField='date',chkSortAsc=false,chkHistory=[],chkEditId=null;
+  function g(id){return document.getElementById(pfx+'-'+id);}
 
-function saveChk(){sSet('chk-register',JSON.stringify(chkTxns));}
-function chkSnap(){
-  chkHistory.push(JSON.stringify(chkTxns));
-  if(chkHistory.length>50)chkHistory.shift();
-  var b=$('btn-undo');b.disabled=false;b.style.opacity='1';
-}
-
-function chkBuildBalMap(){
-  var sorted=chkTxns.slice().sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:a.id-b.id;});
-  var m={},r=chkOpenBal;
-  sorted.forEach(function(t){r+=(t.type==='deposit')?t.amount:-t.amount;m[t.id]=r;});
-  return m;
-}
-
-function renderChkCat(keep){
-  ['chk-cat','chk-e-cat'].forEach(function(id){
-    var s=$(id);if(!s)return;var pv=keep||s.value;
-    s.innerHTML=categories.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');
-    if(pv)s.value=pv;
-  });
-}
-
-function renderChkSummary(){
-  var dep=0,wth=0,pdep=0,pwth=0,cdep=0,cwth=0;
-  chkTxns.forEach(function(t){
-    var cl=!!t.cleared;
-    if(t.type==='deposit'){dep+=t.amount;if(cl)cdep+=t.amount;else pdep+=t.amount;}
-    else{wth+=t.amount;if(cl)cwth+=t.amount;else pwth+=t.amount;}
-  });
-  var bal=chkOpenBal+dep-wth, clr=chkOpenBal+cdep-cwth;
-  $('chk-s-bal').textContent=fmtS(bal);
-  $('chk-s-clr').textContent=fmtS(clr);
-  $('chk-s-pdep').textContent=fmt(pdep);
-  $('chk-s-pwth').textContent=fmt(pwth);
-  $('hdr-bal').textContent=fmtS(bal);
-}
-
-function chkArw(f){
-  return chkSortField===f?('<span class="sarr on">'+(chkSortAsc?'↑':'↓')+'</span>'):'<span class="sarr"></span>';
-}
-
-function chkGetFiltered(){
-  var s=$('chk-f-search').value.toLowerCase().trim(),ty=$('chk-f-type').value;
-  var fr=$('chk-f-from').value,to=$('chk-f-to').value;
-  return chkTxns.filter(function(t){
-    if(s&&t.desc.toLowerCase().indexOf(s)===-1)return false;
-    if(ty&&t.type!==ty)return false;
-    if(fr&&t.date<fr)return false;
-    if(to&&t.date>to)return false;
-    return true;
-  });
-}
-
-function chkSorted(list){
-  return list.slice().sort(function(a,b){
-    var av=a[chkSortField],bv=b[chkSortField];
-    if(chkSortField==='amount'){av=+av;bv=+bv;}
-    if(av<bv)return chkSortAsc?-1:1;if(av>bv)return chkSortAsc?1:-1;return 0;
-  });
-}
-
-function toggleChkSort(f){chkSortAsc=(chkSortField===f)?!chkSortAsc:(f!=='date');chkSortField=f;renderChkTable();}
-
-function renderChkTable(){
-  var rows=chkSorted(chkGetFiltered()),bm=chkBuildBalMap(),mobile=isMobile();
-  $('chk-row-count').textContent=rows.length+' transaction'+(rows.length!==1?'s':'');
-  var head=$('chk-head');
-  if(mobile){
-    head.innerHTML='<tr>'+
-      '<th style="width:32px;">&#x2713;</th>'+
-      '<th class="sortable" data-sort="date" style="width:76px;">Date '+chkArw('date')+'</th>'+
-      '<th class="sortable" data-sort="desc">Description '+chkArw('desc')+'</th>'+
-      '<th class="sortable" data-sort="amount" style="text-align:right;width:76px;">Amount '+chkArw('amount')+'</th>'+
-      '<th style="text-align:center;width:62px;">Act.</th></tr>';
-  } else {
-    head.innerHTML='<tr>'+
-      '<th style="width:32px;">&#x2713;</th>'+
-      '<th class="sortable" data-sort="date" style="width:88px;">Date '+chkArw('date')+'</th>'+
-      '<th class="sortable" data-sort="desc">Description '+chkArw('desc')+'</th>'+
-      '<th class="sortable" data-sort="cat" style="width:96px;">Category '+chkArw('cat')+'</th>'+
-      '<th style="width:80px;">Type</th>'+
-      '<th class="sortable" data-sort="amount" style="text-align:right;width:90px;">Amount '+chkArw('amount')+'</th>'+
-      '<th style="text-align:right;width:90px;">Balance</th>'+
-      '<th style="text-align:center;width:66px;">Actions</th></tr>';
+  function saveTxns(){sSet(storeKey,JSON.stringify(txns));}
+  function snap(){
+    hist.push(JSON.stringify(txns));
+    if(hist.length>50)hist.shift();
+    var b=document.getElementById('btn-undo');b.disabled=false;b.style.opacity='1';
   }
-  var body=$('chk-body'),empty=$('chk-empty');
-  if(!rows.length){body.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  var h='';
-  rows.forEach(function(t){
-    var bal=bm[t.id],neg=bal<0,clr=!!t.cleared;
-    var isDep=t.type==='deposit';
-    var cls=(isDep?'dep':'wth')+'-row'+(clr?'':' unclrd');
-    var amtColor=isDep?'#16a34a':'#dc2626';
-    var amtStyle='color:'+amtColor+';font-weight:700;';
-    var sign=isDep?'+':'-';
-    var cb='<input type="checkbox" class="chk-clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
-    var eb='<button class="btn btn-edit btn-sm chk-edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
-    var db='<button class="btn btn-danger btn-sm chk-del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
+
+  function buildBalMap(){
+    var s=txns.slice().sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:a.id-b.id;});
+    var m={},r=openBal;
+    s.forEach(function(t){r+=(t.type==='deposit')?t.amount:-t.amount;m[t.id]=r;});
+    return m;
+  }
+
+  function renderCat(keep){
+    [pfx+'-cat',pfx+'-e-cat'].forEach(function(id){
+      var s=document.getElementById(id);if(!s)return;
+      var pv=keep||s.value;
+      s.innerHTML=categories.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');
+      if(pv)s.value=pv;
+    });
+  }
+
+  function renderSummary(){
+    var dep=0,wth=0,pdep=0,pwth=0,cdep=0,cwth=0;
+    txns.forEach(function(t){
+      var cl=!!t.cleared;
+      if(t.type==='deposit'){dep+=t.amount;if(cl)cdep+=t.amount;else pdep+=t.amount;}
+      else{wth+=t.amount;if(cl)cwth+=t.amount;else pwth+=t.amount;}
+    });
+    var bal=openBal+dep-wth,clr=openBal+cdep-cwth;
+    g('s-bal').textContent=fmtS(bal);g('s-clr').textContent=fmtS(clr);
+    g('s-pdep').textContent=fmt(pdep);g('s-pwth').textContent=fmt(pwth);
+    document.getElementById('hdr-bal').textContent=fmtS(bal);
+  }
+
+  function arw(f){
+    return sortFld===f?('<span class="sarr on">'+(sAsc?'↑':'↓')+'</span>'):'<span class="sarr"></span>';
+  }
+
+  function getFiltered(){
+    var s=g('f-search').value.toLowerCase().trim(),ty=g('f-type').value;
+    var fr=g('f-from').value,to=g('f-to').value;
+    return txns.filter(function(t){
+      if(s&&t.desc.toLowerCase().indexOf(s)===-1)return false;
+      if(ty&&t.type!==ty)return false;
+      if(fr&&t.date<fr)return false;
+      if(to&&t.date>to)return false;
+      return true;
+    });
+  }
+
+  function doSort(list){
+    return list.slice().sort(function(a,b){
+      var av=a[sortFld],bv=b[sortFld];
+      if(sortFld==='amount'){av=+av;bv=+bv;}
+      if(av<bv)return sAsc?-1:1;if(av>bv)return sAsc?1:-1;return 0;
+    });
+  }
+
+  function toggleSort(f){sAsc=(sortFld===f)?!sAsc:(f!=='date');sortFld=f;renderTable();}
+
+  function renderTable(){
+    var rows=doSort(getFiltered()),bm=buildBalMap(),mobile=isMobile();
+    g('row-count').textContent=rows.length+' transaction'+(rows.length!==1?'s':'');
+    var head=g('head');
     if(mobile){
-      h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
-      h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
-      h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
-      h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
-      h+='<td class="act-cell">'+eb+db+'</td></tr>';
+      head.innerHTML='<tr>'+
+        '<th style="width:32px;">&#x2713;</th>'+
+        '<th class="sortable" data-sort="date" style="width:76px;">Date '+arw('date')+'</th>'+
+        '<th class="sortable" data-sort="desc">Description '+arw('desc')+'</th>'+
+        '<th class="sortable" data-sort="amount" style="text-align:right;width:76px;">Amount '+arw('amount')+'</th>'+
+        '<th style="text-align:center;width:62px;">Act.</th></tr>';
     } else {
-      h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
-      h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
-      h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span></td>';
-      h+='<td class="cat-cell"><span class="catbdg">'+esc(t.cat)+'</span></td>';
-      h+='<td class="type-cell"><span class="badge '+(isDep?'b-ret':'b-exp')+'">'+(isDep?'Dep':'Wth')+'</span></td>';
-      h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
-      h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
-      h+='<td class="act-cell">'+eb+db+'</td></tr>';
+      head.innerHTML='<tr>'+
+        '<th style="width:32px;">&#x2713;</th>'+
+        '<th class="sortable" data-sort="date" style="width:88px;">Date '+arw('date')+'</th>'+
+        '<th class="sortable" data-sort="desc">Description '+arw('desc')+'</th>'+
+        '<th class="sortable" data-sort="cat" style="width:96px;">Category '+arw('cat')+'</th>'+
+        '<th style="width:80px;">Type</th>'+
+        '<th class="sortable" data-sort="amount" style="text-align:right;width:90px;">Amount '+arw('amount')+'</th>'+
+        '<th style="text-align:right;width:90px;">Balance</th>'+
+        '<th style="text-align:center;width:66px;">Actions</th></tr>';
     }
-  });
-  body.innerHTML=h;
+    var body=g('body'),empty=g('empty');
+    if(!rows.length){body.innerHTML='';empty.style.display='block';return;}
+    empty.style.display='none';
+    var h='';
+    rows.forEach(function(t){
+      var bal=bm[t.id],neg=bal<0,clr=!!t.cleared;
+      var isDep=t.type==='deposit';
+      var cls=(isDep?'dep':'wth')+'-row'+(clr?'':' unclrd');
+      var amtColor=isDep?'#16a34a':'#dc2626';
+      var amtStyle='color:'+amtColor+';font-weight:700;';
+      var sign=isDep?'+':'-';
+      var cb='<input type="checkbox" class="'+pfx+'-clr-cb" data-id="'+t.id+'"'+(clr?' checked':'')+' title="Mark cleared">';
+      var eb='<button class="btn btn-edit btn-sm '+pfx+'-edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
+      var db='<button class="btn btn-danger btn-sm '+pfx+'-del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
+      if(mobile){
+        h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
+        h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
+        h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+esc(t.cat)+'</span></td>';
+        h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
+        h+='<td class="act-cell">'+eb+db+'</td></tr>';
+      } else {
+        h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
+        h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
+        h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span></td>';
+        h+='<td class="cat-cell"><span class="catbdg">'+esc(t.cat)+'</span></td>';
+        h+='<td class="type-cell"><span class="badge '+(isDep?'b-ret':'b-exp')+'">'+(isDep?'Dep':'Wth')+'</span></td>';
+        h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
+        h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
+        h+='<td class="act-cell">'+eb+db+'</td></tr>';
+      }
+    });
+    body.innerHTML=h;
+  }
+
+  function renderAll(){renderSummary();renderTable();}
+
+  function addTxn(){
+    var date=g('date').value,desc=g('desc').value.trim();
+    var amt=parseFloat(g('amt').value),cat=g('cat').value;
+    var te=document.querySelector('input[name="'+pfx+'-type"]:checked');
+    var type=te?te.value:'deposit',err=g('form-err');
+    if(!date){err.textContent='Please enter a date.';return;}
+    if(!desc){err.textContent='Please enter a description.';return;}
+    if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
+    err.textContent='';snap();
+    txns.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false});
+    saveTxns();renderAll();
+    g('desc').value='';g('amt').value='';g('date').value=todayStr();g('desc').focus();
+  }
+
+  function delTxn(id){
+    if(!confirm('Delete this transaction?'))return;
+    snap();txns=txns.filter(function(t){return t.id!==id;});saveTxns();renderAll();
+  }
+
+  function toggleCleared(id){
+    var t=txns.find(function(x){return x.id===id;});
+    if(t){snap();t.cleared=!t.cleared;saveTxns();renderAll();}
+  }
+
+  function openEdit(id){
+    var t=txns.find(function(x){return x.id===id;});if(!t)return;
+    editId=id;
+    g('e-date').value=t.date;g('e-desc').value=t.desc;
+    g('e-amt').value=t.amount;g('e-cleared').checked=!!t.cleared;
+    var r=document.querySelector('input[name="'+pfx+'-e-type"][value="'+t.type+'"]');if(r)r.checked=true;
+    g('edit-err').textContent='';renderCat(t.cat);
+    g('edit-modal').classList.add('open');
+  }
+
+  function closeEdit(){g('edit-modal').classList.remove('open');editId=null;}
+
+  function saveEdit(){
+    var date=g('e-date').value,desc=g('e-desc').value.trim();
+    var amt=parseFloat(g('e-amt').value),cat=g('e-cat').value;
+    var te=document.querySelector('input[name="'+pfx+'-e-type"]:checked');
+    var type=te?te.value:'deposit',err=g('edit-err');
+    if(!date){err.textContent='Date required.';return;}
+    if(!desc){err.textContent='Description required.';return;}
+    if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
+    var i=txns.findIndex(function(t){return t.id===editId;});if(i===-1)return;
+    snap();
+    txns[i]={id:txns[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:g('e-cleared').checked};
+    saveTxns();renderAll();closeEdit();
+  }
+
+  function exportCSV(){
+    var rows=doSort(getFiltered());if(!rows.length){alert('Nothing to export.');return;}
+    var bm=buildBalMap();
+    var lines=['Date,Description,Category,Type,Amount,Balance,Cleared'];
+    rows.forEach(function(t){
+      lines.push([t.date,'"'+t.desc.replace(/"/g,'""')+'"',t.cat,
+        t.type==='deposit'?'Deposit':'Withdrawal',
+        (t.type==='deposit'?'':'-')+t.amount.toFixed(2),bm[t.id].toFixed(2),t.cleared?'Yes':'No'].join(','));
+    });
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
+    a.download=pfx+'-register-'+todayStr()+'.csv';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+  }
+
+  function submitCat(){
+    var n=g('new-cat').value.trim();if(!n)return;
+    if(!addCat(n)){g('new-cat').style.borderColor='#dc2626';setTimeout(function(){g('new-cat').style.borderColor='';},1200);return;}
+    renderCat(n);
+    g('new-cat').value='';g('cat-row').style.display='none';
+  }
+
+  function wireEvents(){
+    g('btn-add').addEventListener('click',addTxn);
+    g('amt').addEventListener('keydown',function(e){if(e.key==='Enter')addTxn();});
+    g('btn-set-open').addEventListener('click',function(){
+      var v=parseFloat(g('open').value);
+      if(isNaN(v)||v<0){alert('Please enter a valid opening balance.');return;}
+      openBal=v;sSet(openBalKey,v.toString());
+      g('open-note').textContent='Opening balance: '+fmt(v);
+      renderAll();
+    });
+    [pfx+'-f-search',pfx+'-f-type',pfx+'-f-from',pfx+'-f-to'].forEach(function(id){
+      document.getElementById(id).addEventListener(id.indexOf('search')!==-1?'input':'change',function(){renderTable();});
+    });
+    g('btn-clr-filter').addEventListener('click',function(){
+      ['f-search','f-type','f-from','f-to'].forEach(function(id){g(id).value='';});renderTable();
+    });
+    g('btn-export').addEventListener('click',exportCSV);
+    g('btn-clr-all').addEventListener('click',function(){
+      if(!txns.length)return;if(!confirm('Delete ALL transactions?'))return;
+      snap();txns=[];saveTxns();renderAll();
+    });
+    g('head').addEventListener('click',function(e){
+      var th=e.target.closest('th.sortable');if(th)toggleSort(th.getAttribute('data-sort'));
+    });
+    g('body').addEventListener('click',function(e){
+      var eb=e.target.closest('.'+pfx+'-edit-btn'),db=e.target.closest('.'+pfx+'-del-btn');
+      if(eb)openEdit(parseInt(eb.getAttribute('data-id'),10));
+      if(db)delTxn(parseInt(db.getAttribute('data-id'),10));
+    });
+    g('body').addEventListener('change',function(e){
+      var cb=e.target.closest('.'+pfx+'-clr-cb');
+      if(cb)toggleCleared(parseInt(cb.getAttribute('data-id'),10));
+    });
+    g('btn-cancel-edit').addEventListener('click',closeEdit);
+    g('btn-save-edit').addEventListener('click',saveEdit);
+    g('edit-modal').addEventListener('click',function(e){if(e.target===g('edit-modal'))closeEdit();});
+    g('btn-show-cat').addEventListener('click',function(){
+      var r=g('cat-row');r.style.display=r.style.display==='flex'?'none':'flex';
+      if(r.style.display==='flex')g('new-cat').focus();
+    });
+    g('btn-cancel-cat').addEventListener('click',function(){g('cat-row').style.display='none';g('new-cat').value='';});
+    g('btn-save-cat').addEventListener('click',submitCat);
+    g('new-cat').addEventListener('keydown',function(e){
+      if(e.key==='Enter')submitCat();
+      if(e.key==='Escape'){g('cat-row').style.display='none';g('new-cat').value='';}
+    });
+  }
+
+  return {
+    getTxns:function(){return txns;},
+    setTxns:function(arr){txns=arr;},
+    getOpenBal:function(){return openBal;},
+    setOpenBal:function(v){openBal=v;},
+    renderAll:renderAll,
+    renderCat:renderCat,
+    closeEdit:closeEdit,
+    wireEvents:wireEvents,
+    activatePane:function(){
+      g('open').value=openBal>0?openBal.toFixed(2):'';
+      g('open-note').textContent=openBal>0?'Opening balance: '+fmt(openBal):'No opening balance set';
+      renderCat();renderAll();
+    }
+  };
 }
 
-function renderChk(){renderChkSummary();renderChkTable();}
-
-function addChkTxn(){
-  var date=$('chk-date').value,desc=$('chk-desc').value.trim();
-  var amt=parseFloat($('chk-amt').value),cat=$('chk-cat').value;
-  var te=document.querySelector('input[name="chk-type"]:checked');
-  var type=te?te.value:'deposit',err=$('chk-form-err');
-  if(!date){err.textContent='Please enter a date.';return;}
-  if(!desc){err.textContent='Please enter a description.';return;}
-  if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
-  err.textContent='';chkSnap();
-  chkTxns.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false});
-  saveChk();renderChk();
-  $('chk-desc').value='';$('chk-amt').value='';$('chk-date').value=todayStr();$('chk-desc').focus();
-}
-
-function delChkTxn(id){
-  if(!confirm('Delete this transaction?'))return;
-  chkSnap();
-  chkTxns=chkTxns.filter(function(t){return t.id!==id;});
-  saveChk();renderChk();
-}
-
-function toggleChkCleared(id){
-  var t=chkTxns.find(function(x){return x.id===id;});
-  if(t){chkSnap();t.cleared=!t.cleared;saveChk();renderChk();}
-}
-
-function openChkEdit(id){
-  var t=chkTxns.find(function(x){return x.id===id;});if(!t)return;
-  chkEditId=id;
-  $('chk-e-date').value=t.date;$('chk-e-desc').value=t.desc;
-  $('chk-e-amt').value=t.amount;$('chk-e-cleared').checked=!!t.cleared;
-  var r=document.querySelector('input[name="chk-e-type"][value="'+t.type+'"]');if(r)r.checked=true;
-  $('chk-edit-err').textContent='';renderChkCat(t.cat);
-  $('chk-edit-modal').classList.add('open');
-}
-function closeChkEdit(){$('chk-edit-modal').classList.remove('open');chkEditId=null;}
-function saveChkEdit(){
-  var date=$('chk-e-date').value,desc=$('chk-e-desc').value.trim();
-  var amt=parseFloat($('chk-e-amt').value),cat=$('chk-e-cat').value;
-  var te=document.querySelector('input[name="chk-e-type"]:checked');
-  var type=te?te.value:'deposit',err=$('chk-edit-err');
-  if(!date){err.textContent='Date required.';return;}
-  if(!desc){err.textContent='Description required.';return;}
-  if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
-  var i=chkTxns.findIndex(function(t){return t.id===chkEditId;});if(i===-1)return;
-  chkSnap();
-  chkTxns[i]={id:chkTxns[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('chk-e-cleared').checked};
-  saveChk();renderChk();closeChkEdit();
-}
-
-function exportChkCSV(){
-  var rows=chkSorted(chkGetFiltered());if(!rows.length){alert('Nothing to export.');return;}
-  var bm=chkBuildBalMap();
-  var lines=['Date,Description,Category,Type,Amount,Balance,Cleared'];
-  rows.forEach(function(t){
-    lines.push([t.date,'"'+t.desc.replace(/"/g,'""')+'"',t.cat,
-      t.type==='deposit'?'Deposit':'Withdrawal',
-      (t.type==='deposit'?'':'-')+t.amount.toFixed(2),bm[t.id].toFixed(2),t.cleared?'Yes':'No'].join(','));
-  });
-  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));
-  a.download='checking-'+todayStr()+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
-}
+var chk=makeChecking('chk','chk-register','chk-open-bal');
+var mike=makeChecking('mike','mike-register','mike-open-bal');
+chk.wireEvents();
+mike.wireEvents();
 
 // ── Tab Switching ─────────────────────────────────────────────────────────────
 var activeTab='cc';
@@ -1296,72 +1493,45 @@ function switchTab(tab){
   activeTab=tab;
   $('cc-pane').style.display=tab==='cc'?'':'none';
   $('chk-pane').style.display=tab==='chk'?'':'none';
+  $('mike-pane').style.display=tab==='mike'?'':'none';
   $('tab-cc').classList.toggle('active',tab==='cc');
   $('tab-chk').classList.toggle('active',tab==='chk');
+  $('tab-mike').classList.toggle('active',tab==='mike');
   if(tab==='cc'){
     $('page-title').textContent='💳 Cindy\'s Credit Card Register';
     $('page-sub').textContent='My Credit Card';
     renderAll();
-  } else {
+  } else if(tab==='chk'){
     $('page-title').textContent='🏦 Cindy\'s Checking Account';
     $('page-sub').textContent='My Checking Account';
-    var ob=$('chk-open');
-    ob.value=chkOpenBal>0?chkOpenBal.toFixed(2):'';
-    $('chk-open-note').textContent=chkOpenBal>0?'Opening balance: '+fmt(chkOpenBal):'No opening balance set';
-    renderChkCat();renderChk();
+    chk.activatePane();
+  } else {
+    $('page-title').textContent='🏦 Mike\'s Checking Account';
+    $('page-sub').textContent='My Checking Account';
+    mike.activatePane();
   }
 }
 
 $('tab-cc').addEventListener('click',function(){switchTab('cc');});
 $('tab-chk').addEventListener('click',function(){switchTab('chk');});
+$('tab-mike').addEventListener('click',function(){switchTab('mike');});
 
-// Checking events
-$('chk-btn-add').addEventListener('click',addChkTxn);
-$('chk-amt').addEventListener('keydown',function(e){if(e.key==='Enter')addChkTxn();});
-
-$('btn-set-open').addEventListener('click',function(){
-  var v=parseFloat($('chk-open').value);
-  if(isNaN(v)||v<0){alert('Please enter a valid opening balance.');return;}
-  chkOpenBal=v;sSet('chk-open-bal',v.toString());
-  $('chk-open-note').textContent='Opening balance: '+fmt(v);
-  renderChk();
+// Resize
+window.addEventListener('resize',function(){
+  if(activeTab==='cc')renderTable();
+  else if(activeTab==='chk')chk.renderAll();
+  else mike.renderAll();
 });
-
-['chk-f-search','chk-f-type','chk-f-from','chk-f-to'].forEach(function(id){
-  $(id).addEventListener(id==='chk-f-search'?'input':'change',function(){renderChkTable();});
-});
-$('chk-btn-clr-filter').addEventListener('click',function(){
-  ['chk-f-search','chk-f-type','chk-f-from','chk-f-to'].forEach(function(id){$(id).value='';});
-  renderChkTable();
-});
-$('chk-btn-export').addEventListener('click',exportChkCSV);
-$('chk-btn-clr-all').addEventListener('click',function(){
-  if(!chkTxns.length)return;if(!confirm('Delete ALL checking transactions?'))return;
-  chkSnap();chkTxns=[];saveChk();renderChk();
-});
-
-$('chk-head').addEventListener('click',function(e){
-  var th=e.target.closest('th.sortable');if(th)toggleChkSort(th.getAttribute('data-sort'));
-});
-$('chk-body').addEventListener('click',function(e){
-  var eb=e.target.closest('.chk-edit-btn'),db=e.target.closest('.chk-del-btn');
-  if(eb)openChkEdit(parseInt(eb.getAttribute('data-id'),10));
-  if(db)delChkTxn(parseInt(db.getAttribute('data-id'),10));
-});
-$('chk-body').addEventListener('change',function(e){
-  var cb=e.target.closest('.chk-clr-cb');if(cb)toggleChkCleared(parseInt(cb.getAttribute('data-id'),10));
-});
-$('chk-btn-cancel-edit').addEventListener('click',closeChkEdit);
-$('chk-btn-save-edit').addEventListener('click',saveChkEdit);
-$('chk-edit-modal').addEventListener('click',function(e){if(e.target===$('chk-edit-modal'))closeChkEdit();});
 
 // ── Notes ─────────────────────────────────────────────────────────────────────
 (function(){
-  var ccN=$('cc-notes'),chkN=$('chk-notes');
+  var ccN=$('cc-notes'),chkN=$('chk-notes'),mikeN=$('mike-notes');
   ccN.value=sGet('cc-notes')||'';
   chkN.value=sGet('chk-notes')||'';
+  mikeN.value=sGet('mike-notes')||'';
   ccN.addEventListener('input',function(){sSet('cc-notes',ccN.value);});
   chkN.addEventListener('input',function(){sSet('chk-notes',chkN.value);});
+  mikeN.addEventListener('input',function(){sSet('mike-notes',mikeN.value);});
 })();
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
