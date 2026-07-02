@@ -247,6 +247,27 @@ tbody tr.wth-row { background:#fffafa; }
 tbody tr.dep-row:hover { background:#f0fdf4; }
 tbody tr.wth-row:hover { background:#fef2f2; }
 
+/* Receipt Scanner */
+.scan-modal-body { display:flex; flex-direction:column; gap:14px; }
+.scan-drop-zone { border:2px dashed #cbd5e1; border-radius:12px; padding:28px 16px; text-align:center; background:#f8fafc; transition:border-color .15s; }
+.scan-drop-zone.drag-over { border-color:#2563eb; background:#eff6ff; }
+.scan-drop-icon { font-size:2.2rem; margin-bottom:8px; }
+.scan-drop-zone p { color:#64748b; font-size:.84rem; margin:6px 0 12px; }
+.scan-hint { font-size:.73rem !important; color:#94a3b8 !important; margin-top:4px !important; }
+.scan-preview-img { max-width:100%; max-height:180px; object-fit:contain; border-radius:8px; display:block; margin:0 auto; }
+.scan-prog-wrap { text-align:center; }
+.scan-status-txt { font-size:.82rem; color:#475569; margin-bottom:8px; }
+.scan-bar { height:7px; background:#e2e8f0; border-radius:4px; overflow:hidden; }
+.scan-fill { height:100%; background:#2563eb; border-radius:4px; transition:width .25s; }
+.scan-result-fields { display:flex; flex-wrap:wrap; gap:10px; }
+.scan-result-fields .f,.scan-result-fields .fd { flex:1 1 140px; display:flex; flex-direction:column; gap:4px; }
+.scan-result-fields .fd { flex:1 1 100%; }
+.scan-result-fields label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#64748b; }
+.scan-result-fields input,.scan-result-fields select { padding:7px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:.84rem; color:#1e293b; outline:none; width:100%; }
+.scan-raw-pre { font-size:.71rem; background:#f1f5f9; padding:8px 10px; border-radius:6px; max-height:110px; overflow:auto; white-space:pre-wrap; margin-top:6px; color:#475569; }
+.btn-scan { background:#0f172a; color:#fff; border:none; }
+.btn-scan:hover { background:#1e293b; }
+
 /* Mobile overrides — only structural, no column tricks */
 @media (max-width:1100px) {
   .summary { grid-template-columns:repeat(3,1fr); }
@@ -343,6 +364,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     </div>
     <div class="form-actions">
       <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="btn-add">+ Add</button></div>
+      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-scan btn-sm" id="btn-scan-cc">&#x1F4F7; Scan Receipt</button></div>
     </div>
     <span id="form-err" style="color:var(--danger);font-size:.78rem;flex-basis:100%;text-align:center;"></span>
   </div>
@@ -446,6 +468,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     </div>
     <div class="form-actions">
       <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="chk-btn-add">+ Add</button></div>
+      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-scan btn-sm" id="btn-scan-chk">&#x1F4F7; Scan Receipt</button></div>
     </div>
     <span id="chk-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
   </div>
@@ -532,6 +555,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     </div>
     <div class="form-actions">
       <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="mike-btn-add">+ Add</button></div>
+      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-scan btn-sm" id="btn-scan-mike">&#x1F4F7; Scan Receipt</button></div>
     </div>
     <span id="mike-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
   </div>
@@ -633,6 +657,57 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <button class="btn btn-primary" id="mike-btn-save-edit">Save Changes</button>
     </div>
     <div id="mike-edit-err" style="color:#dc2626;font-size:.78rem;margin-top:8px;text-align:right;"></div>
+  </div>
+</div>
+
+<!-- Receipt Scanner Modal -->
+<div class="modal-ov" id="scan-modal">
+  <div class="modal" style="max-width:480px;">
+    <h2>&#x1F4F7; Scan Receipt</h2>
+    <div class="scan-modal-body">
+
+      <!-- State 1: upload / drop -->
+      <div id="scan-s-upload">
+        <div class="scan-drop-zone" id="scan-drop">
+          <div class="scan-drop-icon">&#x1F9FE;</div>
+          <p>Drop a receipt image here, or</p>
+          <button class="btn btn-primary" id="scan-pick-btn">&#x1F4F7; Take Photo / Choose Image</button>
+          <input type="file" id="scan-file-inp" accept="image/*" style="display:none">
+          <p class="scan-hint">Works on mobile camera, screenshots &amp; scanned receipts</p>
+        </div>
+      </div>
+
+      <!-- State 2: processing -->
+      <div id="scan-s-proc" style="display:none;">
+        <img id="scan-prev-img" class="scan-preview-img" alt="receipt preview">
+        <div class="scan-prog-wrap" style="margin-top:12px;">
+          <div class="scan-status-txt" id="scan-status">Reading receipt…</div>
+          <div class="scan-bar"><div class="scan-fill" id="scan-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- State 3: results -->
+      <div id="scan-s-res" style="display:none;">
+        <img id="scan-res-img" class="scan-preview-img" alt="receipt" style="max-height:140px;margin-bottom:12px;">
+        <div class="scan-result-fields">
+          <div class="f"><label>Date</label><input type="date" id="scan-r-date"></div>
+          <div class="f"><label>Amount ($)</label><input type="number" id="scan-r-amt" step="0.01" min="0.01" placeholder="0.00"></div>
+          <div class="fd"><label>Merchant / Description</label><input type="text" id="scan-r-desc" maxlength="100"></div>
+          <div class="f"><label>Category</label><select id="scan-r-cat"></select></div>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-ghost btn-sm" id="scan-raw-toggle-btn">Show raw OCR text</button>
+          <pre class="scan-raw-pre" id="scan-raw-pre" style="display:none;"></pre>
+        </div>
+        <div id="scan-res-err" style="color:#dc2626;font-size:.78rem;margin-top:6px;"></div>
+      </div>
+
+    </div>
+    <div class="mfooter" style="margin-top:16px;">
+      <button class="btn btn-ghost" id="scan-cancel-btn">Cancel</button>
+      <button class="btn btn-ghost" id="scan-retry-btn" style="display:none;">&#x21BA; Try Another</button>
+      <button class="btn btn-primary" id="scan-use-btn" style="display:none;">&#x2713; Use These Values</button>
+    </div>
   </div>
 </div>
 
@@ -1525,6 +1600,186 @@ window.addEventListener('resize',function(){
   if(activeTab==='cc')renderTable();
   else if(activeTab==='chk')chk.renderAll();
   else mike.renderAll();
+});
+
+// ── Receipt Scanner ───────────────────────────────────────────────────────────
+var scanTarget='cc';
+
+function loadTesseract(cb){
+  if(window.Tesseract){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+  s.onload=cb;
+  s.onerror=function(){alert('Could not load OCR library. Check your internet connection and try again.');};
+  document.head.appendChild(s);
+}
+
+function scanShowState(st){
+  $('scan-s-upload').style.display=st==='upload'?'':'none';
+  $('scan-s-proc').style.display=st==='proc'?'':'none';
+  $('scan-s-res').style.display=st==='res'?'':'none';
+  $('scan-retry-btn').style.display=st==='res'?'':'none';
+  $('scan-use-btn').style.display=st==='res'?'':'none';
+}
+
+function openScanner(target){
+  scanTarget=target;
+  var sc=$('scan-r-cat');
+  sc.innerHTML=categories.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');
+  scanShowState('upload');
+  $('scan-drop').classList.remove('drag-over');
+  $('scan-modal').classList.add('open');
+}
+
+function processReceiptFile(file){
+  if(!file||!file.type.startsWith('image/')){alert('Please select an image file.');return;}
+  var url=URL.createObjectURL(file);
+  $('scan-prev-img').src=url;
+  $('scan-res-img').src=url;
+  scanShowState('proc');
+  $('scan-fill').style.width='0%';
+  $('scan-status').textContent='Loading OCR engine…';
+
+  loadTesseract(function(){
+    $('scan-status').textContent='Initialising…';
+    Tesseract.recognize(file,'eng',{logger:function(m){
+      if(m.status==='loading tesseract core'){$('scan-fill').style.width='10%';}
+      else if(m.status==='initializing tesseract'){$('scan-fill').style.width='25%';}
+      else if(m.status==='loading language traineddata'){$('scan-status').textContent='Loading language data…';$('scan-fill').style.width='40%';}
+      else if(m.status==='initializing api'){$('scan-fill').style.width='60%';}
+      else if(m.status==='recognizing text'){
+        var p=Math.round(m.progress*100);
+        $('scan-fill').style.width=Math.max(60,60+p*0.4)+'%';
+        $('scan-status').textContent='Reading text… '+p+'%';
+      }
+    }}).then(function(result){
+      $('scan-fill').style.width='100%';
+      var text=result.data.text;
+      $('scan-raw-pre').textContent=text;
+      var parsed=parseReceiptText(text);
+      $('scan-r-date').value=parsed.date||todayStr();
+      $('scan-r-desc').value=parsed.merchant||'';
+      $('scan-r-amt').value=parsed.amount?parsed.amount.toFixed(2):'';
+      if(parsed.category)$('scan-r-cat').value=parsed.category;
+      $('scan-res-err').textContent=(parsed.merchant||parsed.amount)?'':'OCR complete but details are unclear — please fill in manually.';
+      scanShowState('res');
+    }).catch(function(err){
+      $('scan-status').textContent='Error: '+err.message;
+    });
+  });
+}
+
+function parseReceiptText(raw){
+  var lines=raw.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+
+  var merchant='';
+  for(var i=0;i<Math.min(lines.length,6);i++){
+    var l=lines[i];
+    if(l.length>=3&&!/^\d/.test(l)&&!/^(tel|phone|fax|www|http|\d{3}[\s\-\.]?\d{3})/i.test(l)){
+      merchant=l.replace(/[*#|\\]/g,'').trim();
+      if(merchant===merchant.toUpperCase()&&merchant.length>2){
+        merchant=merchant.toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});
+      }
+      break;
+    }
+  }
+
+  var date=null;
+  var patterns=[
+    {re:/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/,fn:function(m){return m[3]+'-'+pad(+m[1])+'-'+pad(+m[2]);}},
+    {re:/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})(?!\d)/,fn:function(m){var y=+m[3];y=y<50?2000+y:1900+y;return y+'-'+pad(+m[1])+'-'+pad(+m[2]);}},
+    {re:/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/,fn:function(m){return m[1]+'-'+pad(+m[2])+'-'+pad(+m[3]);}},
+    {re:/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})[,\s]+(\d{4})/i,fn:function(m){
+      var mn={jan:'01',feb:'02',mar:'03',apr:'04',may:'05',jun:'06',jul:'07',aug:'08',sep:'09',oct:'10',nov:'11',dec:'12'};
+      return m[3]+'-'+(mn[m[1].slice(0,3).toLowerCase()]||'01')+'-'+pad(+m[2]);
+    }}
+  ];
+  for(var i=0;i<lines.length&&!date;i++){
+    for(var j=0;j<patterns.length&&!date;j++){
+      var m2=lines[i].match(patterns[j].re);
+      if(m2){
+        try{
+          var d=patterns[j].fn(m2);
+          var dt=new Date(d+'T12:00:00');
+          if(!isNaN(dt.getTime())&&dt.getFullYear()>=2000&&dt.getFullYear()<=2035)date=d;
+        }catch(e2){}
+      }
+    }
+  }
+
+  var amount=null;
+  var totalRe=/(?:total|amount\s*due|balance\s*due|grand\s*total|sale\s*total|charged|you\s*paid)[^\d$]*\$?\s*(\d{1,5}\.?\d{0,2})/i;
+  for(var i=lines.length-1;i>=0&&amount===null;i--){
+    var m3=lines[i].match(totalRe);
+    if(m3){var v=parseFloat(m3[1]);if(v>0&&v<50000)amount=v;}
+  }
+  if(amount===null){
+    var allAmts=[],re2=/\$\s*(\d{1,5}\.\d{2})/g,mth;
+    while((mth=re2.exec(raw))!==null){var v2=parseFloat(mth[1]);if(v2>0&&v2<50000)allAmts.push(v2);}
+    if(allAmts.length){allAmts.sort(function(a,b){return b-a;});amount=allAmts[0];}
+  }
+
+  var n=(merchant+' '+raw).toLowerCase();
+  var cat='Other';
+  if(/starbucks|dunkin|coffee|cafe|restaurant|mcdonald|burger|pizza|taco|chipotle|subway|chick.fil|wendy|kfc|popeyes|diner|bistro|grill|sushi|chinese|thai|italian|deli|bakery/i.test(n))cat='Dining';
+  else if(/walmart|target|costco|sam.s club|kroger|publix|safeway|whole foods|aldi|trader joe|food lion|winn.dixie|h.e.b|meijer|giant/i.test(n))cat='Groceries';
+  else if(/shell|chevron|exxon|bp|mobil|speedway|marathon|sunoco|circle k|pilot|flying j|quiktrip|wawa|racetrac|sheetz|\bgas\b|fuel/i.test(n))cat='Gas';
+  else if(/amazon|ebay|best buy|home depot|lowes|ikea|tj maxx|marshalls|ross|kohls|nordstrom|macy|gap|old navy/i.test(n))cat='Shopping';
+  else if(/uber|lyft|delta|united|american airlines|southwest|jetblue|marriott|hilton|hyatt|airbnb|hotel|motel|inn|rental car/i.test(n))cat='Travel';
+  else if(/netflix|hulu|spotify|apple|google play|disney|amazon prime|youtube|microsoft|adobe|subscription/i.test(n))cat='Subscriptions';
+  else if(/cvs|walgreens|rite aid|pharmacy|hospital|clinic|\bdr\b|dental|vision|medical|health/i.test(n))cat='Healthcare';
+  else if(/electric|utility|water bill|at.t|verizon|comcast|xfinity|t.mobile|spectrum|cox/i.test(n))cat='Utilities';
+  else if(/amc|regal|cinemark|theater|cinema|bowling|dave.buster|entertainment/i.test(n))cat='Entertainment';
+  else{for(var i=0;i<categories.length;i++){if(n.indexOf(categories[i].toLowerCase())!==-1){cat=categories[i];break;}}}
+
+  return{merchant:merchant,date:date,amount:amount,category:cat};
+}
+
+function applyScanResult(){
+  var date=$('scan-r-date').value,desc=$('scan-r-desc').value.trim();
+  var amt=$('scan-r-amt').value,cat=$('scan-r-cat').value;
+  if(scanTarget==='cc'){
+    if(date)$('txn-date').value=date;
+    if(desc)$('txn-desc').value=desc;
+    if(amt)$('txn-amt').value=amt;
+    if(cat)$('txn-cat').value=cat;
+    $('txn-desc').focus();
+  } else if(scanTarget==='chk'){
+    if(date)$('chk-date').value=date;
+    if(desc)$('chk-desc').value=desc;
+    if(amt)$('chk-amt').value=amt;
+    if(cat)$('chk-cat').value=cat;
+    $('chk-desc').focus();
+  } else {
+    if(date)$('mike-date').value=date;
+    if(desc)$('mike-desc').value=desc;
+    if(amt)$('mike-amt').value=amt;
+    if(cat)$('mike-cat').value=cat;
+    $('mike-desc').focus();
+  }
+  $('scan-modal').classList.remove('open');
+}
+
+$('btn-scan-cc').addEventListener('click',function(){openScanner('cc');});
+$('btn-scan-chk').addEventListener('click',function(){openScanner('chk');});
+$('btn-scan-mike').addEventListener('click',function(){openScanner('mike');});
+$('scan-pick-btn').addEventListener('click',function(){$('scan-file-inp').click();});
+$('scan-file-inp').addEventListener('change',function(e){if(e.target.files[0]){processReceiptFile(e.target.files[0]);}e.target.value='';});
+$('scan-cancel-btn').addEventListener('click',function(){$('scan-modal').classList.remove('open');});
+$('scan-retry-btn').addEventListener('click',function(){scanShowState('upload');});
+$('scan-use-btn').addEventListener('click',applyScanResult);
+$('scan-modal').addEventListener('click',function(e){if(e.target===$('scan-modal'))$('scan-modal').classList.remove('open');});
+$('scan-raw-toggle-btn').addEventListener('click',function(){
+  var pre=$('scan-raw-pre');
+  var show=pre.style.display==='none';
+  pre.style.display=show?'':'none';
+  this.textContent=show?'Hide raw OCR text':'Show raw OCR text';
+});
+$('scan-drop').addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag-over');});
+$('scan-drop').addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+$('scan-drop').addEventListener('drop',function(e){
+  e.preventDefault();this.classList.remove('drag-over');
+  var f=e.dataTransfer.files[0];if(f)processReceiptFile(f);
 });
 
 // ── Notes ─────────────────────────────────────────────────────────────────────
