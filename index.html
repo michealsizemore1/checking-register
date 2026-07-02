@@ -152,7 +152,7 @@ td.clr-cell { width:32px; text-align:center; }
 td.date-cell { white-space:nowrap; color:var(--muted); font-size:.78rem; width:82px; }
 td.desc-cell { min-width:80px; max-width:1px; width:100%; } /* stretches */
 td.amt-cell  { white-space:nowrap; text-align:right; width:80px; }
-td.act-cell  { white-space:nowrap; text-align:center; width:66px; }
+td.act-cell  { white-space:nowrap; text-align:center; width:58px; overflow:visible; }
 td.cat-cell  { white-space:nowrap; width:92px; }
 td.type-cell { white-space:nowrap; width:68px; }
 td.bal-cell  { white-space:nowrap; text-align:right; width:90px; }
@@ -364,7 +364,13 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     </div>
     <div class="form-actions">
       <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="btn-add">+ Add</button></div>
-      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-scan btn-sm" id="btn-scan-cc">&#x1F4F7; Scan Receipt</button></div>
+      <div class="fl" style="display:flex;align-items:flex-end;gap:4px;">
+        <button class="btn btn-ghost btn-sm" id="cc-cam-btn" title="Take photo">&#x1F4F7;</button>
+        <button class="btn btn-ghost btn-sm" id="cc-lib-btn" title="Choose from library">&#x1F5BC;</button>
+        <img id="cc-photo-thumb" src="" style="display:none;height:30px;border-radius:3px;cursor:pointer;border:1px solid #e0e4ea;" title="Tap to remove">
+        <input type="file" id="cc-cam-inp" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="cc-lib-inp" accept="image/*" style="display:none">
+      </div>
     </div>
     <span id="form-err" style="color:var(--danger);font-size:.78rem;flex-basis:100%;text-align:center;"></span>
   </div>
@@ -468,7 +474,13 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     </div>
     <div class="form-actions">
       <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="chk-btn-add">+ Add</button></div>
-      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-scan btn-sm" id="btn-scan-chk">&#x1F4F7; Scan Receipt</button></div>
+      <div class="fl" style="display:flex;align-items:flex-end;gap:4px;">
+        <button class="btn btn-ghost btn-sm" id="chk-cam-btn" title="Take photo">&#x1F4F7;</button>
+        <button class="btn btn-ghost btn-sm" id="chk-lib-btn" title="Choose from library">&#x1F5BC;</button>
+        <img id="chk-photo-thumb" src="" style="display:none;height:30px;border-radius:3px;cursor:pointer;border:1px solid #e0e4ea;" title="Tap to remove">
+        <input type="file" id="chk-cam-inp" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="chk-lib-inp" accept="image/*" style="display:none">
+      </div>
     </div>
     <span id="chk-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
   </div>
@@ -555,7 +567,13 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     </div>
     <div class="form-actions">
       <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="mike-btn-add">+ Add</button></div>
-      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-scan btn-sm" id="btn-scan-mike">&#x1F4F7; Scan Receipt</button></div>
+      <div class="fl" style="display:flex;align-items:flex-end;gap:4px;">
+        <button class="btn btn-ghost btn-sm" id="mike-cam-btn" title="Take photo">&#x1F4F7;</button>
+        <button class="btn btn-ghost btn-sm" id="mike-lib-btn" title="Choose from library">&#x1F5BC;</button>
+        <img id="mike-photo-thumb" src="" style="display:none;height:30px;border-radius:3px;cursor:pointer;border:1px solid #e0e4ea;" title="Tap to remove">
+        <input type="file" id="mike-cam-inp" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="mike-lib-inp" accept="image/*" style="display:none">
+      </div>
     </div>
     <span id="mike-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
   </div>
@@ -881,7 +899,9 @@ function addTxn(){
   if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
   err.textContent='';
   snapshot();
-  transactions.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,who:who});
+  var newId=Date.now();
+  transactions.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,who:who});
+  if(ccPendingRcpt){sSet('rcpt-'+newId,ccPendingRcpt);ccPendingRcpt=null;$('cc-photo-thumb').style.display='none';$('cc-photo-thumb').src='';}
   save();renderAll();
   $('txn-desc').value='';$('txn-amt').value='';$('txn-date').value=todayStr();$('txn-desc').focus();
 }
@@ -1046,7 +1066,7 @@ function renderTable(){
     var eb='<button class="btn btn-edit btn-sm edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
     var db='<button class="btn btn-danger btn-sm del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
     var hasRcpt=!!sGet('rcpt-'+t.id);
-    var rb='<button class="btn btn-sm '+(hasRcpt?'rcpt-view-btn':'rcpt-add-btn')+'" data-id="'+t.id+'" style="margin-left:2px;'+(hasRcpt?'color:#059669;':'color:#94a3b8;')+'" title="'+(hasRcpt?'View receipt':'Attach receipt')+'">'+(hasRcpt?'&#x1F9FE;':'&#x1F4CE;')+'</button>';
+    var rb=hasRcpt?'<button class="btn btn-sm rcpt-view-btn" data-id="'+t.id+'" style="margin-left:2px;color:#059669;font-size:.9rem;" title="View receipt">&#x1F9FE;</button>':'';
 
     if(mobile){
       h+='<tr class="'+cls+'">';
@@ -1287,11 +1307,10 @@ $('btn-export').addEventListener('click',exportCSV);
 // Table actions — delegated to tbody
 $('txn-body').addEventListener('click',function(e){
   var eb=e.target.closest('.edit-btn'),db=e.target.closest('.del-btn');
-  var rv=e.target.closest('.rcpt-view-btn'),ra=e.target.closest('.rcpt-add-btn');
+  var rv=e.target.closest('.rcpt-view-btn');
   if(eb)openEdit(parseInt(eb.getAttribute('data-id'),10));
   if(db)delTxn(parseInt(db.getAttribute('data-id'),10));
   if(rv)openRcptView(parseInt(rv.getAttribute('data-id'),10));
-  if(ra)openRcptAttach(parseInt(ra.getAttribute('data-id'),10));
 });
 $('txn-body').addEventListener('change',function(e){
   var cb=e.target.closest('.clr-cb');if(cb)toggleCleared(parseInt(cb.getAttribute('data-id'),10));
@@ -1341,7 +1360,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeEdit()
 function makeChecking(pfx,storeKey,openBalKey){
   var txns=JSON.parse(sGet(storeKey)||'[]');
   var openBal=parseFloat(sGet(openBalKey)||'0');
-  var sortFld='date',sAsc=false,hist=[],editId=null;
+  var sortFld='date',sAsc=false,hist=[],editId=null,pendingRcpt=null;
 
   function g(id){return document.getElementById(pfx+'-'+id);}
 
@@ -1444,7 +1463,7 @@ function makeChecking(pfx,storeKey,openBalKey){
       var eb='<button class="btn btn-edit btn-sm '+pfx+'-edit-btn" data-id="'+t.id+'">&#x270F;&#xFE0F;</button>';
       var db='<button class="btn btn-danger btn-sm '+pfx+'-del-btn" data-id="'+t.id+'" style="margin-left:2px">&#x2715;</button>';
       var hasRcpt=!!sGet('rcpt-'+t.id);
-      var rb='<button class="btn btn-sm '+(hasRcpt?pfx+'-rcpt-view':pfx+'-rcpt-add')+'" data-id="'+t.id+'" style="margin-left:2px;'+(hasRcpt?'color:#059669;':'color:#94a3b8;')+'" title="'+(hasRcpt?'View receipt':'Attach receipt')+'">'+(hasRcpt?'&#x1F9FE;':'&#x1F4CE;')+'</button>';
+      var rb=hasRcpt?'<button class="btn btn-sm '+pfx+'-rcpt-view" data-id="'+t.id+'" style="margin-left:2px;color:#059669;font-size:.9rem;" title="View receipt">&#x1F9FE;</button>':'';
       if(mobile){
         h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
         h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
@@ -1476,7 +1495,9 @@ function makeChecking(pfx,storeKey,openBalKey){
     if(!desc){err.textContent='Please enter a description.';return;}
     if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
     err.textContent='';snap();
-    txns.push({id:Date.now(),date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false});
+    var newId=Date.now();
+    txns.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false});
+    if(pendingRcpt){sSet('rcpt-'+newId,pendingRcpt);pendingRcpt=null;g('photo-thumb').style.display='none';g('photo-thumb').src='';}
     saveTxns();renderAll();
     g('desc').value='';g('amt').value='';g('date').value=todayStr();g('desc').focus();
   }
@@ -1565,11 +1586,10 @@ function makeChecking(pfx,storeKey,openBalKey){
     });
     g('body').addEventListener('click',function(e){
       var eb=e.target.closest('.'+pfx+'-edit-btn'),db=e.target.closest('.'+pfx+'-del-btn');
-      var rv=e.target.closest('.'+pfx+'-rcpt-view'),ra=e.target.closest('.'+pfx+'-rcpt-add');
+      var rv=e.target.closest('.'+pfx+'-rcpt-view');
       if(eb)openEdit(parseInt(eb.getAttribute('data-id'),10));
       if(db)delTxn(parseInt(db.getAttribute('data-id'),10));
       if(rv)openRcptView(parseInt(rv.getAttribute('data-id'),10));
-      if(ra)openRcptAttach(parseInt(ra.getAttribute('data-id'),10));
     });
     g('body').addEventListener('change',function(e){
       var cb=e.target.closest('.'+pfx+'-clr-cb');
@@ -1588,6 +1608,17 @@ function makeChecking(pfx,storeKey,openBalKey){
       if(e.key==='Enter')submitCat();
       if(e.key==='Escape'){g('cat-row').style.display='none';g('new-cat').value='';}
     });
+    g('cam-btn').addEventListener('click',function(){g('cam-inp').click();});
+    g('lib-btn').addEventListener('click',function(){g('lib-inp').click();});
+    g('cam-inp').addEventListener('change',function(e){
+      if(e.target.files[0]){compressImage(e.target.files[0],function(d){pendingRcpt=d;g('photo-thumb').src=d;g('photo-thumb').style.display='inline-block';});}
+      e.target.value='';
+    });
+    g('lib-inp').addEventListener('change',function(e){
+      if(e.target.files[0]){compressImage(e.target.files[0],function(d){pendingRcpt=d;g('photo-thumb').src=d;g('photo-thumb').style.display='inline-block';});}
+      e.target.value='';
+    });
+    g('photo-thumb').addEventListener('click',function(){pendingRcpt=null;this.style.display='none';this.src='';});
   }
 
   return {
@@ -1650,6 +1681,7 @@ window.addEventListener('resize',function(){
 
 // ── Receipt Image Storage ─────────────────────────────────────────────────────
 var rcptTargetId=null;
+var ccPendingRcpt=null;
 
 function compressImage(file,cb){
   var reader=new FileReader();
@@ -1886,20 +1918,33 @@ $('scan-drop').addEventListener('drop',function(e){
   var f=e.dataTransfer.files[0];if(f)processReceiptFile(f);
 });
 
-// ── Receipt modal events ──────────────────────────────────────────────────────
-$('rcpt-camera-btn').addEventListener('click',function(){$('rcpt-camera-inp').click();});
-$('rcpt-library-btn').addEventListener('click',function(){$('rcpt-library-inp').click();});
-$('rcpt-camera-inp').addEventListener('change',function(e){if(e.target.files[0]){attachRcptFile(e.target.files[0]);}e.target.value='';});
-$('rcpt-library-inp').addEventListener('change',function(e){if(e.target.files[0]){attachRcptFile(e.target.files[0]);}e.target.value='';});
-$('rcpt-cancel-btn').addEventListener('click',function(){$('rcpt-attach-modal').classList.remove('open');});
-$('rcpt-attach-modal').addEventListener('click',function(e){if(e.target===$('rcpt-attach-modal'))$('rcpt-attach-modal').classList.remove('open');});
-$('rcpt-remove-btn').addEventListener('click',removeRcpt);
-$('rcpt-view-close').addEventListener('click',function(){$('rcpt-view-modal').classList.remove('open');});
-$('rcpt-view-modal').addEventListener('click',function(e){if(e.target===$('rcpt-view-modal'))$('rcpt-view-modal').classList.remove('open');});
+// Receipt modal events
+document.getElementById('rcpt-camera-btn').addEventListener('click',function(){document.getElementById('rcpt-camera-inp').click();});
+document.getElementById('rcpt-library-btn').addEventListener('click',function(){document.getElementById('rcpt-library-inp').click();});
+document.getElementById('rcpt-camera-inp').addEventListener('change',function(e){if(e.target.files[0]){attachRcptFile(e.target.files[0]);}e.target.value='';});
+document.getElementById('rcpt-library-inp').addEventListener('change',function(e){if(e.target.files[0]){attachRcptFile(e.target.files[0]);}e.target.value='';});
+document.getElementById('rcpt-cancel-btn').addEventListener('click',function(){document.getElementById('rcpt-attach-modal').classList.remove('open');});
+document.getElementById('rcpt-attach-modal').addEventListener('click',function(e){if(e.target===document.getElementById('rcpt-attach-modal'))document.getElementById('rcpt-attach-modal').classList.remove('open');});
+document.getElementById('rcpt-remove-btn').addEventListener('click',removeRcpt);
+document.getElementById('rcpt-view-close').addEventListener('click',function(){document.getElementById('rcpt-view-modal').classList.remove('open');});
+document.getElementById('rcpt-view-modal').addEventListener('click',function(e){if(e.target===document.getElementById('rcpt-view-modal'))document.getElementById('rcpt-view-modal').classList.remove('open');});
 
-// ── Notes ─────────────────────────────────────────────────────────────────────
+// CC inline photo events
+document.getElementById('cc-cam-btn').addEventListener('click',function(){document.getElementById('cc-cam-inp').click();});
+document.getElementById('cc-lib-btn').addEventListener('click',function(){document.getElementById('cc-lib-inp').click();});
+document.getElementById('cc-cam-inp').addEventListener('change',function(e){
+  if(e.target.files[0]){compressImage(e.target.files[0],function(d){ccPendingRcpt=d;document.getElementById('cc-photo-thumb').src=d;document.getElementById('cc-photo-thumb').style.display='inline-block';});}
+  e.target.value='';
+});
+document.getElementById('cc-lib-inp').addEventListener('change',function(e){
+  if(e.target.files[0]){compressImage(e.target.files[0],function(d){ccPendingRcpt=d;document.getElementById('cc-photo-thumb').src=d;document.getElementById('cc-photo-thumb').style.display='inline-block';});}
+  e.target.value='';
+});
+document.getElementById('cc-photo-thumb').addEventListener('click',function(){ccPendingRcpt=null;this.style.display='none';this.src='';});
+
+// Notes
 (function(){
-  var ccN=$('cc-notes'),chkN=$('chk-notes'),mikeN=$('mike-notes');
+  var ccN=document.getElementById('cc-notes'),chkN=document.getElementById('chk-notes'),mikeN=document.getElementById('mike-notes');
   ccN.value=sGet('cc-notes')||'';
   chkN.value=sGet('chk-notes')||'';
   mikeN.value=sGet('mike-notes')||'';
@@ -1908,9 +1953,9 @@ $('rcpt-view-modal').addEventListener('click',function(e){if(e.target===$('rcpt-
   mikeN.addEventListener('input',function(){sSet('mike-notes',mikeN.value);});
 })();
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+// Boot
 renderCatSelects();
-$('txn-date').value=todayStr();
+document.getElementById('txn-date').value=todayStr();
 renderAll();
 
 })();
