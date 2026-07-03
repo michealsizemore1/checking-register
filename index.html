@@ -302,7 +302,10 @@ tbody tr.wth-row:hover { background:#fef2f2; }
   <button class="btn btn-tb btn-sm" id="btn-backup">&#x1F4BE; Backup</button>
   <button class="btn btn-tb btn-sm" id="btn-restore">&#x1F4C2; Restore</button>
   <button class="btn btn-tb btn-sm" id="btn-import">&#x1F4E5; Import CSV</button>
+  <button class="btn btn-tb btn-sm" id="btn-trip">&#x2708;&#xFE0F; Trip</button>
+  <span id="trip-indicator" style="display:none;background:#065f46;color:#fff;font-size:.72rem;padding:3px 9px;border-radius:12px;font-weight:600;white-space:nowrap;"></span>
   <button class="btn btn-tb btn-sm" id="btn-undo" disabled style="opacity:.45;">&#x21B6; Undo</button>
+  <button class="btn btn-tb btn-sm" id="btn-redo" disabled style="opacity:.45;">&#x21B7; Redo</button>
   <button class="btn btn-tb btn-sm" id="btn-ai">&#x1F916; AI Assistant</button>
   <input type="file" id="restore-file" accept=".json" style="display:none">
   <input type="file" id="import-file" accept=".csv,.txt" style="display:none">
@@ -764,6 +767,47 @@ tbody tr.wth-row:hover { background:#fef2f2; }
   </div>
 </div>
 
+<!-- Trip Modal -->
+<div class="modal-ov" id="trip-modal">
+  <div class="modal" style="max-width:440px;">
+    <h2>&#x2708;&#xFE0F; Trip Mode</h2>
+    <div id="trip-s-none">
+      <p style="color:#64748b;font-size:.85rem;margin-bottom:14px;">Track spending across all accounts for a trip. Transactions added while a trip is active are automatically tagged.</p>
+      <div class="f" style="margin-bottom:8px;"><label>Trip Name</label><input type="text" id="trip-name-inp" placeholder="e.g. Vegas July 2026" maxlength="60" style="width:100%;"></div>
+      <div style="display:flex;gap:10px;margin-bottom:8px;">
+        <div class="f" style="flex:1;"><label>Start Date</label><input type="date" id="trip-start-inp" style="width:100%;"></div>
+        <div class="f" style="flex:1;"><label>Budget (optional)</label><input type="number" id="trip-budget-inp" placeholder="0.00" min="0" step="0.01" style="width:100%;"></div>
+      </div>
+      <div id="trip-none-err" style="color:#dc2626;font-size:.78rem;min-height:1rem;"></div>
+      <div class="mfooter">
+        <button class="btn btn-ghost" id="trip-close-btn">Cancel</button>
+        <button class="btn btn-ghost" id="trip-history-btn">&#x1F4CB; Past Trips</button>
+        <button class="btn btn-primary" id="trip-start-btn">Start Trip</button>
+      </div>
+    </div>
+    <div id="trip-s-active" style="display:none;">
+      <div id="trip-active-header"></div>
+      <div id="trip-budget-bar"></div>
+      <div id="trip-cat-list"></div>
+      <div class="mfooter">
+        <button class="btn btn-ghost" id="trip-close-btn2">Close</button>
+        <button class="btn btn-danger" id="trip-end-btn">&#x1F3C1; End Trip</button>
+      </div>
+    </div>
+    <div id="trip-s-history" style="display:none;">
+      <div id="trip-history-list" style="max-height:340px;overflow-y:auto;"></div>
+      <div class="mfooter"><button class="btn btn-ghost" id="trip-back-btn">&#x2190; Back</button></div>
+    </div>
+    <div id="trip-s-detail" style="display:none;">
+      <div id="trip-detail-content" style="max-height:420px;overflow-y:auto;"></div>
+      <div class="mfooter">
+        <button class="btn btn-ghost" id="trip-detail-back-btn">&#x2190; Back</button>
+        <button class="btn btn-danger btn-sm" id="trip-delete-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Edit Modal -->
 <div class="modal-ov" id="edit-modal">
   <div class="modal">
@@ -839,23 +883,36 @@ function sSet(k,v){try{localStorage.setItem(k,v);}catch(e){_mem[k]=v;}}
 
 // ── State ─────────────────────────────────────────────────────────────────────
 var transactions=JSON.parse(sGet('cc-register')||'[]');
-var history=[], MAX_HISTORY=50;
+var history=[], future=[], MAX_HISTORY=50;
 var DEFAULT_CATS=['Groceries','Dining','Gas','Shopping','Travel','Entertainment','Healthcare','Utilities','Subscriptions','Other'];
 var categories=JSON.parse(sGet('cc-categories')||'null')||DEFAULT_CATS.slice();
 var sortField='date', sortAsc=false, unclFirst=false, editId=null;
+var trips=JSON.parse(sGet('cc-trips')||'[]');
+var activeTripId=(function(){var v=sGet('active-trip');return v?parseInt(v,10):null;})();
 
 function snapshot(){
   history.push(JSON.stringify(transactions));
   if(history.length>MAX_HISTORY)history.shift();
-  var btn=$('btn-undo');btn.disabled=false;btn.style.opacity='1';
+  future=[];
+  $('btn-undo').disabled=false;$('btn-undo').style.opacity='1';
+  $('btn-redo').disabled=true;$('btn-redo').style.opacity='.45';
 }
 function save(){sSet('cc-register',JSON.stringify(transactions));}
 function undo(){
   if(!history.length)return;
+  future.push(JSON.stringify(transactions));
   transactions=JSON.parse(history.pop());
   save();renderAll();
-  var btn=$('btn-undo');
-  if(!history.length){btn.disabled=true;btn.style.opacity='.45';}
+  if(!history.length){$('btn-undo').disabled=true;$('btn-undo').style.opacity='.45';}
+  $('btn-redo').disabled=false;$('btn-redo').style.opacity='1';
+}
+function redo(){
+  if(!future.length)return;
+  history.push(JSON.stringify(transactions));
+  transactions=JSON.parse(future.pop());
+  save();renderAll();
+  $('btn-undo').disabled=false;$('btn-undo').style.opacity='1';
+  if(!future.length){$('btn-redo').disabled=true;$('btn-redo').style.opacity='.45';}
 }
 function saveCats(){sSet('cc-categories',JSON.stringify(categories));}
 function $(id){return document.getElementById(id);}
@@ -900,7 +957,7 @@ function addTxn(){
   err.textContent='';
   snapshot();
   var newId=Date.now();
-  transactions.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,who:who});
+  transactions.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,who:who,trip:activeTripId||undefined});
   if(ccPendingRcpt){sSet('rcpt-'+newId,ccPendingRcpt);ccPendingRcpt=null;$('cc-photo-thumb').style.display='none';$('cc-photo-thumb').src='';}
   save();renderAll();
   $('txn-desc').value='';$('txn-amt').value='';$('txn-date').value=todayStr();$('txn-desc').focus();
@@ -1334,6 +1391,7 @@ $('edit-modal').addEventListener('click',function(e){if(e.target===$('edit-modal
 
 // Backup / Restore / Import
 $('btn-undo').addEventListener('click',undo);
+$('btn-redo').addEventListener('click',redo);
 $('btn-backup').addEventListener('click',backup);
 $('btn-restore').addEventListener('click',function(){$('restore-file').click();});
 $('restore-file').addEventListener('change',function(e){if(e.target.files[0]){restore(e.target.files[0]);e.target.value='';}});
@@ -1496,7 +1554,7 @@ function makeChecking(pfx,storeKey,openBalKey){
     if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
     err.textContent='';snap();
     var newId=Date.now();
-    txns.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false});
+    txns.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,trip:activeTripId||undefined});
     if(pendingRcpt){sSet('rcpt-'+newId,pendingRcpt);pendingRcpt=null;g('photo-thumb').style.display='none';g('photo-thumb').src='';}
     saveTxns();renderAll();
     g('desc').value='';g('amt').value='';g('date').value=todayStr();g('desc').focus();
@@ -1938,7 +1996,6 @@ document.getElementById('cc-lib-inp').addEventListener('change',function(e){
   e.target.value='';
 });
 document.getElementById('cc-photo-thumb').addEventListener('click',function(){ccPendingRcpt=null;this.style.display='none';this.src='';});
-
 // Notes
 (function(){
   var ccN=document.getElementById('cc-notes'),chkN=document.getElementById('chk-notes'),mikeN=document.getElementById('mike-notes');
@@ -1954,6 +2011,160 @@ document.getElementById('cc-photo-thumb').addEventListener('click',function(){cc
 renderCatSelects();
 document.getElementById('txn-date').value=todayStr();
 renderAll();
+
+
+// Trip Mode
+function saveTrips(){sSet('cc-trips',JSON.stringify(trips));}
+function getActiveTripObj(){return trips.find(function(t){return t.id===activeTripId;})||null;}
+function getAllTripTxns(tripId){
+  var all=[];
+  transactions.forEach(function(t){if(t.trip===tripId)all.push({t:t,acct:'CC'});});
+  chk.getTxns().forEach(function(t){if(t.trip===tripId)all.push({t:t,acct:"Cindy's Chk"});});
+  mike.getTxns().forEach(function(t){if(t.trip===tripId)all.push({t:t,acct:"Mike's Chk"});});
+  return all;
+}
+function tripSpent(txns){
+  var s=0;
+  txns.forEach(function(item){
+    var t=item.t;
+    if(t.type==='expense'||t.type==='withdrawal')s+=t.amount;
+    else if(t.type==='return')s-=t.amount;
+  });
+  return s;
+}
+function updateTripIndicator(){
+  var trip=getActiveTripObj();
+  var ind=$('trip-indicator');
+  if(trip){ind.textContent='✈️ '+trip.name;ind.style.display='';}
+  else{ind.style.display='none';}
+}
+function startTrip(name,budget,startDate){
+  var id=Date.now();
+  trips.push({id:id,name:name,budget:budget||0,startDate:startDate,endDate:null});
+  saveTrips();activeTripId=id;sSet('active-trip',id.toString());updateTripIndicator();
+}
+function endTrip(){
+  var trip=getActiveTripObj();if(trip)trip.endDate=todayStr();
+  saveTrips();activeTripId=null;sSet('active-trip','');updateTripIndicator();
+}
+function showTripState(st){
+  ['none','active','history','detail'].forEach(function(s){
+    $('trip-s-'+s).style.display=s===st?'':'none';
+  });
+}
+function renderBudgetBar(trip,spent){
+  if(trip.budget>0){
+    var pct=Math.min(100,spent/trip.budget*100);
+    var bc=pct>=90?'#dc2626':pct>=70?'#d97706':'#2563eb';
+    var rem=trip.budget-spent;
+    return '<div style="margin:10px 0 6px;">'
+      +'<div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px;">'
+      +'<span>Budget: '+fmt(trip.budget)+'</span>'
+      +'<span style="color:'+(pct>=90?'#dc2626':'#1e293b')+';">Spent: '+fmt(spent)+'</span></div>'
+      +'<div style="background:#e2e8f0;border-radius:4px;height:8px;">'
+      +'<div style="background:'+bc+';width:'+pct+'%;height:8px;border-radius:4px;"></div></div>'
+      +'<div style="font-size:.78rem;color:'+(rem<0?'#dc2626':'#16a34a')+';">'
+      +(rem>=0?fmt(rem)+' remaining':fmt(-rem)+' over budget')+'</div></div>';
+  }
+  return '<div style="margin:10px 0;font-size:.95rem;font-weight:600;">Total Spent: '+fmt(spent)+'</div>';
+}
+function renderCatBars(txns,spent){
+  var cats={};
+  txns.forEach(function(item){
+    var t=item.t;
+    if(t.type==='expense'||t.type==='withdrawal')cats[t.cat]=(cats[t.cat]||0)+t.amount;
+  });
+  var arr=Object.keys(cats).map(function(k){return{cat:k,amt:cats[k]};}).sort(function(a,b){return b.amt-a.amt;});
+  if(!arr.length)return '<p style="color:#94a3b8;font-size:.85rem;text-align:center;padding:12px 0;">No transactions on this trip yet.</p>';
+  var h='<div style="font-size:.72rem;font-weight:600;color:#64748b;margin:8px 0 5px;letter-spacing:.05em;">BY CATEGORY</div>';
+  arr.forEach(function(c){
+    var pct=spent>0?Math.round(c.amt/spent*100):0;
+    h+='<div style="margin-bottom:5px;">'
+      +'<div style="display:flex;justify-content:space-between;font-size:.8rem;"><span>'+esc(c.cat)+'</span><span>'+fmt(c.amt)+'</span></div>'
+      +'<div style="background:#e2e8f0;border-radius:2px;height:4px;"><div style="background:#2563eb;width:'+pct+'%;height:4px;border-radius:2px;"></div></div>'
+      +'</div>';
+  });
+  return h;
+}
+function openTripModal(){
+  var trip=getActiveTripObj();
+  if(trip){
+    var txns=getAllTripTxns(trip.id),spent=tripSpent(txns);
+    $('trip-active-header').innerHTML='<h3 style="margin-bottom:2px;">'+esc(trip.name)+'</h3>'
+      +'<p style="color:#64748b;font-size:.8rem;margin-bottom:8px;">Started '+fmtD(trip.startDate)+' &bull; '+txns.length+' transaction'+(txns.length!==1?'s':'')+'</p>';
+    $('trip-budget-bar').innerHTML=renderBudgetBar(trip,spent);
+    $('trip-cat-list').innerHTML=renderCatBars(txns,spent);
+    showTripState('active');
+  } else {
+    $('trip-name-inp').value='';$('trip-budget-inp').value='';
+    $('trip-start-inp').value=todayStr();$('trip-none-err').textContent='';
+    showTripState('none');
+  }
+  $('trip-modal').classList.add('open');
+}
+function renderTripHistory(){
+  var ended=trips.filter(function(t){return t.endDate;}).slice().reverse();
+  if(!ended.length){
+    $('trip-history-list').innerHTML='<p style="color:#94a3b8;text-align:center;padding:20px 0;">No past trips yet.</p>';return;
+  }
+  var h='';
+  ended.forEach(function(trip){
+    var txns=getAllTripTxns(trip.id),spent=tripSpent(txns);
+    h+='<div class="trip-hist-row" data-id="'+trip.id+'" style="padding:10px;border:1px solid #e0e4ea;border-radius:6px;margin-bottom:8px;cursor:pointer;">'
+      +'<div style="font-weight:600;">'+esc(trip.name)+'</div>'
+      +'<div style="font-size:.78rem;color:#64748b;">'+fmtD(trip.startDate)+' – '+fmtD(trip.endDate)
+      +' &bull; '+txns.length+' txn'+(txns.length!==1?'s':'')
+      +' &bull; '+fmt(spent)+(trip.budget?' / '+fmt(trip.budget)+' budget':'')+'</div></div>';
+  });
+  $('trip-history-list').innerHTML=h;
+  document.querySelectorAll('.trip-hist-row').forEach(function(row){
+    row.addEventListener('click',function(){showTripDetail(parseInt(this.getAttribute('data-id'),10));});
+  });
+}
+function showTripDetail(id){
+  var trip=trips.find(function(t){return t.id===id;});if(!trip)return;
+  $('trip-delete-btn').setAttribute('data-id',id);
+  var txns=getAllTripTxns(id),spent=tripSpent(txns);
+  var h='<h3 style="margin-bottom:2px;">'+esc(trip.name)+'</h3>'
+    +'<p style="color:#64748b;font-size:.8rem;margin-bottom:8px;">'+fmtD(trip.startDate)+' – '+fmtD(trip.endDate)+'</p>';
+  h+=renderBudgetBar(trip,spent);
+  h+=renderCatBars(txns,spent);
+  if(txns.length){
+    h+='<div style="font-size:.72rem;font-weight:600;color:#64748b;margin:10px 0 4px;letter-spacing:.05em;">TRANSACTIONS</div>'
+      +'<div style="border:1px solid #e0e4ea;border-radius:6px;overflow:hidden;">';
+    txns.slice().sort(function(a,b){return a.t.date<b.t.date?-1:1;}).forEach(function(item){
+      var t=item.t,isExp=(t.type==='expense'||t.type==='withdrawal');
+      h+='<div style="padding:6px 8px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">'
+        +'<div><div style="font-size:.82rem;font-weight:500;">'+esc(t.desc)+'</div>'
+        +'<div style="font-size:.7rem;color:#64748b;">'+fmtD(t.date)+' &bull; '+esc(item.acct)+'</div></div>'
+        +'<span style="font-weight:700;color:'+(isExp?'#dc2626':'#16a34a')+';">'+(isExp?'+':'−')+fmt(t.amount)+'</span></div>';
+    });
+    h+='</div>';
+  }
+  $('trip-detail-content').innerHTML=h;
+  showTripState('detail');
+}
+
+// Trip events
+$('btn-trip').addEventListener('click',openTripModal);
+$('trip-modal').addEventListener('click',function(e){if(e.target===$('trip-modal'))$('trip-modal').classList.remove('open');});
+$('trip-close-btn').addEventListener('click',function(){$('trip-modal').classList.remove('open');});
+$('trip-close-btn2').addEventListener('click',function(){$('trip-modal').classList.remove('open');});
+$('trip-start-btn').addEventListener('click',function(){
+  var name=$('trip-name-inp').value.trim(),budget=parseFloat($('trip-budget-inp').value)||0,sd=$('trip-start-inp').value;
+  if(!name){$('trip-none-err').textContent='Please enter a trip name.';return;}
+  startTrip(name,budget,sd);openTripModal();
+});
+$('trip-history-btn').addEventListener('click',function(){renderTripHistory();showTripState('history');});
+$('trip-end-btn').addEventListener('click',function(){if(!confirm('End this trip?'))return;endTrip();$('trip-modal').classList.remove('open');});
+$('trip-back-btn').addEventListener('click',function(){showTripState('none');});
+$('trip-detail-back-btn').addEventListener('click',function(){renderTripHistory();showTripState('history');});
+$('trip-delete-btn').addEventListener('click',function(){
+  var id=parseInt(this.getAttribute('data-id'),10);
+  if(!confirm('Delete this trip record? (Transactions are kept.)'))return;
+  trips=trips.filter(function(t){return t.id!==id;});saveTrips();renderTripHistory();
+});
+updateTripIndicator();
 
 })();
 </script>
