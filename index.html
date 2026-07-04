@@ -628,6 +628,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Amount ($)</label><input type="number" id="chk-e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="chk-e-desc" maxlength="100"></div>
       <div class="f fl"><label>Category</label><select id="chk-e-cat"></select></div>
+      <div class="f fl"><label>Trip</label><select id="chk-e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
         <div class="type-toggle">
@@ -659,6 +660,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Amount ($)</label><input type="number" id="mike-e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="mike-e-desc" maxlength="100"></div>
       <div class="f fl"><label>Category</label><select id="mike-e-cat"></select></div>
+      <div class="f fl"><label>Trip</label><select id="mike-e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
         <div class="type-toggle">
@@ -817,6 +819,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Amount ($)</label><input type="number" id="e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="e-desc" maxlength="100"></div>
       <div class="f fl"><label>Category</label><select id="e-cat"></select></div>
+      <div class="f fl"><label>Trip</label><select id="e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
         <div class="type-toggle">
@@ -985,6 +988,7 @@ function openEdit(id){
   var w=document.querySelector('input[name="e-who"][value="'+(t.who||'wife')+'"]');
   if(w)w.checked=true;
   $('edit-err').textContent='';renderCatSelects(t.cat);
+  $('e-trip').innerHTML=buildTripOpts(t.trip||null);
   $('edit-modal').classList.add('open');
 }
 function closeEdit(){$('edit-modal').classList.remove('open');editId=null;}
@@ -999,7 +1003,8 @@ function saveEdit(){
   if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
   var i=transactions.findIndex(function(t){return t.id===editId;});if(i===-1)return;
   snapshot();
-  transactions[i]={id:transactions[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('e-cleared').checked,who:who};
+  var tripVal=$('e-trip').value;var tripId=tripVal?parseInt(tripVal,10):undefined;
+  transactions[i]={id:transactions[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('e-cleared').checked,who:who,trip:tripId};
   save();renderAll();closeEdit();
 }
 
@@ -1577,6 +1582,7 @@ function makeChecking(pfx,storeKey,openBalKey){
     g('e-amt').value=t.amount;g('e-cleared').checked=!!t.cleared;
     var r=document.querySelector('input[name="'+pfx+'-e-type"][value="'+t.type+'"]');if(r)r.checked=true;
     g('edit-err').textContent='';renderCat(t.cat);
+    g('e-trip').innerHTML=buildTripOpts(t.trip||null);
     g('edit-modal').classList.add('open');
   }
 
@@ -1592,7 +1598,8 @@ function makeChecking(pfx,storeKey,openBalKey){
     if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
     var i=txns.findIndex(function(t){return t.id===editId;});if(i===-1)return;
     snap();
-    txns[i]={id:txns[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:g('e-cleared').checked};
+    var tv=g('e-trip').value;var tid=tv?parseInt(tv,10):undefined;
+    txns[i]={id:txns[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:g('e-cleared').checked,trip:tid};
     saveTxns();renderAll();closeEdit();
   }
 
@@ -2014,6 +2021,13 @@ renderAll();
 
 
 // Trip Mode
+function buildTripOpts(selectedId){
+  var h='<option value="">(No Trip)</option>';
+  trips.forEach(function(t){
+    h+='<option value="'+t.id+'"'+(t.id===selectedId?' selected':'')+'>'+esc(t.name)+(t.endDate?'':' ✈️')+'</option>';
+  });
+  return h;
+}
 function saveTrips(){sSet('cc-trips',JSON.stringify(trips));}
 function getActiveTripObj(){return trips.find(function(t){return t.id===activeTripId;})||null;}
 function getAllTripTxns(tripId){
