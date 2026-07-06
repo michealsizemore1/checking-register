@@ -1563,6 +1563,15 @@ function makeChecking(pfx,storeKey,openBalKey){
     if(pendingRcpt){sSet('rcpt-'+newId,pendingRcpt);pendingRcpt=null;g('photo-thumb').style.display='none';g('photo-thumb').src='';}
     saveTxns();renderAll();
     g('desc').value='';g('amt').value='';g('date').value=todayStr();g('desc').focus();
+    // Cindy's Checking withdrawal → offer to mirror as CC payment
+    if(pfx==='chk'&&type==='withdrawal'){
+      if(confirm('Also add $'+amt.toFixed(2)+' as a payment in the Credit Card register?')){
+        snapshot();
+        transactions.push({id:newId+1,date:date,desc:desc,cat:'Payment',type:'payment',amount:amt,cleared:false,who:'wife',trip:activeTripId||undefined});
+        save();
+        if(activeTab==='cc')renderAll();
+      }
+    }
   }
 
   function delTxn(id){
