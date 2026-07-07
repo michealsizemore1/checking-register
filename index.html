@@ -315,6 +315,8 @@ tbody tr.wth-row:hover { background:#fef2f2; }
   <button class="tab-btn active" id="tab-cc">&#x1F4B3; Credit Card</button>
   <button class="tab-btn" id="tab-chk">&#x1F3E6; Cindy's Checking</button>
   <button class="tab-btn" id="tab-mike">&#x1F3E6; Mike's Checking</button>
+  <button class="tab-btn" id="tab-savings">&#x1F4B0; Savings</button>
+  <button class="tab-btn" id="tab-hysa">&#x1F4C8; HYSA</button>
 </div>
 
 <div id="cc-pane" class="page-body">
@@ -619,6 +621,190 @@ tbody tr.wth-row:hover { background:#fef2f2; }
 
 </div><!-- /mike-pane -->
 
+<div id="savings-pane" class="page-body" style="display:none;">
+
+  <div class="form-card" style="justify-content:flex-start;">
+    <div class="f fl"><label>Opening Balance ($)</label><input type="number" id="savings-open" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="form-actions"><div class="fl"><label style="color:transparent;">.</label><button class="btn btn-ghost" id="savings-btn-set-open">Set</button></div></div>
+    <span id="savings-open-note" style="font-size:.75rem;color:#64748b;align-self:flex-end;padding-bottom:7px;"></span>
+  </div>
+
+  <div class="summary-4">
+    <div class="card bal"><div class="lbl">&#x1F4B0; Account Balance</div><div class="val" id="savings-s-bal">$0.00</div></div>
+    <div class="card ret"><div class="lbl">&#x2713; Cleared Balance</div><div class="val" id="savings-s-clr">$0.00</div></div>
+    <div class="card uncl-ret"><div class="lbl">&#x26A0; Pending Deposits</div><div class="val" id="savings-s-pdep">$0.00</div></div>
+    <div class="card uncl"><div class="lbl">&#x26A0; Pending Withdrawals</div><div class="val" id="savings-s-pwth">$0.00</div></div>
+  </div>
+
+  <div class="form-card">
+    <div class="f fl"><label>Date</label><input type="date" id="savings-date"></div>
+    <div class="fd fl"><label>Description</label><input type="text" id="savings-desc" placeholder="e.g. Transfer, Interest…" maxlength="100"></div>
+    <div class="f fl"><label>Amount ($)</label><input type="number" id="savings-amt" placeholder="0.00" min="0.01" step="0.01"></div>
+    <div class="f fl">
+      <label>Category</label>
+      <div style="display:flex;gap:4px;">
+        <select id="savings-cat" style="flex:1;min-width:0;"></select>
+        <button class="btn btn-sm" id="savings-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+      </div>
+      <div id="savings-cat-row" style="display:none;margin-top:4px;gap:4px;">
+        <input type="text" id="savings-new-cat" placeholder="New category…" maxlength="40"
+          style="flex:1;padding:5px 8px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="savings-btn-save-cat" style="background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="savings-btn-cancel-cat" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">&#x2715;</button>
+      </div>
+    </div>
+    <div class="ft fl">
+      <label>Type</label>
+      <div class="type-toggle">
+        <input type="radio" name="savings-type" id="savings-dep" value="deposit" checked>
+        <label for="savings-dep" class="rl">&#x2B06; Deposit</label>
+        <input type="radio" name="savings-type" id="savings-wth" value="withdrawal">
+        <label for="savings-wth" class="el">&#x2B07; Withdrawal</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="savings-btn-add">+ Add</button></div>
+      <div class="fl" style="display:flex;align-items:flex-end;gap:4px;">
+        <button class="btn btn-ghost btn-sm" id="savings-cam-btn" title="Take photo">&#x1F4F7;</button>
+        <button class="btn btn-ghost btn-sm" id="savings-lib-btn" title="Choose from library">&#x1F5BC;</button>
+        <img id="savings-photo-thumb" src="" style="display:none;height:30px;border-radius:3px;cursor:pointer;border:1px solid #e0e4ea;" title="Tap to remove">
+        <input type="file" id="savings-cam-inp" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="savings-lib-inp" accept="image/*" style="display:none">
+      </div>
+    </div>
+    <span id="savings-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
+  </div>
+
+  <div class="filters-card">
+    <div class="f fl"><label>Search</label><input type="text" id="savings-f-search" placeholder="Search…"></div>
+    <div class="f fl"><label>Type</label>
+      <select id="savings-f-type">
+        <option value="">All Types</option>
+        <option value="deposit">Deposits</option>
+        <option value="withdrawal">Withdrawals</option>
+      </select>
+    </div>
+    <div class="f fl"><label>From</label><input type="date" id="savings-f-from"></div>
+    <div class="f fl"><label>To</label><input type="date" id="savings-f-to"></div>
+    <div class="filter-actions">
+      <button class="btn btn-ghost btn-sm" id="savings-btn-clr-filter">Clear</button>
+      <button class="btn btn-export btn-sm" id="savings-btn-export">&#x2B07; Export CSV</button>
+    </div>
+  </div>
+
+  <div class="notes-card">
+    <div class="notes-hdr"><span>&#x1F4DD; Notes</span><small>auto-saved</small></div>
+    <textarea id="savings-notes" placeholder="Jot down anything — account number, routing number, reminders…" rows="2"></textarea>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr">
+      <h2>Transactions</h2>
+      <div class="thr">
+        <span id="savings-row-count">0 transactions</span>
+        <button class="btn btn-danger btn-sm" id="savings-btn-clr-all">Clear All</button>
+      </div>
+    </div>
+    <div class="tscroll">
+      <table id="savings-table"><thead id="savings-head"></thead><tbody id="savings-body"></tbody></table>
+      <div id="savings-empty" class="empty-state"><div class="icon">&#x1F3E6;</div><p>No transactions yet.</p></div>
+    </div>
+  </div>
+
+</div><!-- /savings-pane -->
+
+<div id="hysa-pane" class="page-body" style="display:none;">
+
+  <div class="form-card" style="justify-content:flex-start;">
+    <div class="f fl"><label>Opening Balance ($)</label><input type="number" id="hysa-open" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="form-actions"><div class="fl"><label style="color:transparent;">.</label><button class="btn btn-ghost" id="hysa-btn-set-open">Set</button></div></div>
+    <span id="hysa-open-note" style="font-size:.75rem;color:#64748b;align-self:flex-end;padding-bottom:7px;"></span>
+  </div>
+
+  <div class="summary-4">
+    <div class="card bal"><div class="lbl">&#x1F4B0; Account Balance</div><div class="val" id="hysa-s-bal">$0.00</div></div>
+    <div class="card ret"><div class="lbl">&#x2713; Cleared Balance</div><div class="val" id="hysa-s-clr">$0.00</div></div>
+    <div class="card uncl-ret"><div class="lbl">&#x26A0; Pending Deposits</div><div class="val" id="hysa-s-pdep">$0.00</div></div>
+    <div class="card uncl"><div class="lbl">&#x26A0; Pending Withdrawals</div><div class="val" id="hysa-s-pwth">$0.00</div></div>
+  </div>
+
+  <div class="form-card">
+    <div class="f fl"><label>Date</label><input type="date" id="hysa-date"></div>
+    <div class="fd fl"><label>Description</label><input type="text" id="hysa-desc" placeholder="e.g. Transfer, Interest…" maxlength="100"></div>
+    <div class="f fl"><label>Amount ($)</label><input type="number" id="hysa-amt" placeholder="0.00" min="0.01" step="0.01"></div>
+    <div class="f fl">
+      <label>Category</label>
+      <div style="display:flex;gap:4px;">
+        <select id="hysa-cat" style="flex:1;min-width:0;"></select>
+        <button class="btn btn-sm" id="hysa-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+      </div>
+      <div id="hysa-cat-row" style="display:none;margin-top:4px;gap:4px;">
+        <input type="text" id="hysa-new-cat" placeholder="New category…" maxlength="40"
+          style="flex:1;padding:5px 8px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="hysa-btn-save-cat" style="background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="hysa-btn-cancel-cat" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">&#x2715;</button>
+      </div>
+    </div>
+    <div class="ft fl">
+      <label>Type</label>
+      <div class="type-toggle">
+        <input type="radio" name="hysa-type" id="hysa-dep" value="deposit" checked>
+        <label for="hysa-dep" class="rl">&#x2B06; Deposit</label>
+        <input type="radio" name="hysa-type" id="hysa-wth" value="withdrawal">
+        <label for="hysa-wth" class="el">&#x2B07; Withdrawal</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <div class="fl"><label style="color:transparent;">.</label><button class="btn btn-primary" id="hysa-btn-add">+ Add</button></div>
+      <div class="fl" style="display:flex;align-items:flex-end;gap:4px;">
+        <button class="btn btn-ghost btn-sm" id="hysa-cam-btn" title="Take photo">&#x1F4F7;</button>
+        <button class="btn btn-ghost btn-sm" id="hysa-lib-btn" title="Choose from library">&#x1F5BC;</button>
+        <img id="hysa-photo-thumb" src="" style="display:none;height:30px;border-radius:3px;cursor:pointer;border:1px solid #e0e4ea;" title="Tap to remove">
+        <input type="file" id="hysa-cam-inp" accept="image/*" capture="environment" style="display:none">
+        <input type="file" id="hysa-lib-inp" accept="image/*" style="display:none">
+      </div>
+    </div>
+    <span id="hysa-form-err" style="color:#dc2626;font-size:.78rem;flex-basis:100%;text-align:center;"></span>
+  </div>
+
+  <div class="filters-card">
+    <div class="f fl"><label>Search</label><input type="text" id="hysa-f-search" placeholder="Search…"></div>
+    <div class="f fl"><label>Type</label>
+      <select id="hysa-f-type">
+        <option value="">All Types</option>
+        <option value="deposit">Deposits</option>
+        <option value="withdrawal">Withdrawals</option>
+      </select>
+    </div>
+    <div class="f fl"><label>From</label><input type="date" id="hysa-f-from"></div>
+    <div class="f fl"><label>To</label><input type="date" id="hysa-f-to"></div>
+    <div class="filter-actions">
+      <button class="btn btn-ghost btn-sm" id="hysa-btn-clr-filter">Clear</button>
+      <button class="btn btn-export btn-sm" id="hysa-btn-export">&#x2B07; Export CSV</button>
+    </div>
+  </div>
+
+  <div class="notes-card">
+    <div class="notes-hdr"><span>&#x1F4DD; Notes</span><small>auto-saved</small></div>
+    <textarea id="hysa-notes" placeholder="Jot down anything — account number, routing number, reminders…" rows="2"></textarea>
+  </div>
+
+  <div class="table-card">
+    <div class="table-hdr">
+      <h2>Transactions</h2>
+      <div class="thr">
+        <span id="hysa-row-count">0 transactions</span>
+        <button class="btn btn-danger btn-sm" id="hysa-btn-clr-all">Clear All</button>
+      </div>
+    </div>
+    <div class="tscroll">
+      <table id="hysa-table"><thead id="hysa-head"></thead><tbody id="hysa-body"></tbody></table>
+      <div id="hysa-empty" class="empty-state"><div class="icon">&#x1F3E6;</div><p>No transactions yet.</p></div>
+    </div>
+  </div>
+
+</div><!-- /hysa-pane -->
+
 <!-- Checking Edit Modal -->
 <div class="modal-ov" id="chk-edit-modal">
   <div class="modal">
@@ -682,6 +868,69 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     <div id="mike-edit-err" style="color:#dc2626;font-size:.78rem;margin-top:8px;text-align:right;"></div>
   </div>
 </div>
+
+<div class="modal-ov" id="savings-edit-modal">
+  <div class="modal">
+    <h2>&#x270F;&#xFE0F; Edit Transaction</h2>
+    <div class="mgrid">
+      <div class="f fl"><label>Date</label><input type="date" id="savings-e-date"></div>
+      <div class="f fl"><label>Amount ($)</label><input type="number" id="savings-e-amt" min="0.01" step="0.01"></div>
+      <div class="f full fl"><label>Description</label><input type="text" id="savings-e-desc" maxlength="100"></div>
+      <div class="f fl"><label>Category</label><select id="savings-e-cat"></select></div>
+      <div class="f fl"><label>Trip</label><select id="savings-e-trip"></select></div>
+      <div class="f fl">
+        <label>Type</label>
+        <div class="type-toggle">
+          <input type="radio" name="savings-e-type" id="savings-ed" value="deposit">
+          <label for="savings-ed" class="rl">&#x2B06; Deposit</label>
+          <input type="radio" name="savings-e-type" id="savings-ew" value="withdrawal">
+          <label for="savings-ew" class="el">&#x2B07; Withdrawal</label>
+        </div>
+      </div>
+      <div class="f fl" style="display:flex;align-items:center;gap:8px;padding-top:18px;">
+        <input type="checkbox" id="savings-e-cleared" style="width:16px;height:16px;accent-color:#16a34a;cursor:pointer;">
+        <label for="savings-e-cleared" style="font-size:.84rem;color:#1e293b;text-transform:none;letter-spacing:0;font-weight:500;cursor:pointer;">Cleared</label>
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="btn btn-ghost" id="savings-btn-cancel-edit">Cancel</button>
+      <button class="btn btn-primary" id="savings-btn-save-edit">Save Changes</button>
+    </div>
+    <div id="savings-edit-err" style="color:#dc2626;font-size:.78rem;margin-top:8px;text-align:right;"></div>
+  </div>
+
+
+<!--  HYSA Edit Modal -->
+<div class="modal-ov" id="hysa-edit-modal">
+  <div class="modal">
+    <h2>&#x270F;&#xFE0F; Edit Transaction</h2>
+    <div class="mgrid">
+      <div class="f fl"><label>Date</label><input type="date" id="hysa-e-date"></div>
+      <div class="f fl"><label>Amount ($)</label><input type="number" id="hysa-e-amt" min="0.01" step="0.01"></div>
+      <div class="f full fl"><label>Description</label><input type="text" id="hysa-e-desc" maxlength="100"></div>
+      <div class="f fl"><label>Category</label><select id="hysa-e-cat"></select></div>
+      <div class="f fl"><label>Trip</label><select id="hysa-e-trip"></select></div>
+      <div class="f fl">
+        <label>Type</label>
+        <div class="type-toggle">
+          <input type="radio" name="hysa-e-type" id="hysa-ed" value="deposit">
+          <label for="hysa-ed" class="rl">&#x2B06; Deposit</label>
+          <input type="radio" name="hysa-e-type" id="hysa-ew" value="withdrawal">
+          <label for="hysa-ew" class="el">&#x2B07; Withdrawal</label>
+        </div>
+      </div>
+      <div class="f fl" style="display:flex;align-items:center;gap:8px;padding-top:18px;">
+        <input type="checkbox" id="hysa-e-cleared" style="width:16px;height:16px;accent-color:#16a34a;cursor:pointer;">
+        <label for="hysa-e-cleared" style="font-size:.84rem;color:#1e293b;text-transform:none;letter-spacing:0;font-weight:500;cursor:pointer;">Cleared</label>
+      </div>
+    </div>
+    <div class="mfooter">
+      <button class="btn btn-ghost" id="hysa-btn-cancel-edit">Cancel</button>
+      <button class="btn btn-primary" id="hysa-btn-save-edit">Save Changes</button>
+    </div>
+    <div id="hysa-edit-err" style="color:#dc2626;font-size:.78rem;margin-top:8px;text-align:right;"></div>
+  </div>
+
 
 <!-- Receipt Scanner Modal -->
 <div class="modal-ov" id="scan-modal">
@@ -1227,11 +1476,14 @@ function importCSV(file){
 
 // ── Backup / Restore ──────────────────────────────────────────────────────────
 function backup(){
-  var data={version:6,exported:new Date().toISOString(),
+  var data={version:7,exported:new Date().toISOString(),
     transactions:transactions,categories:categories,
     chkTxns:chk.getTxns(),chkOpenBal:chk.getOpenBal(),
     mikeTxns:mike.getTxns(),mikeOpenBal:mike.getOpenBal(),
-    ccNotes:sGet('cc-notes')||'',chkNotes:sGet('chk-notes')||'',mikeNotes:sGet('mike-notes')||''};
+    savingsTxns:sav.getTxns(),savingsOpenBal:sav.getOpenBal(),
+    hysaTxns:hysa.getTxns(),hysaOpenBal:hysa.getOpenBal(),
+    ccNotes:sGet('cc-notes')||'',chkNotes:sGet('chk-notes')||'',mikeNotes:sGet('mike-notes')||'',
+    savingsNotes:sGet('savings-notes')||'',hysaNotes:sGet('hysa-notes')||''};
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   a.download='register-backup-'+todayStr()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
@@ -1245,6 +1497,10 @@ function persistAll(){
     localStorage.setItem('chk-open-bal',chk.getOpenBal().toString());
     localStorage.setItem('mike-register',JSON.stringify(mike.getTxns()));
     localStorage.setItem('mike-open-bal',mike.getOpenBal().toString());
+    localStorage.setItem('savings-register',JSON.stringify(sav.getTxns()));
+    localStorage.setItem('savings-open-bal',sav.getOpenBal().toString());
+    localStorage.setItem('hysa-register',JSON.stringify(hysa.getTxns()));
+    localStorage.setItem('hysa-open-bal',hysa.getOpenBal().toString());
   }catch(e){ok=false;}
   return ok;
 }
@@ -1262,16 +1518,22 @@ function restore(file){
       if(data.chkOpenBal!=null)chk.setOpenBal(parseFloat(data.chkOpenBal)||0);
       if(data.mikeTxns&&Array.isArray(data.mikeTxns))mike.setTxns(data.mikeTxns);
       if(data.mikeOpenBal!=null)mike.setOpenBal(parseFloat(data.mikeOpenBal)||0);
+      if(data.savingsTxns&&Array.isArray(data.savingsTxns))sav.setTxns(data.savingsTxns);
+      if(data.savingsOpenBal!=null)sav.setOpenBal(parseFloat(data.savingsOpenBal)||0);
+      if(data.hysaTxns&&Array.isArray(data.hysaTxns))hysa.setTxns(data.hysaTxns);
+      if(data.hysaOpenBal!=null)hysa.setOpenBal(parseFloat(data.hysaOpenBal)||0);
       if(data.ccNotes!=null){sSet('cc-notes',data.ccNotes);$('cc-notes').value=data.ccNotes;}
       if(data.chkNotes!=null){sSet('chk-notes',data.chkNotes);$('chk-notes').value=data.chkNotes;}
       if(data.mikeNotes!=null){sSet('mike-notes',data.mikeNotes);$('mike-notes').value=data.mikeNotes;}
+      if(data.savingsNotes!=null){sSet('savings-notes',data.savingsNotes);$('savings-notes').value=data.savingsNotes;}
+      if(data.hysaNotes!=null){sSet('hysa-notes',data.hysaNotes);$('hysa-notes').value=data.hysaNotes;}
       // Persist everything
       var ok=persistAll();
       renderCatSelects();renderAll();
-      if(activeTab==='chk')chk.activatePane();else if(activeTab==='mike')mike.activatePane();
-      var cn=chk.getTxns().length,mn=mike.getTxns().length;
+      if(activeTab==='chk')chk.activatePane();else if(activeTab==='mike')mike.activatePane();else if(activeTab==='savings')sav.activatePane();else if(activeTab==='hysa')hysa.activatePane();
+      var cn=chk.getTxns().length,mn=mike.getTxns().length,sn=sav.getTxns().length,hn=hysa.getTxns().length;
       if(ok){
-        alert('Restored! '+transactions.length+' CC + '+cn+' Cindy checking + '+mn+' Mike checking transactions loaded. Data saved — refresh-safe.');
+        alert('Restored! '+transactions.length+' CC + '+cn+' Chk + '+mn+' Mike + '+sn+' Savings + '+hn+' HYSA transactions loaded.');
       } else {
         alert('Restored in this session, but localStorage is unavailable in this environment — data may not survive a page refresh. Consider keeping the backup file handy.');
       }
@@ -1714,43 +1976,39 @@ function makeChecking(pfx,storeKey,openBalKey){
 
 var chk=makeChecking('chk','chk-register','chk-open-bal');
 var mike=makeChecking('mike','mike-register','mike-open-bal');
+var sav=makeChecking('savings','savings-register','savings-open-bal');
+var hysa=makeChecking('hysa','hysa-register','hysa-open-bal');
 chk.wireEvents();
 mike.wireEvents();
+sav.wireEvents();
+hysa.wireEvents();
 
 // ── Tab Switching ─────────────────────────────────────────────────────────────
 var activeTab='cc';
 function switchTab(tab){
   activeTab=tab;
-  $('cc-pane').style.display=tab==='cc'?'':'none';
-  $('chk-pane').style.display=tab==='chk'?'':'none';
-  $('mike-pane').style.display=tab==='mike'?'':'none';
-  $('tab-cc').classList.toggle('active',tab==='cc');
-  $('tab-chk').classList.toggle('active',tab==='chk');
-  $('tab-mike').classList.toggle('active',tab==='mike');
-  if(tab==='cc'){
-    $('page-title').textContent='💳 Cindy\'s Credit Card Register';
-    $('page-sub').textContent='My Credit Card';
-    renderAll();
-  } else if(tab==='chk'){
-    $('page-title').textContent='🏦 Cindy\'s Checking Account';
-    $('page-sub').textContent='My Checking Account';
-    chk.activatePane();
-  } else {
-    $('page-title').textContent='🏦 Mike\'s Checking Account';
-    $('page-sub').textContent='My Checking Account';
-    mike.activatePane();
-  }
+  ['cc-pane','chk-pane','mike-pane','savings-pane','hysa-pane'].forEach(function(id){$(id).style.display=id===tab+'-pane'?'':'none';});
+  ['tab-cc','tab-chk','tab-mike','tab-savings','tab-hysa'].forEach(function(id){$(id).classList.toggle('active',id==='tab-'+tab);});
+  if(tab==='cc'){$('page-title').textContent='\u1F4B3 Cindy\'s Credit Card Register';$('page-sub').textContent='My Credit Card';renderAll();}
+  else if(tab==='chk'){$('page-title').textContent='\uD83C\uDFE6 Cindy\'s Checking Account';$('page-sub').textContent='My Checking Account';chk.activatePane();}
+  else if(tab==='mike'){$('page-title').textContent='\uD83C\uDFE6 Mike\'s Checking Account';$('page-sub').textContent='My Checking Account';mike.activatePane();}
+  else if(tab==='savings'){$('page-title').textContent='\uD83D\uDCB0 Savings Account';$('page-sub').textContent='Savings';sav.activatePane();}
+  else{$('page-title').textContent='\uD83D\uDCC8 HYSA Account';$('page-sub').textContent='High Yield Savings';hysa.activatePane();}
 }
 
 $('tab-cc').addEventListener('click',function(){switchTab('cc');});
 $('tab-chk').addEventListener('click',function(){switchTab('chk');});
 $('tab-mike').addEventListener('click',function(){switchTab('mike');});
+$('tab-savings').addEventListener('click',function(){switchTab('savings');});
+$('tab-hysa').addEventListener('click',function(){switchTab('hysa');});
 
 // Resize
 window.addEventListener('resize',function(){
   if(activeTab==='cc')renderTable();
   else if(activeTab==='chk')chk.renderAll();
-  else mike.renderAll();
+  else if(activeTab==='mike')mike.renderAll();
+  else if(activeTab==='savings')sav.renderAll();
+  else hysa.renderAll();
 });
 
 // ── Receipt Image Storage ─────────────────────────────────────────────────────
@@ -2014,13 +2272,17 @@ document.getElementById('cc-lib-inp').addEventListener('change',function(e){
 document.getElementById('cc-photo-thumb').addEventListener('click',function(){ccPendingRcpt=null;this.style.display='none';this.src='';});
 // Notes
 (function(){
-  var ccN=document.getElementById('cc-notes'),chkN=document.getElementById('chk-notes'),mikeN=document.getElementById('mike-notes');
+  var ccN=document.getElementById('cc-notes'),chkN=document.getElementById('chk-notes'),mikeN=document.getElementById('mike-notes'),savN=document.getElementById('savings-notes'),hysaN=document.getElementById('hysa-notes');
   ccN.value=sGet('cc-notes')||'';
   chkN.value=sGet('chk-notes')||'';
   mikeN.value=sGet('mike-notes')||'';
+  savN.value=sGet('savings-notes')||'';
+  hysaN.value=sGet('hysa-notes')||'';
   ccN.addEventListener('input',function(){sSet('cc-notes',ccN.value);});
   chkN.addEventListener('input',function(){sSet('chk-notes',chkN.value);});
   mikeN.addEventListener('input',function(){sSet('mike-notes',mikeN.value);});
+  savN.addEventListener('input',function(){sSet('savings-notes',savN.value);});
+  hysaN.addEventListener('input',function(){sSet('hysa-notes',hysaN.value);});
 })();
 
 // Boot
