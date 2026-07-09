@@ -326,6 +326,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     <div class="card exp"><div class="lbl">&#x2713; Cleared Expenses</div><div class="val" id="s-exp">$0.00</div></div>
     <div class="card ret"><div class="lbl">&#x2713; Cleared Returns</div><div class="val" id="s-ret">$0.00</div></div>
     <div class="card pay"><div class="lbl">&#x2713; Cleared Payments</div><div class="val" id="s-pay">$0.00</div></div>
+    <div class="card bal"><div class="lbl">&#x1F4B3; Total Owed</div><div class="val" id="s-bal">$0.00</div></div>
     <div class="card uncl"><div class="lbl">&#x26A0; Uncleared Charges</div><div class="val" id="s-uncl">$0.00</div></div>
     <div class="card uncl-ret"><div class="lbl">&#x21A9; Uncleared Returns</div><div class="val" id="s-uncl-ret">$0.00</div></div>
   </div>
@@ -1306,7 +1307,7 @@ function renderSummary(){
   var netAvail=chkBal-totalOwed;
   $('s-exp').textContent=fmt(exp);$('s-ret').textContent=fmt(ret);
   $('s-pay').textContent=fmt(pay);
-  $('s-uncl').textContent=fmt(uexp);
+  $('s-bal').textContent=fmtS(totalOwed);$('s-uncl').textContent=fmt(uexp);
   $('s-uncl-ret').textContent=fmt(uret);
   $('hdr-bal').textContent=fmtS(netAvail);
   var hl=$('hdr-lbl');if(hl)hl.textContent='Net Available';
