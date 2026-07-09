@@ -293,7 +293,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
   <div><h1 id="page-title">&#x1F4B3; Cindy's Credit Card Register</h1><p id="page-sub">My Credit Card</p></div>
   <span style="font-size:.65rem;background:rgba(255,255,255,.18);color:#fff;padding:2px 7px;border-radius:10px;font-weight:700;letter-spacing:.04em;align-self:center;">v9</span>
   <div class="hbal">
-    <div class="lbl">Current Balance</div>
+    <div class="lbl" id="hdr-lbl">Net Available</div>
     <div class="amt" id="hdr-bal">$0.00</div>
   </div>
 </header>
@@ -326,7 +326,6 @@ tbody tr.wth-row:hover { background:#fef2f2; }
     <div class="card exp"><div class="lbl">&#x2713; Cleared Expenses</div><div class="val" id="s-exp">$0.00</div></div>
     <div class="card ret"><div class="lbl">&#x2713; Cleared Returns</div><div class="val" id="s-ret">$0.00</div></div>
     <div class="card pay"><div class="lbl">&#x2713; Cleared Payments</div><div class="val" id="s-pay">$0.00</div></div>
-    <div class="card bal"><div class="lbl">&#x1F4B3; Total Owed</div><div class="val" id="s-bal">$0.00</div></div>
     <div class="card uncl"><div class="lbl">&#x26A0; Uncleared Charges</div><div class="val" id="s-uncl">$0.00</div></div>
     <div class="card uncl-ret"><div class="lbl">&#x21A9; Uncleared Returns</div><div class="val" id="s-uncl-ret">$0.00</div></div>
   </div>
@@ -1301,11 +1300,16 @@ function renderSummary(){
     else if(t.type==='payment'){if(cleared)pay+=t.amount;else upay+=t.amount;}
   });
   var totalOwed=(exp+uexp)-(ret+uret)-(pay+upay);
+  var chkDep=0,chkWth=0;
+  chk.getTxns().forEach(function(t){if(t.type==="deposit")chkDep+=t.amount;else chkWth+=t.amount;});
+  var chkBal=chk.getOpenBal()+chkDep-chkWth;
+  var netAvail=chkBal-totalOwed;
   $('s-exp').textContent=fmt(exp);$('s-ret').textContent=fmt(ret);
-  $('s-pay').textContent=fmt(pay);$('s-bal').textContent=fmtS(totalOwed);
+  $('s-pay').textContent=fmt(pay);
   $('s-uncl').textContent=fmt(uexp);
   $('s-uncl-ret').textContent=fmt(uret);
-  $('hdr-bal').textContent=fmtS(totalOwed);
+  $('hdr-bal').textContent=fmtS(netAvail);
+  var hl=$('hdr-lbl');if(hl)hl.textContent='Net Available';
 }
 
 function buildBalMap(){
