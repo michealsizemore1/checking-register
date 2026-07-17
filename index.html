@@ -518,6 +518,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <h2>Transactions</h2>
       <div class="thr">
         <span id="chk-row-count">0 transactions</span>
+        <button class="btn btn-uncl btn-sm" id="chk-btn-uncl">&#x26A0; Uncleared First</button>
         <button class="btn btn-danger btn-sm" id="chk-btn-clr-all">Clear All</button>
       </div>
     </div>
@@ -611,6 +612,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <h2>Transactions</h2>
       <div class="thr">
         <span id="mike-row-count">0 transactions</span>
+        <button class="btn btn-uncl btn-sm" id="mike-btn-uncl">&#x26A0; Uncleared First</button>
         <button class="btn btn-danger btn-sm" id="mike-btn-clr-all">Clear All</button>
       </div>
     </div>
@@ -703,6 +705,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <h2>Transactions</h2>
       <div class="thr">
         <span id="savings-row-count">0 transactions</span>
+        <button class="btn btn-uncl btn-sm" id="savings-btn-uncl">&#x26A0; Uncleared First</button>
         <button class="btn btn-danger btn-sm" id="savings-btn-clr-all">Clear All</button>
       </div>
     </div>
@@ -795,6 +798,7 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <h2>Transactions</h2>
       <div class="thr">
         <span id="hysa-row-count">0 transactions</span>
+        <button class="btn btn-uncl btn-sm" id="hysa-btn-uncl">&#x26A0; Uncleared First</button>
         <button class="btn btn-danger btn-sm" id="hysa-btn-clr-all">Clear All</button>
       </div>
     </div>
@@ -1691,7 +1695,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeEdit()
 function makeChecking(pfx,storeKey,openBalKey){
   var txns=JSON.parse(sGet(storeKey)||'[]');
   var openBal=parseFloat(sGet(openBalKey)||'0');
-  var sortFld='date',sAsc=false,hist=[],editId=null,pendingRcpt=null;
+  var sortFld='date',sAsc=false,unclFirst=false,hist=[],editId=null,pendingRcpt=null;
 
   function g(id){return document.getElementById(pfx+'-'+id);}
 
@@ -1749,6 +1753,7 @@ function makeChecking(pfx,storeKey,openBalKey){
 
   function doSort(list){
     return list.slice().sort(function(a,b){
+      if(unclFirst){var ac=a.cleared?1:0,bc=b.cleared?1:0;if(ac!==bc)return ac-bc;}
       var av=a[sortFld],bv=b[sortFld];
       if(sortFld==='amount'){av=+av;bv=+bv;}
       if(av<bv)return sAsc?-1:1;if(av>bv)return sAsc?1:-1;return 0;
