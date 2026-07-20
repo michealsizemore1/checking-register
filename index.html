@@ -346,7 +346,9 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <label>Category</label>
       <div style="display:flex;gap:4px;">
         <select id="txn-cat" style="flex:1;min-width:0;"></select>
-        <button class="btn btn-ghost btn-sm" id="btn-show-cat" style="flex-shrink:0;padding:6px 8px;">＋</button>
+        <input type="number" id="txn-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;color:var(--text);">
+        <button class="btn btn-primary btn-sm" id="btn-add-cat-chip" style="flex-shrink:0;padding:6px 9px;">Add</button>
+        <button class="btn btn-ghost btn-sm" id="btn-show-cat" style="flex-shrink:0;padding:6px 8px;" title="New category">＋</button>
       </div>
       <div id="cc-add-chips" class="cat-chips"></div>
       <div id="cat-row" style="display:none;margin-top:4px;display:none;gap:4px;">
@@ -469,7 +471,9 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <label>Category</label>
       <div style="display:flex;gap:4px;">
         <select id="chk-cat" style="flex:1;min-width:0;"></select>
-        <button class="btn btn-sm" id="chk-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+        <input type="number" id="chk-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="chk-btn-add-cat-chip" style="flex-shrink:0;padding:6px 9px;background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="chk-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;" title="New category">+</button>
       </div>
       <div id="chk-add-chips" class="cat-chips"></div>
       <div id="chk-cat-row" style="display:none;margin-top:4px;gap:4px;">
@@ -565,7 +569,9 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <label>Category</label>
       <div style="display:flex;gap:4px;">
         <select id="mike-cat" style="flex:1;min-width:0;"></select>
-        <button class="btn btn-sm" id="mike-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+        <input type="number" id="mike-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="mike-btn-add-cat-chip" style="flex-shrink:0;padding:6px 9px;background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="mike-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;" title="New category">+</button>
       </div>
       <div id="mike-add-chips" class="cat-chips"></div>
       <div id="mike-cat-row" style="display:none;margin-top:4px;gap:4px;">
@@ -660,7 +666,9 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <label>Category</label>
       <div style="display:flex;gap:4px;">
         <select id="savings-cat" style="flex:1;min-width:0;"></select>
-        <button class="btn btn-sm" id="savings-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+        <input type="number" id="savings-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="savings-btn-add-cat-chip" style="flex-shrink:0;padding:6px 9px;background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="savings-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;" title="New category">+</button>
       </div>
       <div id="savings-add-chips" class="cat-chips"></div>
       <div id="savings-cat-row" style="display:none;margin-top:4px;gap:4px;">
@@ -755,7 +763,9 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <label>Category</label>
       <div style="display:flex;gap:4px;">
         <select id="hysa-cat" style="flex:1;min-width:0;"></select>
-        <button class="btn btn-sm" id="hysa-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;">+</button>
+        <input type="number" id="hysa-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+        <button class="btn btn-sm" id="hysa-btn-add-cat-chip" style="flex-shrink:0;padding:6px 9px;background:#2563eb;color:#fff;font-weight:600;">Add</button>
+        <button class="btn btn-sm" id="hysa-btn-show-cat" style="flex-shrink:0;padding:6px 10px;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;font-weight:700;" title="New category">+</button>
       </div>
       <div id="hysa-add-chips" class="cat-chips"></div>
       <div id="hysa-cat-row" style="display:none;margin-top:4px;gap:4px;">
@@ -835,7 +845,14 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Date</label><input type="date" id="chk-e-date"></div>
       <div class="f fl"><label>Amount ($)</label><input type="number" id="chk-e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="chk-e-desc" maxlength="100"></div>
-      <div class="f fl"><label>Category</label><select id="chk-e-cat"></select><div id="chk-edit-chips" class="cat-chips"></div></div>
+      <div class="f fl"><label>Category</label>
+        <div style="display:flex;gap:4px;margin-top:2px;">
+          <select id="chk-e-cat" style="flex:1;min-width:0;"></select>
+          <input type="number" id="chk-e-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+          <button class="btn btn-primary btn-sm" id="chk-btn-add-edit-chip" style="flex-shrink:0;padding:6px 9px;">Add</button>
+        </div>
+        <div id="chk-edit-chips" class="cat-chips"></div>
+      </div>
       <div class="f fl"><label>Trip</label><select id="chk-e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
@@ -867,7 +884,14 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Date</label><input type="date" id="mike-e-date"></div>
       <div class="f fl"><label>Amount ($)</label><input type="number" id="mike-e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="mike-e-desc" maxlength="100"></div>
-      <div class="f fl"><label>Category</label><select id="mike-e-cat"></select><div id="mike-edit-chips" class="cat-chips"></div></div>
+      <div class="f fl"><label>Category</label>
+        <div style="display:flex;gap:4px;margin-top:2px;">
+          <select id="mike-e-cat" style="flex:1;min-width:0;"></select>
+          <input type="number" id="mike-e-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+          <button class="btn btn-primary btn-sm" id="mike-btn-add-edit-chip" style="flex-shrink:0;padding:6px 9px;">Add</button>
+        </div>
+        <div id="mike-edit-chips" class="cat-chips"></div>
+      </div>
       <div class="f fl"><label>Trip</label><select id="mike-e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
@@ -898,7 +922,14 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Date</label><input type="date" id="savings-e-date"></div>
       <div class="f fl"><label>Amount ($)</label><input type="number" id="savings-e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="savings-e-desc" maxlength="100"></div>
-      <div class="f fl"><label>Category</label><select id="savings-e-cat"></select><div id="savings-edit-chips" class="cat-chips"></div></div>
+      <div class="f fl"><label>Category</label>
+        <div style="display:flex;gap:4px;margin-top:2px;">
+          <select id="savings-e-cat" style="flex:1;min-width:0;"></select>
+          <input type="number" id="savings-e-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+          <button class="btn btn-primary btn-sm" id="savings-btn-add-edit-chip" style="flex-shrink:0;padding:6px 9px;">Add</button>
+        </div>
+        <div id="savings-edit-chips" class="cat-chips"></div>
+      </div>
       <div class="f fl"><label>Trip</label><select id="savings-e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
@@ -930,7 +961,14 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Date</label><input type="date" id="hysa-e-date"></div>
       <div class="f fl"><label>Amount ($)</label><input type="number" id="hysa-e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="hysa-e-desc" maxlength="100"></div>
-      <div class="f fl"><label>Category</label><select id="hysa-e-cat"></select><div id="hysa-edit-chips" class="cat-chips"></div></div>
+      <div class="f fl"><label>Category</label>
+        <div style="display:flex;gap:4px;margin-top:2px;">
+          <select id="hysa-e-cat" style="flex:1;min-width:0;"></select>
+          <input type="number" id="hysa-e-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid #cbd5e1;border-radius:5px;outline:none;color:#1e293b;">
+          <button class="btn btn-primary btn-sm" id="hysa-btn-add-edit-chip" style="flex-shrink:0;padding:6px 9px;">Add</button>
+        </div>
+        <div id="hysa-edit-chips" class="cat-chips"></div>
+      </div>
       <div class="f fl"><label>Trip</label><select id="hysa-e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
@@ -1089,7 +1127,14 @@ tbody tr.wth-row:hover { background:#fef2f2; }
       <div class="f fl"><label>Date</label><input type="date" id="e-date"></div>
       <div class="f fl"><label>Amount ($)</label><input type="number" id="e-amt" min="0.01" step="0.01"></div>
       <div class="f full fl"><label>Description</label><input type="text" id="e-desc" maxlength="100"></div>
-      <div class="f fl"><label>Category</label><select id="e-cat"></select><div id="cc-edit-chips" class="cat-chips"></div></div>
+      <div class="f fl"><label>Category</label>
+        <div style="display:flex;gap:4px;margin-top:2px;">
+          <select id="e-cat" style="flex:1;min-width:0;"></select>
+          <input type="number" id="e-cat-amt" placeholder="$ amt" min="0" step="0.01" style="width:72px;padding:6px 4px;font-size:.8rem;border:1px solid var(--border);border-radius:5px;outline:none;color:var(--text);">
+          <button class="btn btn-primary btn-sm" id="btn-add-edit-chip" style="flex-shrink:0;padding:6px 9px;">Add</button>
+        </div>
+        <div id="cc-edit-chips" class="cat-chips"></div>
+      </div>
       <div class="f fl"><label>Trip</label><select id="e-trip"></select></div>
       <div class="f fl">
         <label>Type</label>
@@ -1215,7 +1260,11 @@ function renderCatSelects(){
 }
 function renderCCChips(containerId,arr){
   var el=$(containerId);if(!el)return;
-  el.innerHTML=arr.map(function(cat){return '<span class="cat-chip">'+esc(cat)+'<span class="cat-rm" data-cat="'+esc(cat)+'">&#xD7;</span></span>';}).join('');
+  el.innerHTML=arr.map(function(item){
+    var cat=typeof item==='string'?item:item.cat;
+    var amtStr=typeof item==='object'&&item.amt!==null?' <small>$'+parseFloat(item.amt).toFixed(2)+'</small>':'';
+    return '<span class="cat-chip">'+esc(cat)+amtStr+'<span class="cat-rm" data-cat="'+esc(cat)+'">&#xD7;</span></span>';
+  }).join('');
 }
 function renderCCCatDelList(){
   var el=$('cc-cat-del-list');if(!el)return;
@@ -1229,8 +1278,8 @@ function deleteCat(name){
   if(!confirm('Delete "'+name+'" category? Existing transactions keep their categories.'))return;
   var idx=categories.indexOf(name);if(idx===-1)return;
   categories.splice(idx,1);saveCats();renderCatSelects();
-  ccAddCats=ccAddCats.filter(function(x){return x!==name;});
-  ccEditCats=ccEditCats.filter(function(x){return x!==name;});
+  ccAddCats=ccAddCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==name;});
+  ccEditCats=ccEditCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==name;});
   renderCCChips('cc-add-chips',ccAddCats);
   renderCCChips('cc-edit-chips',ccEditCats);
   renderCCCatDelList();
@@ -1256,8 +1305,9 @@ function addTxn(){
   err.textContent='';
   snapshot();
   var newId=Date.now();
-  var cat=ccAddCats.join(', ');
-  transactions.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,who:who,trip:activeTripId||undefined});
+  var cat=ccAddCats.map(function(x){return typeof x==='string'?x:x.cat;}).join(', ');
+  var catAmts=ccAddCats.map(function(x){return typeof x==='object'&&x.amt!==null?x.amt.toFixed(2):'';}).join(', ');
+  transactions.push({id:newId,date:date,desc:desc,cat:cat,catAmts:catAmts,type:type,amount:amt,cleared:false,who:who,trip:activeTripId||undefined});
   if(ccPendingRcpt){sSet('rcpt-'+newId,ccPendingRcpt);ccPendingRcpt=null;$('cc-photo-thumb').style.display='none';$('cc-photo-thumb').src='';}
   save();renderAll();
   ccAddCats=[];renderCCChips('cc-add-chips',[]);
@@ -1285,7 +1335,8 @@ function openEdit(id){
   if(r)r.checked=true;
   var w=document.querySelector('input[name="e-who"][value="'+(t.who||'wife')+'"]');
   if(w)w.checked=true;
-  ccEditCats=t.cat?t.cat.split(', ').filter(function(x){return x.trim();}):[];
+  var eCats=t.cat?t.cat.split(', ').filter(function(x){return x.trim();}):[],eAmts=t.catAmts?t.catAmts.split(', '):[];
+  ccEditCats=eCats.map(function(cat,i){var a=eAmts[i]&&eAmts[i].trim()?parseFloat(eAmts[i]):null;return {cat:cat,amt:isNaN(a)?null:a};});
   renderCatSelects();renderCCChips('cc-edit-chips',ccEditCats);
   $('edit-err').textContent='';
   $('e-trip').innerHTML=buildTripOpts(t.trip||null);
@@ -1302,11 +1353,12 @@ function saveEdit(){
   if(!desc){err.textContent='Description required.';return;}
   if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
   if(!ccEditCats.length){err.textContent='Please select at least one category.';return;}
-  var cat=ccEditCats.join(', ');
+  var cat=ccEditCats.map(function(x){return typeof x==='string'?x:x.cat;}).join(', ');
+  var catAmts=ccEditCats.map(function(x){return typeof x==='object'&&x.amt!==null?x.amt.toFixed(2):'';}).join(', ');
   var i=transactions.findIndex(function(t){return t.id===editId;});if(i===-1)return;
   snapshot();
   var tripVal=$('e-trip').value;var tripId=tripVal?parseInt(tripVal,10):undefined;
-  transactions[i]={id:transactions[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:$('e-cleared').checked,who:who,trip:tripId};
+  transactions[i]={id:transactions[i].id,date:date,desc:desc,cat:cat,catAmts:catAmts,type:type,amount:amt,cleared:$('e-cleared').checked,who:who,trip:tripId};
   save();renderAll();closeEdit();
 }
 
@@ -1342,6 +1394,22 @@ function sorted(list){
 }
 
 // ── Render ────────────────────────────────────────────────────────────────────
+function catBadges(t){
+  var cats=t.cat?t.cat.split(', '):[];
+  var amts=t.catAmts?t.catAmts.split(', '):[];
+  return cats.map(function(cat,i){
+    var a=amts[i]&&amts[i].trim()?parseFloat(amts[i]):null;
+    return '<span class="catbdg">'+esc(cat.trim())+(a!==null&&!isNaN(a)?' <small>$'+a.toFixed(2)+'</small>':'')+'</span>';
+  }).join(' ');
+}
+function catDesc(t){
+  var cats=t.cat?t.cat.split(', '):[];
+  var amts=t.catAmts?t.catAmts.split(', '):[];
+  return cats.map(function(cat,i){
+    var a=amts[i]&&amts[i].trim()?parseFloat(amts[i]):null;
+    return esc(cat.trim())+(a!==null&&!isNaN(a)?' $'+a.toFixed(2):'');
+  }).join(', ');
+}
 function renderAll(){renderSummary();renderTable();}
 
 function renderSummary(){
@@ -1441,7 +1509,7 @@ function renderTable(){
       h+='<tr class="'+cls+'">';
       h+='<td class="clr-cell">'+cb+'</td>';
       h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
-      h+='<td class="desc-cell"><span class="desc-main" style="'+whoStyle+'" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+t.cat.split(', ').map(function(x){return esc(x.trim());}).join(', ')+'</span></td>';
+      h+='<td class="desc-cell"><span class="desc-main" style="'+whoStyle+'" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+catDesc(t)+'</span></td>';
       h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
       h+='<td class="act-cell">'+rb+eb+db+'</td>';
       h+='</tr>';
@@ -1450,7 +1518,7 @@ function renderTable(){
       h+='<td class="clr-cell">'+cb+'</td>';
       h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
       h+='<td class="desc-cell"><span class="desc-main" style="'+whoStyle+'" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span style="'+amtStyle+'font-size:.7rem;">'+sign+fmt(t.amount)+'</span></td>';
-      h+='<td class="cat-cell">'+t.cat.split(', ').map(function(x){return '<span class="catbdg">'+esc(x.trim())+'</span>';}).join(' ')+'</td>';
+      h+='<td class="cat-cell">'+catBadges(t)+'</td>';
       h+='<td class="type-cell"><span class="badge b-'+t.type+'">'+(t.type==='expense'?'Exp':t.type==='return'?'Ret':'Pay')+'</span></td>';
       h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
       h+='<td class="act-cell">'+rb+eb+db+'</td>';
@@ -1685,10 +1753,35 @@ $('txn-amt').addEventListener('keydown',function(e){if(e.key==='Enter')addTxn();
 });
 $('btn-clr-filter').addEventListener('click',function(){['f-search','f-cat','f-type','f-from','f-to'].forEach(function(id){$(id).value='';});renderTable();});
 // CC multi-cat pickers
-$('txn-cat').addEventListener('change',function(){var v=this.value;if(!v)return;if(ccAddCats.indexOf(v)===-1)ccAddCats.push(v);renderCCChips('cc-add-chips',ccAddCats);this.value='';});
-$('cc-add-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');ccAddCats=ccAddCats.filter(function(x){return x!==ct;});renderCCChips('cc-add-chips',ccAddCats);}});
-$('e-cat').addEventListener('change',function(){var v=this.value;if(!v)return;if(ccEditCats.indexOf(v)===-1)ccEditCats.push(v);renderCCChips('cc-edit-chips',ccEditCats);this.value='';});
-$('cc-edit-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');ccEditCats=ccEditCats.filter(function(x){return x!==ct;});renderCCChips('cc-edit-chips',ccEditCats);}});
+function addCCChip(){
+  var v=$('txn-cat').value,a=parseFloat($('txn-cat-amt').value);
+  if(!v)return;
+  if(ccAddCats.some(function(x){return (typeof x==='string'?x:x.cat)===v;}))return;
+  ccAddCats.push({cat:v,amt:isNaN(a)||a<=0?null:a});
+  renderCCChips('cc-add-chips',ccAddCats);
+  recomputeTotal();
+  $('txn-cat').value='';$('txn-cat-amt').value='';
+}
+function recomputeTotal(){
+  var hasAmt=ccAddCats.some(function(x){return typeof x==='object'&&x.amt!==null;});
+  if(!hasAmt)return;
+  var sum=ccAddCats.reduce(function(s,x){return s+(typeof x==='object'&&x.amt?x.amt:0);},0);
+  var f=$('txn-amt');if(!f.value||parseFloat(f.value)===0)f.value=sum.toFixed(2);
+}
+$('btn-add-cat-chip').addEventListener('click',addCCChip);
+$('txn-cat-amt').addEventListener('keydown',function(e){if(e.key==='Enter')addCCChip();});
+$('cc-add-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');ccAddCats=ccAddCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==ct;});renderCCChips('cc-add-chips',ccAddCats);recomputeTotal();}});
+function addCCEditChip(){
+  var v=$('e-cat').value,a=parseFloat($('e-cat-amt').value);
+  if(!v)return;
+  if(ccEditCats.some(function(x){return (typeof x==='string'?x:x.cat)===v;}))return;
+  ccEditCats.push({cat:v,amt:isNaN(a)||a<=0?null:a});
+  renderCCChips('cc-edit-chips',ccEditCats);
+  $('e-cat').value='';$('e-cat-amt').value='';
+}
+$('btn-add-edit-chip').addEventListener('click',addCCEditChip);
+$('e-cat-amt').addEventListener('keydown',function(e){if(e.key==='Enter')addCCEditChip();});
+$('cc-edit-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');ccEditCats=ccEditCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==ct;});renderCCChips('cc-edit-chips',ccEditCats);}});
 $('cc-cat-del-list').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm[data-action="delete"]');if(rm)deleteCat(rm.getAttribute('data-cat'));});
 $('btn-export').addEventListener('click',exportCSV);
 
@@ -1774,6 +1867,23 @@ function makeChecking(pfx,storeKey,openBalKey){
       s.innerHTML='<option value="">— Add category —</option>'+categories.slice().sort(function(a,b){return a.localeCompare(b);}).map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');
       s.value='';
     });
+    var fc=document.getElementById(pfx+'-f-cat'),fp=fc?fc.value:'';
+    if(fc){fc.innerHTML='<option value="">All</option>'+categories.slice().sort(function(a,b){return a.localeCompare(b);}).map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');if(fp)fc.value=fp;}
+  }
+  function chipHtml(item){
+    var cat=typeof item==='string'?item:item.cat;
+    var amtStr=typeof item==='object'&&item.amt!==null?' <small>$'+parseFloat(item.amt).toFixed(2)+'</small>':'';
+    return '<span class="cat-chip">'+esc(cat)+amtStr+'<span class="cat-rm" data-cat="'+esc(cat)+'">&#xD7;</span></span>';
+  }
+  function renderAddChips(){var el=g('add-chips');if(el)el.innerHTML=selectedAddCats.map(chipHtml).join('');}
+  function renderEditChips(){var el=g('edit-chips');if(el)el.innerHTML=selectedEditCats.map(chipHtml).join('');}
+  function renderDelList(){
+    var el=g('cat-del-list');if(!el)return;
+    if(!categories.length){el.innerHTML='<span style="font-size:.74rem;color:#94a3b8;">No categories.</span>';return;}
+    el.innerHTML='<span style="font-size:.74rem;color:#64748b;display:block;width:100%;margin-bottom:2px;">&#x1F5D1; Click to delete:</span>'+
+      categories.slice().sort(function(a,b){return a.localeCompare(b);}).map(function(cat){
+        return '<span class="cat-chip del-chip">'+esc(cat)+'<span class="cat-rm" data-cat="'+esc(cat)+'" data-action="delete">&#xD7;</span></span>';
+      }).join('');
   }
 
   function renderSummary(){
@@ -1857,14 +1967,14 @@ function makeChecking(pfx,storeKey,openBalKey){
       if(mobile){
         h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
         h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
-        h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+t.cat.split(', ').map(function(x){return esc(x.trim());}).join(', ')+'</span></td>';
+        h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span><span class="desc-sub">'+t.cat.split(', ').map(function(cat,i){var amts=t.catAmts?t.catAmts.split(', '):[];var a=amts[i]&&amts[i].trim()?parseFloat(amts[i]):null;return esc(cat.trim())+(a!==null&&!isNaN(a)?' $'+a.toFixed(2):'');}).join(', ')+'</span></td>';
         h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
         h+='<td class="act-cell">'+rb+eb+db+'</td></tr>';
       } else {
         h+='<tr class="'+cls+'"><td class="clr-cell">'+cb+'</td>';
         h+='<td class="date-cell">'+fmtD(t.date)+'</td>';
         h+='<td class="desc-cell"><span class="desc-main" style="font-weight:500;" title="'+esc(t.desc)+'">'+esc(t.desc)+'</span></td>';
-        h+='<td class="cat-cell">'+t.cat.split(', ').map(function(x){return '<span class="catbdg">'+esc(x.trim())+'</span>';}).join(' ')+'</td>';
+        h+='<td class="cat-cell">'+t.cat.split(', ').map(function(cat,i){var amts=t.catAmts?t.catAmts.split(', '):[];var a=amts[i]&&amts[i].trim()?parseFloat(amts[i]):null;return '<span class="catbdg">'+esc(cat.trim())+(a!==null&&!isNaN(a)?' <small>$'+a.toFixed(2)+'</small>':'')+'</span>';}).join(' ')+'</td>';
         h+='<td class="type-cell"><span class="badge '+(isDep?'b-ret':'b-exp')+'">'+(isDep?'Dep':'Wth')+'</span></td>';
         h+='<td class="amt-cell"><span style="'+amtStyle+'">'+sign+fmt(t.amount)+'</span></td>';
         h+='<td class="bal-cell"><span style="font-weight:600;color:'+(neg?'#dc2626':'#2563eb')+';">'+fmtS(bal)+'</span></td>';
@@ -1886,9 +1996,10 @@ function makeChecking(pfx,storeKey,openBalKey){
     if(!amt||amt<=0){err.textContent='Please enter a valid amount.';return;}
     if(!selectedAddCats.length){err.textContent='Please select at least one category.';return;}
     err.textContent='';snap();
-    var cat=selectedAddCats.join(', ');
+    var cat=selectedAddCats.map(function(x){return typeof x==='string'?x:x.cat;}).join(', ');
+    var catAmts=selectedAddCats.map(function(x){return typeof x==='object'&&x.amt!==null?x.amt.toFixed(2):'';}).join(', ');
     var newId=Date.now();
-    txns.push({id:newId,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:false,trip:activeTripId||undefined});
+    txns.push({id:newId,date:date,desc:desc,cat:cat,catAmts:catAmts,type:type,amount:amt,cleared:false,trip:activeTripId||undefined});
     if(pendingRcpt){sSet('rcpt-'+newId,pendingRcpt);pendingRcpt=null;g('photo-thumb').style.display='none';g('photo-thumb').src='';}
     saveTxns();renderAll();
     selectedAddCats=[];renderAddChips();
@@ -1920,7 +2031,8 @@ function makeChecking(pfx,storeKey,openBalKey){
     g('e-date').value=t.date;g('e-desc').value=t.desc;
     g('e-amt').value=t.amount;g('e-cleared').checked=!!t.cleared;
     var r=document.querySelector('input[name="'+pfx+'-e-type"][value="'+t.type+'"]');if(r)r.checked=true;
-    selectedEditCats=t.cat?t.cat.split(', ').filter(function(x){return x.trim();}):[];
+    var sCats=t.cat?t.cat.split(', ').filter(function(x){return x.trim();}):[],sAmts=t.catAmts?t.catAmts.split(', '):[];
+    selectedEditCats=sCats.map(function(cat,i){var a=sAmts[i]&&sAmts[i].trim()?parseFloat(sAmts[i]):null;return {cat:cat,amt:isNaN(a)?null:a};});
     renderCat();renderEditChips();
     g('edit-err').textContent='';
     g('e-trip').innerHTML=buildTripOpts(t.trip||null);
@@ -1938,11 +2050,12 @@ function makeChecking(pfx,storeKey,openBalKey){
     if(!desc){err.textContent='Description required.';return;}
     if(!amt||amt<=0){err.textContent='Valid amount required.';return;}
     if(!selectedEditCats.length){err.textContent='Please select at least one category.';return;}
-    var cat=selectedEditCats.join(', ');
+    var cat=selectedEditCats.map(function(x){return typeof x==='string'?x:x.cat;}).join(', ');
+    var catAmts=selectedEditCats.map(function(x){return typeof x==='object'&&x.amt!==null?x.amt.toFixed(2):'';}).join(', ');
     var i=txns.findIndex(function(t){return t.id===editId;});if(i===-1)return;
     snap();
     var tv=g('e-trip').value;var tid=tv?parseInt(tv,10):undefined;
-    txns[i]={id:txns[i].id,date:date,desc:desc,cat:cat,type:type,amount:amt,cleared:g('e-cleared').checked,trip:tid};
+    txns[i]={id:txns[i].id,date:date,desc:desc,cat:cat,catAmts:catAmts,type:type,amount:amt,cleared:g('e-cleared').checked,trip:tid};
     saveTxns();renderAll();closeEdit();
   }
 
@@ -2019,10 +2132,14 @@ function makeChecking(pfx,storeKey,openBalKey){
       if(e.key==='Enter')submitCat();
       if(e.key==='Escape'){g('cat-row').style.display='none';g('cat-del-list').style.display='none';g('new-cat').value='';}
     });
-    g('cat').addEventListener('change',function(){var v=this.value;if(!v)return;if(selectedAddCats.indexOf(v)===-1)selectedAddCats.push(v);renderAddChips();this.value='';});
-    g('add-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');selectedAddCats=selectedAddCats.filter(function(x){return x!==ct;});renderAddChips();}});
-    g('e-cat').addEventListener('change',function(){var v=this.value;if(!v)return;if(selectedEditCats.indexOf(v)===-1)selectedEditCats.push(v);renderEditChips();this.value='';});
-    g('edit-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');selectedEditCats=selectedEditCats.filter(function(x){return x!==ct;});renderEditChips();}});
+    function addChip(){var v=g('cat').value,a=parseFloat(g('cat-amt').value);if(!v)return;if(selectedAddCats.some(function(x){return (typeof x==='string'?x:x.cat)===v;}))return;selectedAddCats.push({cat:v,amt:isNaN(a)||a<=0?null:a});renderAddChips();var af=g('amt');var sum=selectedAddCats.reduce(function(s,x){return s+(typeof x==='object'&&x.amt?x.amt:0);},0);if(af&&sum>0&&(!af.value||parseFloat(af.value)===0))af.value=sum.toFixed(2);g('cat').value='';g('cat-amt').value='';}
+    function addEditChip(){var v=g('e-cat').value,a=parseFloat(g('e-cat-amt').value);if(!v)return;if(selectedEditCats.some(function(x){return (typeof x==='string'?x:x.cat)===v;}))return;selectedEditCats.push({cat:v,amt:isNaN(a)||a<=0?null:a});renderEditChips();g('e-cat').value='';g('e-cat-amt').value='';}
+    g('btn-add-cat-chip').addEventListener('click',addChip);
+    g('cat-amt').addEventListener('keydown',function(e){if(e.key==='Enter')addChip();});
+    g('btn-add-edit-chip').addEventListener('click',addEditChip);
+    g('e-cat-amt').addEventListener('keydown',function(e){if(e.key==='Enter')addEditChip();});
+    g('add-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');selectedAddCats=selectedAddCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==ct;});renderAddChips();}});
+    g('edit-chips').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm');if(rm&&rm.getAttribute('data-action')!=='delete'){var ct=rm.getAttribute('data-cat');selectedEditCats=selectedEditCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==ct;});renderEditChips();}});
     g('cat-del-list').addEventListener('click',function(e){var rm=e.target.closest('.cat-rm[data-action="delete"]');if(rm)deleteCat(rm.getAttribute('data-cat'));});
     g('cam-btn').addEventListener('click',function(){g('cam-inp').click();});
     g('lib-btn').addEventListener('click',function(){g('lib-inp').click();});
@@ -2044,7 +2161,7 @@ function makeChecking(pfx,storeKey,openBalKey){
     setOpenBal:function(v){openBal=v;},
     renderAll:renderAll,
     renderCat:renderCat,
-    clearCat:function(name){selectedAddCats=selectedAddCats.filter(function(x){return x!==name;});selectedEditCats=selectedEditCats.filter(function(x){return x!==name;});renderAddChips();renderEditChips();renderDelList();},
+    clearCat:function(name){selectedAddCats=selectedAddCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==name;});selectedEditCats=selectedEditCats.filter(function(x){return (typeof x==='string'?x:x.cat)!==name;});renderAddChips();renderEditChips();renderDelList();},
     closeEdit:closeEdit,
     wireEvents:wireEvents,
     activatePane:function(){
